@@ -1,0 +1,108 @@
+{
+  "dataset_name": "Ransomchats Snapshot",
+  "last_updated": "2026-01-28T11:30:30.629265",
+  "source_repository": "https://github.com/Casualtek/Ransomchats",
+  "statistics": {
+    "total_groups": 24,
+    "total_chats": 233,
+    "total_messages": 11092,
+    "groups": {
+      "Akira": {
+        "chat_count": 60,
+        "message_count": 2408
+      },
+      "Avaddon": {
+        "chat_count": 7,
+        "message_count": 380
+      },
+      "Avos": {
+        "chat_count": 1,
+        "message_count": 86
+      },
+      "Babuk": {
+        "chat_count": 2,
+        "message_count": 150
+      },
+      "BlackBasta": {
+        "chat_count": 5,
+        "message_count": 257
+      },
+      "BlackMatter": {
+        "chat_count": 2,
+        "message_count": 121
+      },
+      "Cloak": {
+        "chat_count": 2,
+        "message_count": 120
+      },
+      "Conti": {
+        "chat_count": 32,
+        "message_count": 1709
+      },
+      "Darkside": {
+        "chat_count": 5,
+        "message_count": 425
+      },
+      "Dragonforce": {
+        "chat_count": 14,
+        "message_count": 375
+      },
+      "fog": {
+        "chat_count": 6,
+        "message_count": 333
+      },
+      "Hive": {
+        "chat_count": 8,
+        "message_count": 372
+      },
+      "Hunters International": {
+        "chat_count": 1,
+        "message_count": 29
+      },
+      "lockbit3.0": {
+        "chat_count": 42,
+        "message_count": 2220
+      },
+      "Mallox": {
+        "chat_count": 3,
+        "message_count": 108
+      },
+      "mount-locker": {
+        "chat_count": 1,
+        "message_count": 60
+      },
+      "NoEscape": {
+        "chat_count": 2,
+        "message_count": 10
+      },
+      "Pear": {
+        "chat_count": 1,
+        "message_count": 42
+      },
+      "Qilin": {
+        "chat_count": 2,
+        "message_count": 39
+      },
+      "RansomHub": {
+        "chat_count": 1,
+        "message_count": 1
+      },
+      "Ranzy": {
+        "chat_count": 2,
+        "message_count": 56
+      },
+      "REvil": {
+        "chat_count": 20,
+        "message_count": 1065
+      },
+      "RunSomeWares": {
+        "chat_count": 1,
+        "message_count": 27
+      },
+      "trinity": {
+        "chat_count": 13,
+        "message_count": 699
+      }
+    }
+  }
+}

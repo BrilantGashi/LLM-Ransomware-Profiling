@@ -1,0 +1,21 @@
+model_config:
+  openai:
+    # Credentials are managed via environment variables (.env file)
+    model_name: "phi4-mini"
+
+llm_parameters:
+  temperature: 0.8        
+  top_p: 0.95            
+  max_tokens: 1024       
+  frequency_penalty: 0   
+  presence_penalty: 0    
+
+paths:
+  raw_data: "data/raw/messages.json"
+  processed_data: "data/processed/labelled_chats.json"
+  chat_index_url: "https://raw.githubusercontent.com/Casualtek/Ransomchats/main/chat_index.json"
+  base_raw_url: "https://raw.githubusercontent.com/Casualtek/Ransomchats/main/"
+
+processing:
+  max_workers: 4
+  max_prompt_chars: 10000
