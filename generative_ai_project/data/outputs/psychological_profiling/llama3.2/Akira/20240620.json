@@ -1,0 +1,12 @@
+{
+  "attacker_tone": "Professional",
+  "attacker_competence": "Semi_Professional",
+  "attacker_strategy": "Problem_Solving",
+  "influence_tactics": ["Authority", "Scarcity", "Reciprocity"],
+  "victim_emotion": "Professional_Detachment",
+  "victim_tactic": "Relationship_Building",
+  "victim_tactic_effectiveness": "High",
+  "power_balance": "Balanced",
+  "attacker_effectiveness_score": 4,
+  "victim_effectiveness_score": 4
+}

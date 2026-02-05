@@ -1,1 +1,41 @@
+version: 1
+disable_existing_loggers: False
 
+formatters:
+  standard:
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    datefmt: "%H:%M:%S"
+  detailed:
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(module)s:%(lineno)d - %(message)s"
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: INFO
+    formatter: standard
+    stream: ext://sys.stdout
+
+  file_handler:
+    class: logging.FileHandler
+    level: DEBUG
+    formatter: detailed
+    filename: "data/logs/project.log"
+    encoding: "utf8"
+
+loggers:
+  # Logger principale per la tua Pipeline
+  RansomPipeline:
+    level: INFO
+    handlers: [console, file_handler]
+    propagate: False
+
+  # Logger per il Client AI (utile per debuggare errori API)
+  UniBS_Client:
+    level: INFO
+    handlers: [console, file_handler]
+    propagate: False
+
+# Configurazione globale di fallback
+root:
+  level: WARNING
+  handlers: [console]

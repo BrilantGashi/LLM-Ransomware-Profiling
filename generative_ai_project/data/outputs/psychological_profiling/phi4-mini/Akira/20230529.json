@@ -1,0 +1,12 @@
+{
+  "attacker_tone": "Aggressive",
+  "attacker_competence": "Organized_Group",
+  "attacker_strategy": "Competing",
+  "influence_tactics": ["Scarcity"],
+  "victim_emotion": "Shock_to_Resignation",
+  "victim_tactic": "Rapid_Capitulation",
+  "victim_tactic_effectiveness": "None",
+  "power_balance": "Attacker_Dominant",
+  "attacker_effectiveness_score": 4,
+  "victim_effectiveness_score": 1
+}

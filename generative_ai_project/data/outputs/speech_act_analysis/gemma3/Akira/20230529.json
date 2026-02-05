@@ -1,0 +1,44 @@
+[
+  {
+    "text": "greeting",
+    "party": "Akira",
+    "primary_act": "OPENING",
+    "argumentative_function": "EXPRESSIVE",
+    "phase": "OPENING"
+  },
+  {
+    "text": "request",
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "argumentative_function": "NEGOTIATIVE",
+    "phase": "OPENING"
+  },
+  {
+    "text": "offer",
+    "party": "Akira",
+    "primary_act": "NEGOTIATIVE",
+    "argumentative_function": "NEGOTIATIVE",
+    "phase": "BARGAINING"
+  },
+  {
+    "text": "payment",
+    "party": "Akira",
+    "primary_act": "COMMISSIVE",
+    "argumentative_function": "DIRECTIVE",
+    "phase": "CLOSURE"
+  },
+  {
+    "text": "payment_amount",
+    "party": "Akira",
+    "primary_act": "COMMISSIVE",
+    "argumentative_function": "DIRECTIVE",
+    "phase": "CLOSURE"
+  },
+  {
+    "text": "payment_details",
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "argumentative_function": "DIRECTIVE",
+    "phase": "CLOSURE"
+  }
+]

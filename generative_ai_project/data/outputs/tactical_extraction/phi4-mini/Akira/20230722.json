@@ -1,0 +1,13 @@
+{
+  "initial_demand": null,
+  "final_price": 190000,
+  "currency": "USD",
+  "discount_percent": null,
+  "victim_size": "Unknown",
+  "attack_type": "Double_Extortion",
+  "data_volume_gb": null,
+  "encryption_confirmed": null,
+  "exfiltration_confirmed": null,
+  "outcome": "Ongoing",
+  "attacker_flexibility": "Unknown"
+}

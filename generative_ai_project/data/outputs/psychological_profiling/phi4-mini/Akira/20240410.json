@@ -1,0 +1,12 @@
+{
+  "attacker_tone": "Professional",
+  "attacker_competence": "Organized_Group",
+  "attacker_strategy": "Compromising",
+  "influence_tactics": ["Scarcity", "Reciprocity", "Commitment", "Authority"],
+  "victim_emotion": "Shock_to_Resignation",
+  "victim_tactic": "Poverty_Pleading",
+  "victim_tactic_effectiveness": "Low",
+  "power_balance": "Attacker_Dominant",
+  "attacker_effectiveness_score": 4,
+  "victim_effectiveness_score": 1
+}

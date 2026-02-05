@@ -1,0 +1,37 @@
+[
+  {
+    "text": "You can find yourself in our news column: https://akiral2iz6a7qgd3ayp3l6yub7xx2uep76idk3u2kollpj5z3z636bad.onion/",
+    "party": "Victim",
+    "primary_act": "OTHER",
+    "argumentative_function": "OTHER",
+    "phase": "OPENING"
+  },
+  {
+    "text": "> If we don't get a respond within next 24 hours, we will be forced to announce your corporate data leak on our blog.",
+    "party": "Victim",
+    "primary_act": "PRESSURE",
+    "argumentative_function": "PRESSURE",
+    "phase": "OPENING"
+  },
+  {
+    "text": "> These files were taken from your network prior to encryption. You can pick 2-3 random files from the list and we will upload them to this chat as a proof of possession. To prove that we can properly decrypt your data you can upload 2-3 encrypted files to our chat and we will upload decrypted copies back.",
+    "party": "Victim",
+    "primary_act": "BARGAINING",
+    "argumentative_function": "BARGAINING",
+    "phase": "OTHER"
+  },
+  {
+    "text": "> You can find yourself in our news column: https://akiral2iz6a7qgd3ayp3l6yub7xx2uep76idk3u2kollpj5z3z636bad.onion/ If you want this post to be removed, we have to agree at something.",
+    "party": "Victim",
+    "primary_act": "OTHER",
+    "argumentative_function": "OTHER",
+    "phase": "OTHER"
+  },
+  {
+    "text": "We will reach out to you soon.",
+    "party": "Attacker",
+    "primary_act": "OTHER",
+    "argumentative_function": "OTHER",
+    "phase": "OTHER"
+  }
+]

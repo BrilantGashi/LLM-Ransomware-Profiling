@@ -1,0 +1,274 @@
+[
+  {
+    "text": "Hello. You've reached an Akira support chat. Currently, we are preparing the list of data we took from your network. For now you have to know that dealing with us is the best possible way to settle this quick and cheap. Keep in touch and be patient with us. We will reach out to you soon.",
+    "party": "Akira",
+    "primary_act": "INFORMATIVE",
+    "argumentative_function": "EXPRESSIVE",
+    "phase": "OPENING",
+    "consensus_meta": {
+      "total_models": 2,
+      "primary_act": {
+        "label": "INFORMATIVE",
+        "score": 0.5,
+        "valid_votes": 2,
+        "missing_votes": 0,
+        "distribution": {
+          "INFORMATIVE": 1,
+          "OPENING": 1
+        },
+        "is_tie": true,
+        "tied_labels": [
+          "INFORMATIVE",
+          "OPENING"
+        ]
+      },
+      "argumentative_function": {
+        "label": "EXPRESSIVE",
+        "score": 0.5,
+        "valid_votes": 2,
+        "missing_votes": 0,
+        "distribution": {
+          "FACTS": 1,
+          "EXPRESSIVE": 1
+        },
+        "is_tie": true,
+        "tied_labels": [
+          "EXPRESSIVE",
+          "FACTS"
+        ]
+      }
+    }
+  },
+  {
+    "text": "Your attempts to waste our time could force our exit from negotiations and cause data publication.",
+    "party": "Akira",
+    "primary_act": "COMMISSIVE",
+    "argumentative_function": "NEGOTIATIVE",
+    "phase": "OTHER",
+    "consensus_meta": {
+      "total_models": 2,
+      "primary_act": {
+        "label": "COMMISSIVE",
+        "score": 0.5,
+        "valid_votes": 2,
+        "missing_votes": 0,
+        "distribution": {
+          "COMMISSIVE": 1,
+          "DIRECTIVE": 1
+        },
+        "is_tie": true,
+        "tied_labels": [
+          "COMMISSIVE",
+          "DIRECTIVE"
+        ]
+      },
+      "argumentative_function": {
+        "label": "NEGOTIATIVE",
+        "score": 0.5,
+        "valid_votes": 2,
+        "missing_votes": 0,
+        "distribution": {
+          "PRESSURE": 1,
+          "NEGOTIATIVE": 1
+        },
+        "is_tie": true,
+        "tied_labels": [
+          "NEGOTIATIVE",
+          "PRESSURE"
+        ]
+      }
+    }
+  },
+  {
+    "text": "we identified our systems to be encrypted and we have limited back ups. Let us know if you can help with recovery.",
+    "party": "Victim",
+    "primary_act": "INFORMATIVE",
+    "argumentative_function": "FACTS",
+    "phase": "OTHER",
+    "consensus_meta": {
+      "total_models": 2,
+      "primary_act": {
+        "label": "INFORMATIVE",
+        "score": 0.5,
+        "valid_votes": 2,
+        "missing_votes": 0,
+        "distribution": {
+          "INFORMATIVE": 1,
+          "NEGOTIATIVE": 1
+        },
+        "is_tie": true,
+        "tied_labels": [
+          "INFORMATIVE",
+          "NEGOTIATIVE"
+        ]
+      },
+      "argumentative_function": {
+        "label": "FACTS",
+        "score": 0.5,
+        "valid_votes": 2,
+        "missing_votes": 0,
+        "distribution": {
+          "FACTS": 1,
+          "NEGOTIATIVE": 1
+        },
+        "is_tie": true,
+        "tied_labels": [
+          "FACTS",
+          "NEGOTIATIVE"
+        ]
+      }
+    }
+  },
+  {
+    "text": "We will let you know soon.",
+    "party": "Akira",
+    "primary_act": "COMMISSIVE",
+    "argumentative_function": "DIRECTIVE",
+    "phase": "OTHER",
+    "consensus_meta": {
+      "total_models": 2,
+      "primary_act": {
+        "label": "COMMISSIVE",
+        "score": 0.5,
+        "valid_votes": 2,
+        "missing_votes": 0,
+        "distribution": {
+          "NEGOTIATIVE": 1,
+          "COMMISSIVE": 1
+        },
+        "is_tie": true,
+        "tied_labels": [
+          "COMMISSIVE",
+          "NEGOTIATIVE"
+        ]
+      },
+      "argumentative_function": {
+        "label": "DIRECTIVE",
+        "score": 0.5,
+        "valid_votes": 2,
+        "missing_votes": 0,
+        "distribution": {
+          "PROCESS": 1,
+          "DIRECTIVE": 1
+        },
+        "is_tie": true,
+        "tied_labels": [
+          "DIRECTIVE",
+          "PROCESS"
+        ]
+      }
+    }
+  },
+  {
+    "text": "Hello! First of all send us 2-3 encrypted files, so we can prove that we can restore them. Secondly we have downloaded 400 gb of your sensaitve data. In the attachment we sent you the file-lists of data we have downloaded from your network. You can request any 2-3 files from that list as proof that we have the files. For the service of decryption and secure deletion of downloaded files your company must pay 900000 usd in BTC.\nFile list: https://temp.sh/[redacted]/all.txt",
+    "party": "Akira",
+    "primary_act": "COMMISSIVE",
+    "argumentative_function": "CONDITIONAL",
+    "phase": "OTHER",
+    "consensus_meta": {
+      "total_models": 2,
+      "primary_act": {
+        "label": "COMMISSIVE",
+        "score": 0.5,
+        "valid_votes": 2,
+        "missing_votes": 0,
+        "distribution": {
+          "NEGOTIATIVE": 1,
+          "COMMISSIVE": 1
+        },
+        "is_tie": true,
+        "tied_labels": [
+          "COMMISSIVE",
+          "NEGOTIATIVE"
+        ]
+      },
+      "argumentative_function": {
+        "label": "CONDITIONAL",
+        "score": 0.5,
+        "valid_votes": 2,
+        "missing_votes": 0,
+        "distribution": {
+          "CONDITIONAL": 1,
+          "DIRECTIVE": 1
+        },
+        "is_tie": true,
+        "tied_labels": [
+          "CONDITIONAL",
+          "DIRECTIVE"
+        ]
+      }
+    }
+  },
+  {
+    "text": "> knock knock !",
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "argumentative_function": "DIRECTIVE",
+    "phase": "OTHER",
+    "consensus_meta": {
+      "total_models": 2,
+      "primary_act": {
+        "label": "DIRECTIVE",
+        "score": 0.5,
+        "valid_votes": 2,
+        "missing_votes": 0,
+        "distribution": {
+          "EXPRESSIVE": 1,
+          "DIRECTIVE": 1
+        },
+        "is_tie": true,
+        "tied_labels": [
+          "DIRECTIVE",
+          "EXPRESSIVE"
+        ]
+      },
+      "argumentative_function": {
+        "label": "DIRECTIVE",
+        "score": 0.5,
+        "valid_votes": 2,
+        "missing_votes": 0,
+        "distribution": {
+          "OTHER": 1,
+          "DIRECTIVE": 1
+        },
+        "is_tie": true,
+        "tied_labels": [
+          "DIRECTIVE",
+          "OTHER"
+        ]
+      }
+    }
+  },
+  {
+    "text": "Don't you see our previous message? We've sent the list and outlined the deal terms.",
+    "party": "Akira",
+    "primary_act": "NEGOTIATIVE",
+    "argumentative_function": "PROCESS",
+    "phase": "OTHER",
+    "consensus_meta": {
+      "total_models": 2,
+      "primary_act": {
+        "label": "NEGOTIATIVE",
+        "score": 1.0,
+        "valid_votes": 1,
+        "missing_votes": 1,
+        "distribution": {
+          "NEGOTIATIVE": 1
+        },
+        "is_tie": false,
+        "tied_labels": []
+      },
+      "argumentative_function": {
+        "label": "PROCESS",
+        "score": 1.0,
+        "valid_votes": 1,
+        "missing_votes": 1,
+        "distribution": {
+          "PROCESS": 1
+        },
+        "is_tie": false,
+        "tied_labels": []
+      }
+    }
+  }
+]

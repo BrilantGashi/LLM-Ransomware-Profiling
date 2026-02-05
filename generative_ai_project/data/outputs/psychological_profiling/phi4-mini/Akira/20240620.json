@@ -1,0 +1,12 @@
+{
+  "attacker_tone": "Professional",
+  "attacker_competence": "Semi_Professional",
+  "attacker_strategy": "Competing",
+  "influence_tactics": ["Commitment"],
+  "victim_emotion": "Professional_Detachment",
+  "victim_tactic": "Poverty_Pleading",
+  "victim_tactic_effectiveness": "None",
+  "power_balance": "Attacker_Dominant",
+  "attacker_effectiveness_score": 3,
+  "victim_effectiveness_score": 1
+}

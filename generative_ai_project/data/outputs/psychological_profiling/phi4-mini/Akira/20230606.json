@@ -1,0 +1,12 @@
+{
+  "attacker_tone": "Aggressive",
+  "attacker_competence": "Semi_Professional",
+  "attacker_strategy": "Competing",
+  "influence_tactics": ["Scarcity", "Commitment"],
+  "victim_emotion": "Panic",
+  "victim_tactic": "Poverty_Pleading",
+  "victim_tactic_effectiveness": "Low",
+  "power_balance": "Attacker_Dominant",
+  "attacker_effectiveness_score": 4,
+  "victim_effectiveness_score": 2
+}

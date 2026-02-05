@@ -1,0 +1,13 @@
+{
+  "initial_demand": null,
+  "final_price": null,
+  "currency": "BTC",
+  "discount_percent": null,
+  "victim_size": "Unknown",
+  "attack_type": "Double_Extortion",
+  "data_volume_gb": 400,
+  "encryption_confirmed": true,
+  "exfiltration_confirmed": true,
+  "outcome": "Unknown",
+  "attacker_flexibility": null
+}

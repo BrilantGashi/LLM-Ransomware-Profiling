@@ -1,7 +1,26 @@
-model_config:
-  openai:
-    # Credentials are managed via environment variables (.env file)
-    model_name: "phi4-mini"
+# config/model_config.yaml
+
+# UniBS Cluster Configuration
+unibs_cluster:
+  base_url: "https://gpustack.ing.unibs.it/v1"
+  # models: List of models supported by the cluster (for reference)
+  # - phi4-mini
+  # - phi4
+  # - llama3.2
+  # - gpt-oss
+  # - qwen3
+  # - granite3.3
+  # - gemma3
+
+# Active Model for standard analysis (single model mode)
+active_model: "phi4-mini"
+
+# List the models to be used for the ensemble/consensus pipeline.
+# If this list is active, the pipeline will run all these models and compute agreement.
+ensemble_models:
+  - "phi4-mini"
+  - "llama3.2"
+  - "gemma3"  
 
 llm_parameters:
   temperature: 0.8        
@@ -12,7 +31,6 @@ llm_parameters:
 
 paths:
   raw_data: "data/raw/messages.json"
-  processed_data: "data/processed/labelled_chats.json"
   chat_index_url: "https://raw.githubusercontent.com/Casualtek/Ransomchats/main/chat_index.json"
   base_raw_url: "https://raw.githubusercontent.com/Casualtek/Ransomchats/main/"
 

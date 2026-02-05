@@ -1,0 +1,75 @@
+{
+  "task_name": "tactical_extraction",
+  "examples": [
+    {
+      "input": [
+        {"party": "Attacker", "text": "Your systems are encrypted. Pay $5,000,000 in BTC within 48 hours or we publish your data."},
+        {"party": "Victim", "text": "We need proof. Can you show us a sample of the stolen files?"},
+        {"party": "Attacker", "text": "Here's a sample: [link to 3 files, 400GB total]. Payment address: bc1qxy..."},
+        {"party": "Victim", "text": "We can only afford $2,000,000. Can you accept this?"},
+        {"party": "Attacker", "text": "OK. Final price $2M. Send funds to the address above."}
+      ],
+      "output": {
+        "metadata": {
+          "ransomware_group": "Unknown",
+          "victim_size": "Unknown",
+          "attack_type": "Double Extortion"
+        },
+        "financial_negotiation": {
+          "initial_demand": 5000000,
+          "final_agreed_price": 2000000,
+          "currency": "BTC",
+          "discount_percentage": 60,
+          "payment_deadline": "48 hours",
+          "urgency_tactics": ["Threat_to_Publish"]
+        },
+        "technical_indicators": {
+          "data_volume_gb": 400,
+          "data_types_stolen": [],
+          "encryption_confirmed": true,
+          "exfiltration_confirmed": true,
+          "proof_of_life_provided": true
+        },
+        "negotiation_dynamics": {
+          "outcome_status": "Paid",
+          "attacker_flexibility": "High",
+          "trust_issues": []
+        }
+      }
+    },
+    {
+      "input": [
+        {"party": "Attacker", "text": "We are Akira. Your files are locked. Price is 10 Bitcoin."},
+        {"party": "Victim", "text": "We won't pay. This is extortion."},
+        {"party": "Attacker", "text": "Your data will be leaked on our blog in 24 hours."}
+      ],
+      "output": {
+        "metadata": {
+          "ransomware_group": "Akira",
+          "victim_size": "Unknown",
+          "attack_type": "Encryption Only"
+        },
+        "financial_negotiation": {
+          "initial_demand": 10,
+          "final_agreed_price": null,
+          "currency": "BTC",
+          "discount_percentage": null,
+          "payment_deadline": "24 hours",
+          "urgency_tactics": ["Threat_to_Publish"]
+        },
+        "technical_indicators": {
+          "data_volume_gb": null,
+          "data_types_stolen": [],
+          "encryption_confirmed": true,
+          "exfiltration_confirmed": null,
+          "proof_of_life_provided": false
+        },
+        "negotiation_dynamics": {
+          "outcome_status": "Not_Paid",
+          "attacker_flexibility": "Unknown",
+          "trust_issues": []
+        }
+      }
+    }
+  ]
+}

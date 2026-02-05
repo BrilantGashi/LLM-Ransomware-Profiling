@@ -1,0 +1,51 @@
+[
+  {
+    "text": "Hello. We received your message and are authorised to speak with you. However, we are concerned about the security of this chat portal because your note has been sent to many people. Please can you provide us with an email address so that we can communicate with you further.",
+    "party": "Victim",
+    "primary_act": "INFORMATIVE",
+    "argumentative_function": "FACTS",
+    "phase": "OPENING"
+  },
+  {
+    "text": "Hello. You've reached Akira support chat. Currently, we are preparing the list of data we took from your network. For now you have to know that dealing with us is the best possible way to settle this quick and cheap. Keep in touch and be patient with us. Do you have a permission to conduct a negotiation on behalf of your organization? Once we get your reply you will be provided with all the details.",
+    "party": "Akira",
+    "primary_act": "INFORMATIVE",
+    "argumentative_function": "CONDITIONAL",
+    "phase": "OPENING"
+  },
+  {
+    "text": "Do you need a new chat ID?",
+    "party": "Akira",
+    "primary_act": "DIRECTIVE",
+    "argumentative_function": "PRESSURE",
+    "phase": "OPENING"
+  },
+  {
+    "text": "Thank you. We do have authority to speak with you. If we get a new chat ID, how will we know that it is secure and nobody else has access? We prefer email.",
+    "party": "Victim",
+    "primary_act": "INFORMATIVE",
+    "argumentative_function": "FAIRNESS",
+    "phase": "OPENING"
+  },
+  {
+    "text": "This chat is the only one place to communicate in secure. You will get a one-time note that contains a new chat ID. This note will be destroyed once you open it.",
+    "party": "Akira",
+    "primary_act": "INFORMATIVE",
+    "argumentative_function": "FACTS",
+    "phase": "OPENING"
+  },
+  {
+    "text": "https://privnote.com/[redacted]",
+    "party": "Akira",
+    "primary_act": "DIRECTIVE",
+    "argumentative_function": "PRESSURE",
+    "phase": "CLOSURE"
+  },
+  {
+    "text": "We look forward to your message in the new chat room.",
+    "party": "Akira",
+    "primary_act": "INFORMATIVE",
+    "argumentative_function": "FAIRNESS",
+    "phase": "OTHER"
+  }
+]

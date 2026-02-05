@@ -49,6 +49,7 @@ db.sqlite3
 # --- OS Generated Files ---
 .DS_Store
 Thumbs.db
+*.ini
 
 # --- Project Outputs (Optional - customize as needed) ---
 # Uncomment if you don't want to track generated outputs

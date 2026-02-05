@@ -1,0 +1,187 @@
+{
+  "task_name": "speech_act_analysis",
+  "description": "Examples for speech act and argumentative function annotation using Speech Act Theory and Argumentation Theory",
+  "examples": [
+    {
+      "description": "Simple opening with demand and victim response",
+      "input": [
+        {"party": "Attacker", "text": "Your files are encrypted. We have your complete database."},
+        {"party": "Attacker", "text": "Send $100,000 USD in Bitcoin within 24 hours."},
+        {"party": "Victim", "text": "Can you provide proof that you have our data?"},
+        {"party": "Attacker", "text": "Here is a sample of your customer records."},
+        {"party": "Victim", "text": "We only have $50,000 available. This is all we can afford."},
+        {"party": "Attacker", "text": "We accept $50,000. Send to address: 1A1z7agoat4FwWOrX6XWVBU5SV2ywBsrWX"}
+      ],
+      "output": [
+        {
+          "text": "Your files are encrypted. We have your complete database.",
+          "party": "Attacker",
+          "primary_act": "INFORMATIVE_DECLARATIVE",
+          "secondary_acts": [],
+          "argumentative_function": "GROUNDS_FACTS",
+          "phase": "OPENING_CONTACT",
+          "rationale": "Establishes factual basis for the threat: attacker states possession of encrypted files and stolen data."
+        },
+        {
+          "text": "Send $100,000 USD in Bitcoin within 24 hours.",
+          "party": "Attacker",
+          "primary_act": "DIRECTIVE",
+          "secondary_acts": ["COMMISSIVE"],
+          "argumentative_function": "ACTION_PRESSURE",
+          "phase": "DEMAND_FORMULATION",
+          "rationale": "Imperative demand with time constraint (24 hours). Secondary COMMISSIVE implicit in threat-backed command."
+        },
+        {
+          "text": "Can you provide proof that you have our data?",
+          "party": "Victim",
+          "primary_act": "DIRECTIVE",
+          "secondary_acts": [],
+          "argumentative_function": "PROCESS_MAINTENANCE",
+          "phase": "PROOF_OF_CAPABILITY",
+          "rationale": "Question-as-request asking attacker to verify capability before negotiation proceeds. Manages negotiation protocol."
+        },
+        {
+          "text": "Here is a sample of your customer records.",
+          "party": "Attacker",
+          "primary_act": "INFORMATIVE_DECLARATIVE",
+          "secondary_acts": [],
+          "argumentative_function": "GROUNDS_FACTS",
+          "phase": "PROOF_OF_CAPABILITY",
+          "rationale": "Provides evidence responding to victim's proof request. Establishes credibility of data possession."
+        },
+        {
+          "text": "We only have $50,000 available. This is all we can afford.",
+          "party": "Victim",
+          "primary_act": "NEGOTIATIVE_EVALUATIVE",
+          "secondary_acts": [],
+          "argumentative_function": "VALUE_FAIRNESS_APPEAL",
+          "phase": "BARGAINING_CONCESSION",
+          "rationale": "Counter-proposal grounded in financial feasibility. Justifies lower offer by constraint, not refusal."
+        },
+        {
+          "text": "We accept $50,000. Send to address: 1A1z7agoat4FwWOrX6XWVBU5SV2ywBsrWX",
+          "party": "Attacker",
+          "primary_act": "COMMISSIVE",
+          "secondary_acts": ["DIRECTIVE"],
+          "argumentative_function": "CONDITIONAL_REASONING",
+          "phase": "RESOLUTION_CLOSURE",
+          "rationale": "Attacker commits to accepting reduced price (PROMISE). Secondary DIRECTIVE: instructs payment delivery method."
+        }
+      ]
+    },
+    {
+      "description": "Threat-based negotiation with emotional appeal and stalling",
+      "input": [
+        {"party": "Attacker", "text": "We have your data. Pay $500,000 or we publish everything in 72 hours."},
+        {"party": "Victim", "text": "Please, we are begging you. Give us more time. We need to arrange the funds."},
+        {"party": "Attacker", "text": "Time is running out. Other companies paid without hesitation."},
+        {"party": "Victim", "text": "We understand the urgency. Can we have 7 days instead of 3?"},
+        {"party": "Attacker", "text": "5 days maximum. That's our final answer."}
+      ],
+      "output": [
+        {
+          "text": "We have your data. Pay $500,000 or we publish everything in 72 hours.",
+          "party": "Attacker",
+          "primary_act": "COMMISSIVE",
+          "secondary_acts": ["DIRECTIVE", "INFORMATIVE_DECLARATIVE"],
+          "argumentative_function": "CONDITIONAL_REASONING",
+          "phase": "OPENING_CONTACT",
+          "rationale": "Primary COMMISSIVE threat: 'if you don't pay, we publish' (conditional commitment). Secondary: declarative fact + command to pay."
+        },
+        {
+          "text": "Please, we are begging you. Give us more time. We need to arrange the funds.",
+          "party": "Victim",
+          "primary_act": "DIRECTIVE",
+          "secondary_acts": ["EXPRESSIVE_METACOMMUNICATIVE"],
+          "argumentative_function": "VALUE_FAIRNESS_APPEAL",
+          "phase": "BARGAINING_CONCESSION",
+          "rationale": "Polite request for deadline extension. Secondary emotional expression (pleading tone). Appeals to fairness/mercy."
+        },
+        {
+          "text": "Time is running out. Other companies paid without hesitation.",
+          "party": "Attacker",
+          "primary_act": "INFORMATIVE_DECLARATIVE",
+          "secondary_acts": [],
+          "argumentative_function": "ACTION_PRESSURE",
+          "phase": "BARGAINING_CONCESSION",
+          "rationale": "States fact about time scarcity and normalcy (social proof). Pressures victim via urgency and conformity norm."
+        },
+        {
+          "text": "We understand the urgency. Can we have 7 days instead of 3?",
+          "party": "Victim",
+          "primary_act": "DIRECTIVE",
+          "secondary_acts": ["EXPRESSIVE_METACOMMUNICATIVE"],
+          "argumentative_function": "PROCESS_MAINTENANCE",
+          "phase": "BARGAINING_CONCESSION",
+          "rationale": "Question requesting deadline negotiation. Includes empathetic preamble (face-work). Manages negotiation timeline."
+        },
+        {
+          "text": "5 days maximum. That's our final answer.",
+          "party": "Attacker",
+          "primary_act": "NEGOTIATIVE_EVALUATIVE",
+          "secondary_acts": ["COMMISSIVE"],
+          "argumentative_function": "CONDITIONAL_REASONING",
+          "phase": "RESOLUTION_CLOSURE",
+          "rationale": "Counter-proposal with finality marker. Commits to final term (5 days). Signals end of negotiation phase."
+        }
+      ]
+    },
+    {
+      "description": "Professional attacker with ethos-building; victim technical stalling",
+      "input": [
+        {"party": "Attacker", "text": "We are a serious organization with 15 years of experience. Your network was compromised on 2026-01-15."},
+        {"party": "Victim", "text": "Thank you for the details. How do we verify the decryption works before payment?"},
+        {"party": "Attacker", "text": "We can provide a free decryption of 5 files as proof of good faith."},
+        {"party": "Victim", "text": "We appreciate this. We need to purchase Bitcoin first. Can you confirm the wallet address?"},
+        {"party": "Attacker", "text": "Confirmed. The address is bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh. Payment must arrive within 48 hours."}
+      ],
+      "output": [
+        {
+          "text": "We are a serious organization with 15 years of experience. Your network was compromised on 2026-01-15.",
+          "party": "Attacker",
+          "primary_act": "INFORMATIVE_DECLARATIVE",
+          "secondary_acts": [],
+          "argumentative_function": "FACE_ETHOS_WORK",
+          "phase": "OPENING_CONTACT",
+          "rationale": "Establishes credibility and reputation (15 years). Also includes factual claim (compromise date). Builds trust via ethos."
+        },
+        {
+          "text": "Thank you for the details. How do we verify the decryption works before payment?",
+          "party": "Victim",
+          "primary_act": "DIRECTIVE",
+          "secondary_acts": ["EXPRESSIVE_METACOMMUNICATIVE"],
+          "argumentative_function": "PROCESS_MAINTENANCE",
+          "phase": "PROOF_OF_CAPABILITY",
+          "rationale": "Question requesting procedure clarification. Begins with gratitude (secondary emotional). Stalls payment via verification demand."
+        },
+        {
+          "text": "We can provide a free decryption of 5 files as proof of good faith.",
+          "party": "Attacker",
+          "primary_act": "COMMISSIVE",
+          "secondary_acts": [],
+          "argumentative_function": "FACE_ETHOS_WORK",
+          "phase": "PROOF_OF_CAPABILITY",
+          "rationale": "Offers concession (free trial decrypt). Positions attacker as trustworthy and fair-dealing. PROMISE-type commissive."
+        },
+        {
+          "text": "We appreciate this. We need to purchase Bitcoin first. Can you confirm the wallet address?",
+          "party": "Victim",
+          "primary_act": "DIRECTIVE",
+          "secondary_acts": ["EXPRESSIVE_METACOMMUNICATIVE"],
+          "argumentative_function": "PROCESS_MAINTENANCE",
+          "phase": "BARGAINING_CONCESSION",
+          "rationale": "Expresses gratitude, then requests wallet confirmation. Stalls via technical requirement (need to buy BTC). Manages payment process."
+        },
+        {
+          "text": "Confirmed. The address is bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh. Payment must arrive within 48 hours.",
+          "party": "Attacker",
+          "primary_act": "INFORMATIVE_DECLARATIVE",
+          "secondary_acts": ["DIRECTIVE", "COMMISSIVE"],
+          "argumentative_function": "PROCESS_MAINTENANCE",
+          "phase": "RESOLUTION_CLOSURE",
+          "rationale": "Confirms wallet (information). Embeds time deadline (secondary directive + threat-via-deadline commissive). Finalizes protocol."
+        }
+      ]
+    }
+  ]
+}

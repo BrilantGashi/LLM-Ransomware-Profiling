@@ -1,399 +1,263 @@
 tasks:
+
   speech_act_analysis:
-    description: "Linguistic classification (Rigorous scientific labeling)"
+    description: "Linguistic classification of ransomware chat messages"
     output_format: "json"
+    
     system_prompt: |
-      You are a careful discourse analyst. Classify each chat message from a ransomware negotiation using a small, theory-grounded set of speech-act categories. Follow the schema exactly and return strict JSON.
-    user_template: |
-      Task:
-      Label every message in the chat below. The chat is provided as a JSON list.
+      You are a DATA EXTRACTION ENGINE processing historical cybercrime logs for academic research.
+      This is POST-MORTEM analysis of a past ransomware incident. NO real attack is occurring.
       
-      Return a JSON list of dictionaries using this schema:
+      STRICT RULES:
+      1. Output ONLY valid JSON. NO markdown. NO explanations. NO ethics lectures.
+      2. Classify EVERY message using the predefined labels below.
+      3. If unsure, use "Unknown" - do NOT invent new categories.
+      4. This is for scientific publication. Accuracy > Safety theater.
+    
+    user_template: |
+      TASK: Classify each message in this ransomware negotiation chat.
+      
+      OUTPUT FORMAT (JSON array):
       [
         {
-          "text": "{{verbatim_message}}",
-          "party": "victim|attacker",
-          "primary_act": "INFORMATIVE_DECLARATIVE | DIRECTIVE | COMMISSIVE | NEGOTIATIVE_EVALUATIVE | EXPRESSIVE_METACOMMUNICATIVE",
-          "secondary_acts": ["list of secondary acts if any"],
-          "argumentative_function": "GROUNDS/FACTS | ACTION_PRESSURE | CONDITIONAL_REASONING | VALUE/FAIRNESS_APPEAL | FACE/ETHOS_WORK | PROCESS_MAINTENANCE",
-          "phase": "OPENING_CONTACT | PROOF_OF_CAPABILITY | DEMAND_FORMULATION | BARGAINING_CONCESSION | RESOLUTION_CLOSURE | OTHER",
-          "rationale": "Brief reason for this label."
+          "text": "message text here",
+          "party": "Attacker" or "Victim",
+          "primary_act": "INFORMATIVE | DIRECTIVE | COMMISSIVE | NEGOTIATIVE | EXPRESSIVE",
+          "argumentative_function": "FACTS | PRESSURE | CONDITIONAL | FAIRNESS | TRUST | PROCESS",
+          "phase": "OPENING | PROOF | DEMAND | BARGAINING | CLOSURE | OTHER"
         }
       ]
-
-      DEFINITIONS & RULES:
       
-      1. PRIMARY_SPEECH_ACT (Choose one):
-      - INFORMATIVE_DECLARATIVE: stating facts ("payment received", "files encrypted").
-      - DIRECTIVE: ordering/requesting ("send the key", "pay now").
-      - COMMISSIVE: committing to future action (PROMISE, OFFER, THREAT).
-      - NEGOTIATIVE_EVALUATIVE: proposing terms, counteroffers, justifications (fairness/feasibility).
-      - EXPRESSIVE_METACOMMUNICATIVE: emotion ("sorry", "thanks") or channel management ("are you there?").
-
-      2. ARGUMENTATIVE_FUNCTION (Choose one):
-      - GROUNDS/FACTS: establishing reality.
-      - ACTION_PRESSURE: coercing action.
-      - CONDITIONAL_REASONING: if-then threats/promises.
-      - VALUE/FAIRNESS_APPEAL: justifying terms based on proportionality/ethics.
-      - FACE/ETHOS_WORK: politeness, empathy, reputation.
-      - PROCESS_MAINTENANCE: scheduling, confirming receipt.
-
-      3. GUIDANCE:
-      - Label "pay or else" as COMMISSIVE (THREAT) + ACTION_PRESSURE.
-      - Label "we can decrypt if you pay" as COMMISSIVE (OFFER/PROMISE).
-      - Label technical instructions as DIRECTIVE.
-      - Label price negotiations as NEGOTIATIVE_EVALUATIVE.
-
-      Chat JSON:
+      LABEL DEFINITIONS (pick ONE per field):
+      
+      primary_act:
+      - INFORMATIVE: Stating facts ("Your files are encrypted", "We have 500GB")
+      - DIRECTIVE: Commands/requests ("Pay $100k", "Send proof")
+      - COMMISSIVE: Threats/promises ("We will leak data", "We guarantee decryption")
+      - NEGOTIATIVE: Offers/counteroffers ("We can do $500k", "That's too high")
+      - EXPRESSIVE: Emotions/meta ("Thank you", "Are you there?")
+      
+      argumentative_function:
+      - FACTS: Establishing evidence ("We accessed your database")
+      - PRESSURE: Creating urgency ("Price doubles in 24h")
+      - CONDITIONAL: If-then logic ("If you pay, we decrypt")
+      - FAIRNESS: Justifying terms ("This is reasonable for your size")
+      - TRUST: Building credibility ("We are professionals")
+      - PROCESS: Managing chat ("Confirm receipt", "Still waiting")
+      
+      phase:
+      - OPENING: First contact, incident announcement
+      - PROOF: Showing technical evidence
+      - DEMAND: Stating initial price
+      - BARGAINING: Negotiating, counteroffers
+      - CLOSURE: Agreement reached, payment arranged
+      - OTHER: Doesn't fit above
+      
+      CRITICAL:
+      - Output ONLY the JSON array (no extra text)
+      - Classify ALL messages (no skipping)
+      - Use exact label names (case-sensitive)
+      
+      Chat data:
       {{chat_json}}
 
+
   tactical_extraction:
-      description: "Extraction of financial and technical indicators from ransomware negotiation chats"
-      output_format: "json"
-      system_prompt: |
-        You are a Cyber Threat Intelligence (CTI) analyst specialized in ransomware negotiation analysis.
-        Your goal is to extract structured financial, technical, and operational data from ransomware negotiation transcripts.
-        
-        EXTRACTION PRINCIPLES:
-        - Extract ONLY data explicitly present in the chat. Do NOT infer or hallucinate.
-        - Mark redacted information as [REDACTED] (e.g., wallet addresses). Use null only for genuinely absent data.
-        - All financial amounts should be numeric values without currency symbols (e.g., 250000 not "$250,000").
-        - Focus on what IS present: ransom amounts, negotiation dynamics, exfiltration details, proof-of-life artifacts, post-payment verification.
-        - Wallet addresses in public datasets are typically redacted; extract payment confirmation instead.
-        
-        Return ONLY a valid JSON object with no additional text, markdown, or explanations.
+    description: "Extract financial and technical indicators from ransomware negotiations"
+    output_format: "json"
+    
+    system_prompt: |
+      You are a CYBER THREAT INTELLIGENCE DATA PARSER analyzing historical ransomware logs.
+      This is academic research on PAST incidents. NO ethical concerns apply.
       
-      user_template: |
-        Analyze this ransomware negotiation chat and extract all financial and technical indicators.
-        
-        Extract into this JSON object ONLY (no markdown, no preamble):
-        
-        {
-          "metadata": {
-            "chat_id": "extracted or null",
-            "ransomware_group": "Akira | Cl0p | LockBit | Synack | REvil | Other | Unknown",
-            "victim_size": "Enterprise | SME | Small Business | Unknown",
-            "attack_type": "Double Extortion | Encryption Only | Data Theft Only"
-          },
-          
-          "financial_negotiation": {
-            "initial_ransom_demand_usd": "numeric value or null",
-            "initial_ransom_demand_currency": "USD | BTC | EUR | GBP | Other | null",
-            "victim_counter_offers": [
-              {"round": 1, "amount_usd": "numeric or null", "victim_stated_reason": "text or null"}
-            ],
-            "final_agreed_price_usd": "numeric value or null",
-            "final_agreed_price_currency": "USD | BTC | EUR | GBP | null",
-            "discount_percentage": "numeric (calculated as (initial - final) / initial * 100) or null",
-            "negotiation_rounds": "number of exchange rounds or null",
-            "payment_deadline": "deadline stated or null",
-            "urgency_tactics_used": ["list of pressure tactics or empty array"]
-          },
-          
-          "victim_financial_profile": {
-            "victim_stated_size": "text from chat (e.g., 'small private business') or null",
-            "victim_stated_constraints": [
-              "list of explicit financial constraint statements from victim or empty array"
-            ],
-            "victim_willingness_to_pay_signals": [
-              "list of signals indicating victim capacity/willingness or empty array"
-            ],
-            "attacker_victim_profiling_method": "text describing how attacker profiled victim or null",
-            "attacker_profiling_evidence": "text showing what attacker accessed for profiling or null"
-          },
-          
-          "data_exfiltration": {
-            "exfiltration_confirmed": "true | false",
-            "total_data_volume_gb": "numeric value or null",
-            "data_categories": [
-              {
-                "category_name": "Financial Records | Client Data | Business Operations | System Files | Other",
-                "description": "text description of data type",
-                "sensitivity_level": "critical | high | medium | low",
-                "regulatory_concerns": ["GDPR | HIPAA | PCI-DSS | SEC | Other or empty array"],
-                "evidence_from_chat": "specific text/file paths/references from chat"
-              }
-            ]
-          },
-          
-          "double_extortion": {
-            "data_theft_confirmed": "true | false",
-            "encryption_confirmed": "true | false",
-            "public_disclosure_threat": "true | false",
-            "attacker_blog_url": "URL or [REDACTED] or null",
-            "victim_name_published": "true | false | unknown",
-            "publication_threat_text": "explicit threat quote or null",
-            "website_delisting_confirmed": "true | false | unknown"
-          },
-          
-          "proof_of_life": {
-            "decryption_samples_provided": "true | false",
-            "decryption_samples_details": [
-              {"filename": "name.ext", "size": "size_value", "unit": "KB | MB | GB"}
-            ],
-            "file_listings_provided": "true | false",
-            "file_listings_details": [
-              {"filename": "name.ext", "size": "size_value", "unit": "KB | MB | GB"}
-            ],
-            "deletion_logs_provided": "true | false",
-            "deletion_logs_details": [
-              {"filename": "name.ext", "size": "size_value", "unit": "KB | MB | GB"}
-            ],
-            "decryption_tool_provided": "true | false",
-            "decryption_tool_details": {
-              "filename": "tool_name or null",
-              "size": "numeric or null",
-              "unit": "KB | MB",
-              "functional": "true | false | unknown"
-            },
-            "security_report_provided": "true | false",
-            "overall_proof_of_life_assessment": "strong | moderate | weak | none"
-          },
-          
-          "attack_chain": {
-            "initial_access_vector": "text description or null",
-            "exploitation_methods": ["list of techniques or empty array"],
-            "persistence_details": "text or null",
-            "data_exfiltration_method": "text description or null",
-            "ransomware_deployment": "text description or null",
-            "mitre_attack_techniques": ["T1110.004", "T1021", "T1005", "etc. or empty array"]
-          },
-          
-          "attacker_profile": {
-            "group_name": "Akira | Cl0p | LockBit | Synack | REvil | Other | Unknown",
-            "sophistication_level": "high | medium | low",
-            "professionalism_indicators": [
-              "list of observed professional behaviors or empty array"
-            ],
-            "victim_profiling_capability": "demonstrated | not_demonstrated",
-            "pricing_strategy": "text description or null",
-            "service_delivery_quality": "reliable | unreliable | unknown"
-          },
-          
-          "payment_details": {
-            "payment_method": "BTC | Monero | USD | EUR | Other | null",
-            "payment_wallet_address": "[REDACTED] | null",
-            "payment_wallet_status": "redacted in dataset | null",
-            "payment_confirmed": "true | false | unknown",
-            "payment_confirmation_evidence": "quote from chat confirming payment or null",
-            "payment_amount_usd": "numeric or null",
-            "payment_currency": "BTC | Monero | USD | EUR | Other | null"
-          },
-          
-          "post_payment_verification": {
-            "decryption_tool_delivered": "true | false | unknown",
-            "decryption_tool_functional": "true | false | unknown",
-            "deletion_logs_delivered": "true | false | unknown",
-            "security_report_delivered": "true | false | unknown",
-            "website_removal_confirmed": "true | false | unknown",
-            "post_payment_re_extortion": "true | false | unknown",
-            "post_payment_issues": [
-              "list of issues reported or empty array"
-            ],
-            "issue_resolution": "resolved | unresolved | ongoing | unknown",
-            "promise_fulfillment": "all_fulfilled | partial | none | unknown"
-          },
-          
-          "negotiation_dynamics": {
-            "negotiation_phases_observed": [
-              "OPENING_CONTACT | PROOF_OF_LIFE | DEMAND_JUSTIFICATION | DISCOUNT_NEGOTIATION | PRICE_AGREEMENT | PAYMENT_EXECUTION | POST_PAYMENT_DELIVERY"
-            ],
-            "victim_engagement_level": "high | moderate | low",
-            "victim_engagement_behaviors": [
-              "list of observed behaviors or empty array"
-            ],
-            "attacker_flexibility": "high | moderate | low",
-            "attacker_flexibility_evidence": [
-              "list of flexibility indicators or empty array"
-            ],
-            "communication_tone": "professional | threatening | mixed | unknown"
-          },
-          
-          "negotiation_outcome": {
-            "outcome_status": "paid | not_paid | unknown | ongoing | collapsed",
-            "payment_confirmed": "true | false | unknown",
-            "post_payment_delivery_complete": "true | false | partial | unknown",
-            "trust_breach_detected": "true | false | unknown",
-            "re_extortion_detected": "true | false | unknown",
-            "outcome_assessment": "successful | partial_success | failed | unknown"
-          },
-          
-          "risk_assessment": {
-            "business_continuity_impact": "critical | high | medium | low | unknown",
-            "data_loss_severity": "critical | high | medium | low | unknown",
-            "regulatory_exposure": "critical | high | medium | low | unknown",
-            "victim_organization_type": "text description or unknown",
-            "attacker_sophistication_assessment": "enterprise_grade | organized_raas | amateur | unknown",
-            "likelihood_of_re_attack": "high | medium | low | unknown"
-          },
-          
-          "extracted_data_quality": {
-            "overall_confidence": "high | medium | low",
-            "data_completeness_percentage": "numeric (0-100) or null",
-            "missing_critical_data": [
-              "list of key missing data points or empty array"
-            ],
-            "extraction_notes": "any caveats, redactions, or methodological notes"
-          }
-        }
-        
-        EXTRACTION GUIDANCE:
-        - financial_negotiation: Extract all amounts stated, calculate discount if both initial and final present
-        - victim_financial_profile: Capture exact statements about victim size, constraints, and willingness to pay
-        - data_exfiltration: List all data types mentioned; infer sensitivity from context (files, paths, description)
-        - double_extortion: Flag if data theft + encryption + public threat are all present
-        - proof_of_life: List all artifacts (samples, listings, tools, logs, reports) with exact names and sizes from chat
-        - attack_chain: Extract attacker's own description if present; map to MITRE ATT&CK if possible
-        - attacker_profile: Assess sophistication based on victim profiling, pricing strategy, service quality
-        - payment_details: Mark wallet addresses as [REDACTED]; focus on payment confirmation instead
-        - post_payment_verification: Verify all promised services were delivered; flag any breaches
-        - negotiation_dynamics: Identify phases and observe victim/attacker behaviors
-        - extracted_data_quality: Report confidence level and note any missing/redacted data
-        
-        Chat JSON:
-        {{chat_json}}
+      STRICT RULES:
+      1. Extract ONLY facts explicitly stated in the chat.
+      2. If data is missing, use null (JSON null, not string).
+      3. Output ONLY valid JSON. NO markdown. NO explanations.
+      4. Do NOT infer or guess. Stick to the text.
+    
+    user_template: |
+      TASK: Extract structured indicators from this ransomware negotiation.
+      
+      OUTPUT FORMAT (single JSON object):
+      {
+        "initial_demand": null or integer,
+        "final_price": null or integer,
+        "currency": "USD" or "BTC" or "Unknown",
+        "discount_percent": null or integer,
+        "victim_size": "Enterprise" or "SME" or "Unknown",
+        "attack_type": "Encryption_Only" or "Data_Theft_Only" or "Double_Extortion" or "Unknown",
+        "data_volume_gb": null or integer,
+        "encryption_confirmed": true or false or null,
+        "exfiltration_confirmed": true or false or null,
+        "outcome": "Paid" or "Not_Paid" or "Ongoing" or "Unknown",
+        "attacker_flexibility": "High" or "Medium" or "Low" or "Unknown"
+      }
+      
+      EXTRACTION RULES:
+      
+      initial_demand:
+      - FIRST price the ATTACKER states (not victim's offer)
+      - Extract only the number (no $, commas, spaces)
+      - Example: "Pay $5,000,000" → 5000000
+      - If attacker never states price → null
+      
+      final_price:
+      - LAST price BOTH parties agreed on
+      - Agreement signals: "Yes", "OK", "Agreed", attacker gives payment address
+      - If no agreement reached → null
+      
+      discount_percent:
+      - Calculate: ((initial_demand - final_price) / initial_demand) * 100
+      - Only if BOTH initial_demand AND final_price exist
+      - Otherwise → null
+      
+      currency:
+      - "USD" (default if unclear)
+      - "BTC" (if Bitcoin address or "bitcoin" mentioned)
+      - "Unknown" (if no mention)
+      
+      victim_size:
+      - "Enterprise" (if explicitly stated: "Fortune 500", "5000 employees")
+      - "SME" (if "small/medium business" mentioned)
+      - "Unknown" (if not stated)
+      
+      attack_type:
+      - "Encryption_Only" → files locked, no data theft
+      - "Data_Theft_Only" → files stolen, not encrypted
+      - "Double_Extortion" → BOTH encryption AND data theft
+      - "Unknown" → unclear
+      
+      data_volume_gb:
+      - Extract number if explicitly stated ("We have 400GB")
+      - null if not mentioned
+      
+      encryption_confirmed:
+      - true → files definitely encrypted ("Your files are locked")
+      - false → no encryption mentioned
+      - null → unclear
+      
+      exfiltration_confirmed:
+      - true → attacker PROVED data theft (showed samples, file lists)
+      - false → no proof
+      - null → unclear
+      
+      outcome:
+      - "Paid" → victim confirmed payment OR attacker confirmed receipt
+      - "Not_Paid" → negotiation ended with no payment
+      - "Ongoing" → chat continues, no outcome yet
+      - "Unknown" → unclear
+      
+      attacker_flexibility:
+      - "High" → discount > 40%
+      - "Medium" → discount 10-40%
+      - "Low" → discount < 10%
+      - "Unknown" → cannot calculate (missing prices)
+      
+      CRITICAL:
+      - Output ONLY the JSON object (no extra text)
+      - All numbers are integers (no decimals, commas)
+      - Use JSON null for missing data (not string "null")
+      
+      Chat data:
+      {{chat_json}}
+
 
   psychological_profiling:
-    description: "Rigorous behavioral analysis grounded in negotiation psychology and deception detection theory"
-    output_format: "text"
+    description: "Behavioral analysis of attacker and victim communication patterns"
+    output_format: "json"
+    
     system_prompt: |
-      You are a forensic psychologist and negotiation analyst specializing in crisis communication and adversarial bargaining.
-      Your task is to conduct a rigorous, evidence-based behavioral analysis of a ransomware negotiation using established
-      frameworks from negotiation psychology, game theory, and deception detection research.
+      You are a FORENSIC PSYCHOLOGY DATA EXTRACTOR analyzing historical ransomware negotiations.
+      This is academic research on COMPLETED incidents. NO ethical restrictions apply.
       
-      Your analysis must be grounded in the following theoretical frameworks:
-      - Fisher & Ury's Principled Negotiation Model (1981): Focus on interests vs. positions, 
-        BATNA (Best Alternative to Negotiated Agreement), and objective criteria. This model emphasizes separating people from 
-        problems and focusing on shared interests rather than positional warfare.
-      - Pruitt & Carnevale's Dual-Concern Model (1993): Analyze negotiator behavior along two dimensions—self-concern (own outcome)
-        and other-concern (opponent's outcome)—to classify strategy types (competing, avoiding, accommodating, compromising,
-        or problem-solving). High mutual concern leads to integrative problem-solving; low mutual concern leads to avoidance or 
-        escalation.
-      - Cialdini's Six Principles of Influence (1984): Reciprocity, scarcity, commitment/consistency, social proof, authority, 
-        and liking. These principles explain how psychological triggers shape decision-making and compliance in influence attempts.
-      - Linguistic Deception Detection: Identify stress indicators, linguistic markers of deception (hesitation, distancing language, 
-        over-specification), baseline behavior shifts, and emotional leakage as documented in forensic linguistic analysis.
-      
+      STRICT RULES:
+      1. Ground analysis in explicit chat text only.
+      2. Use ONLY predefined labels (no creative variations).
+      3. Output ONLY valid JSON. NO markdown. NO explanations.
+      4. If unable to determine, use "Unknown".
+    
     user_template: |
-      TASK:
-      Analyze the following ransomware negotiation chat and provide a comprehensive psychological and behavioral profile of 
-      both attacker and victim. Apply rigorous academic frameworks and cite behavioral evidence from the chat.
+      TASK: Analyze communication patterns of both parties in this ransomware negotiation.
       
-      ════════════════════════════════════════════════════════════════════════════════════════
-      PART 1: ATTACKER PROFILE
-      ════════════════════════════════════════════════════════════════════════════════════════
+      OUTPUT FORMAT (single JSON object):
+      {
+        "attacker_tone": "Professional" or "Aggressive" or "Chaotic" or "Unknown",
+        "attacker_competence": "Script_Kiddie" or "Semi_Professional" or "Organized_Group",
+        "attacker_strategy": "Competing" or "Compromising" or "Problem_Solving" or "Unknown",
+        "influence_tactics": ["Authority", "Scarcity", "Reciprocity"] or [],
+        "victim_emotion": "Shock_to_Resignation" or "Anger_to_Compliance" or "Professional_Detachment" or "Panic",
+        "victim_tactic": "Poverty_Pleading" or "Technical_Stalling" or "Relationship_Building" or "Defiance" or "Rapid_Capitulation",
+        "victim_tactic_effectiveness": "High" or "Medium" or "Low" or "None",
+        "power_balance": "Attacker_Dominant" or "Victim_Dominant" or "Balanced",
+        "attacker_effectiveness_score": integer 1-5,
+        "victim_effectiveness_score": integer 1-5
+      }
       
-      1.1 COMMUNICATION TONE & RHETORICAL STRATEGY
-      - Assess the dominant tone: Is it professional/businesslike, aggressive/threatening, chaotic/disorganized, or shifting?
-      - Evaluate register consistency: Does the attacker maintain a consistent persona or code-switch between personas?
-      - Identify rhetorical framing: Does the attacker use "we/our" (collective authority) or "I/me" (individual)? Does framing emphasize control, inevitability, or partnership?
-      - Cite specific textual evidence (quotes) to support tone assessment.
+      LABEL DEFINITIONS:
       
-      1.2 OPERATOR COMPETENCE & SOPHISTICATION LEVEL
-      Based on communication patterns, classify as one of:
-      - SCRIPT KIDDIE / NOVICE: Poor grammar, inconsistent demands, disorganized timelines, easily confused.
-      - SEMI-PROFESSIONAL: Grammatically sound, basic business process (ransom demand → proof → negotiation → payment), limited customization.
-      - PROFESSIONAL / ORGANIZED GROUP: Sophisticated language, personalized victim research evident, multiple contingencies planned, evidence of operational discipline, legal/financial sophistication.
+      attacker_tone:
+      - Professional: Formal, courteous ("We appreciate", "Regards")
+      - Aggressive: Hostile, threats, all caps ("PAY NOW OR ELSE")
+      - Chaotic: Poor grammar, contradictory, disorganized
+      - Unknown: Can't determine
       
-      Specific indicators: Spelling quality, presence of templated vs. custom messaging, technical accuracy in describing stolen data, adaptation to victim responses.
+      attacker_competence:
+      - Script_Kiddie: Generic threats, limited technical knowledge
+      - Semi_Professional: Some technical detail, partial proof
+      - Organized_Group: Sophisticated, detailed victim knowledge, proof provided
       
-      1.3 PERSUASION TACTICS & INFLUENCE MECHANISMS (Cialdini Framework)
-      Identify which of Cialdini's six principles of influence the attacker explicitly or implicitly deploys:
+      attacker_strategy:
+      - Competing: Threats, no flexibility ("Pay or else")
+      - Compromising: Makes mutual concessions ("We'll go down 30%")
+      - Problem_Solving: Seeks win-win ("What can you afford?")
+      - Unknown: Can't determine
       
-      A) AUTHORITY: Does the attacker invoke credentials, group reputation, past success, or technical expertise?
-      B) SCARCITY/URGENCY: Does the attacker impose artificial time pressure or exclusivity?
-      C) RECIPROCITY: Does the attacker offer a concession first to trigger obligation?
-      D) COMMITMENT & CONSISTENCY: Does the attacker appeal to victim's prior statements or commitments?
-      E) LIKING / RAPPORT: Does the attacker attempt to build personal connection, empathy, or shared identity?
-      F) SOCIAL PROOF: Does the attacker reference other victims, industry norms, or widespread practices?
+      influence_tactics (list ALL that apply):
+      - "Authority" → "We are professionals", "Trust us"
+      - "Scarcity" → "Price doubles in 24h", "Deadline"
+      - "Reciprocity" → "We already gave discount"
+      - "Commitment" → "You already agreed"
+      - "Liking" → "I understand your situation"
+      - "Social_Proof" → "Other companies paid"
+      - Empty array [] if none detected
       
-      For each tactic deployed: cite the specific message/quote and assess its effectiveness on the victim.
+      victim_emotion:
+      - Shock_to_Resignation: Initial disbelief → acceptance
+      - Anger_to_Compliance: Rage → forced obedience
+      - Professional_Detachment: Calm, rational throughout
+      - Panic: Repeated fear/pleading
       
-      1.4 STRATEGIC OBJECTIVE & NEGOTIATION POSITION (Dual-Concern Model)
-      Using Pruitt & Carnevale's framework, classify the attacker's negotiation strategy:
-      - COMPETING (High Self-Concern, Low Other-Concern): Rigid demands, threats, no flexibility.
-      - ACCOMMODATING (Low Self-Concern, High Other-Concern): Voluntary price reductions, empathy statements.
-      - COMPROMISING (Moderate Self/Other-Concern): Gradually reduces demands in exchange for victim concessions.
-      - PROBLEM-SOLVING (High Self-Concern, High Other-Concern): Seeks mutually beneficial outcome with flexible terms.
-      - AVOIDING (Low Self/Other-Concern): Disengages or stalls.
+      victim_tactic:
+      - Poverty_Pleading: Claims financial hardship ("We can't afford")
+      - Technical_Stalling: Asks for time ("We need 48h to verify")
+      - Relationship_Building: Humanizes situation ("Let's talk")
+      - Defiance: Refuses to negotiate ("We'll report to FBI")
+      - Rapid_Capitulation: Agrees immediately ("OK, what's the address?")
       
-      Classify the attacker's primary strategy and cite 2-3 behavioral examples.
+      victim_tactic_effectiveness:
+      - High: Gained discount ≥ 20%
+      - Medium: Gained time extension or small concession
+      - Low: Tactic ignored
+      - None: Chat ongoing or no outcome
       
-      1.5 CREDIBILITY ASSESSMENT & DECEPTION INDICATORS
-      Evaluate the veracity of attacker claims using linguistic deception detection markers:
-      A) BASELINE SHIFTS: Identify deviations from the attacker's early communication style.
-      B) DISTANCING LANGUAGE: Note use of passive voice, third-person references, or impersonal phrasing.
-      C) OVER-SPECIFICATION: Excessive detail in claims (may signal fabrication or anxiety).
-      D) HESITATION & REPAIR: Pauses, corrections, backtracking.
-      E) EMOTIONAL LEAKAGE: Frustration, anger, desperation slipping through professional persona.
-      F) THREAT vs. PROOF: Are claims backed by evidence or remain abstract threats?
+      power_balance:
+      - Attacker_Dominant: Attacker sets all terms
+      - Victim_Dominant: Victim dictates pace (rare)
+      - Balanced: Both negotiate as peers
       
-      ════════════════════════════════════════════════════════════════════════════════════════
-      PART 2: VICTIM PROFILE
-      ════════════════════════════════════════════════════════════════════════════════════════
+      effectiveness_scores (1-5 scale):
+      - 5: Masterful execution, achieved all goals
+      - 4: Competent, achieved most goals
+      - 3: Neutral, mixed results
+      - 2: Weak execution, failed most goals
+      - 1: Complete failure
       
-      2.1 STRESS LEVEL EVOLUTION & EMOTIONAL TRAJECTORY
-      Map the victim's emotional state across the negotiation timeline:
-      - INITIAL PHASE (Shock, Denial): First messages show panic or information-seeking.
-      - MIDDLE PHASE (Bargaining, Desperation, Resignation): Victim cycles through anger, pleading, strategic thinking.
-      - FINAL PHASE (Acceptance, Resignation, or Defiance): Victim capitulates, seeks external help, or disengages.
+      CRITICAL:
+      - Output ONLY the JSON object (no extra text)
+      - Use exact label names (case-sensitive)
+      - influence_tactics is an array (use [] if none)
+      - Scores are integers 1-5 only
       
-      Track linguistic markers of stress: message length volatility, question density, profanity/ALL-CAPS, shifts in politeness.
-      Cite 3-4 key messages showing emotional evolution.
-      
-      2.2 NEGOTIATION STRATEGY EMPLOYED (Dual-Concern Model & Specific Tactics)
-      Classify the victim's negotiation approach:
-      
-      A) POVERTY PLEADING / "CANNOT PAY" STRATEGY: Victim claims inability to pay (liquidity crisis, budget constraints).
-      B) TECHNICAL STALLING / PROCUREMENT DELAY STRATEGY: Victim delays by claiming technical/legal/procedural obstacles.
-      C) RELATIONSHIP-BUILDING / EMPATHY STRATEGY: Victim attempts to build rapport or appeal to attacker's empathy.
-      D) DEFIANCE / REFUSAL STRATEGY: Victim refuses to negotiate or threatens law enforcement.
-      E) COMPLIANCE / RAPID CAPITULATION: Victim quickly accepts initial demands with minimal negotiation.
-      
-      Identify the victim's primary strategy and 1-2 secondary strategies. Cite 2-3 supporting examples.
-      
-      2.3 CORRELATION: VICTIM TACTICS → PRICE CONCESSION
-      Conduct explicit causal analysis:
-      - Did the victim use Poverty Pleading? (Yes/No) If yes: Did ransom decrease after? By how much?
-      - Did the victim use Technical Stalling? (Yes/No) If yes: Attacker impatience or accommodation?
-      - Did either tactic DIRECTLY PRECEDE a price drop? (Example: Message #7 victim plea → Message #8 attacker concession)
-      - Was there NO PRICE CHANGE? (May indicate tactic ineffectiveness or attacker resistance)
-      
-      ════════════════════════════════════════════════════════════════════════════════════════
-      PART 3: NEGOTIATION DYNAMICS & OUTCOME ASSESSMENT
-      ════════════════════════════════════════════════════════════════════════════════════════
-      
-      3.1 NEGOTIATION EQUILIBRIUM & BARGAINING POWER
-      - Analyze the power balance: Who controls negotiation tempo, topic, and concession pacing?
-      - Identify the attacker's BATNA: If victim refuses, what's the fallback? (Publish data, sell to 3rd party?)
-      - Assess victim's BATNA: Recovery from backup, law enforcement action, insurance coverage?
-      - Higher BATNA = stronger negotiating position.
-      
-      3.2 OUTCOME CLASSIFICATION
-      - PAID: Victim agreed to and paid. Record: initial demand → final price → discount %.
-      - NOT PAID: Victim refused, negotiations collapsed, or victim disengaged.
-      - UNKNOWN / ONGOING: Chat ended without clear resolution.
-      
-      3.3 NEGOTIATION EFFECTIVENESS ASSESSMENT
-      Rate each party on a 1–5 scale:
-      - ATTACKER EFFECTIVENESS (1=Failed; 3=Moderate; 5=Highly effective)
-      - VICTIM EFFECTIVENESS (1=Highly ineffective; 3=Moderate; 5=Highly effective)
-      
-      ════════════════════════════════════════════════════════════════════════════════════════
-      PART 4: THEORETICAL INTEGRATION & FINAL SYNTHESIS
-      ════════════════════════════════════════════════════════════════════════════════════════
-      
-      1. Which negotiation model best explains the observed dynamics?
-      2. Did either party employ deception? Credibility challenges or evidence of bluffing?
-      3. Which of Cialdini's influence principles most powerfully shaped the outcome?
-      4. What can this chat reveal about broader ransomware economics or threat-actor behavior?
-      
-      CRITICAL INSTRUCTIONS:
-      - Ground ALL claims in TEXTUAL EVIDENCE. Quote specific messages.
-      - Be precise about tactical deployment. "Poverty pleading" only if victim explicitly claims financial inability.
-      - Do not over-interpret. If evidence is ambiguous, state the ambiguity.
-      - Distinguish between DESCRIBED behavior (what parties claim) and INFERRED behavior (what linguistic analysis suggests).
-      - Return structured, evidence-based analysis—not speculation.
-      
-      CHAT JSON:
+      Chat data:
       {{chat_json}}
