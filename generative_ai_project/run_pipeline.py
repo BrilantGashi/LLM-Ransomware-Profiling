@@ -2,6 +2,10 @@
 Ransomware Negotiation Analysis Pipeline
 Main execution script with multi-model ensemble support and robust error handling.
 Compliant with UniBS Cluster Handbook (February 2026)
+
+Author: Brilant Gashi
+Supervisors: Prof. Federico Cerutti, Prof. Pietro Baroni
+University of Brescia - 2025/2026
 """
 
 import sys
@@ -93,15 +97,23 @@ def print_banner(config, models, max_chats):
 
 
 class RansomwarePipeline:
+    """
+    Main pipeline orchestrator for ransomware negotiation analysis.
+    
+    Supports multi-model ensemble processing with consensus validation,
+    automatic chunking for long dialogues, and robust error handling.
+    """
+    
     def __init__(self):
+        """Initialize pipeline with configuration files and directory structure."""
         self.base_dir = BASE_DIR
         self.config_dir = self.base_dir / "config"
         self.output_dir = self.base_dir / "data" / "outputs"
         self.output_dir.mkdir(parents=True, exist_ok=True)
         
-        # Load Model Config
+        # Load Model Config with UTF-8 encoding
         self.model_config_path = self.config_dir / "model_config.yaml"
-        with open(self.model_config_path, 'r') as f:
+        with open(self.model_config_path, 'r', encoding='utf-8') as f:
             self.model_config = yaml.safe_load(f)
 
         # Use ensemble list if present, otherwise single active model
@@ -109,7 +121,7 @@ class RansomwarePipeline:
         self.max_workers = self.model_config.get('processing', {}).get('max_workers', 4)
         self.chunk_max_chars = self.model_config.get('processing', {}).get('chunk_max_chars', 10000)
         
-        # NEW: Initialize error handler (Handbook Section 9 compliant)
+        # Initialize error handler (Handbook Section 9 compliant)
         retry_config = self.model_config.get('processing', {}).get('retry', {})
         self.error_handler = UniBSErrorHandler(
             max_retries=retry_config.get('max_attempts', 3),
@@ -121,13 +133,16 @@ class RansomwarePipeline:
         self.full_dataset = {}
         self.few_shot_cache = {}
         
-        # NEW: Feature flags
+        # Feature flags
         self.save_reasoning = self.model_config.get('logging', {}).get('save_reasoning', True)
         self.validate_json = self.model_config.get('features', {}).get('validate_json_output', True)
 
     def load_resources(self):
-        """Quietly loads resources, logging details only to file."""
-        # Load Prompts
+        """
+        Load all required resources: prompts, dataset, and configurations.
+        Logs details to file, prints minimal info to console.
+        """
+        # Load Prompts with UTF-8 encoding
         prompts_path = self.config_dir / "prompt_templates.yaml"
         try:
             with open(prompts_path, 'r', encoding='utf-8') as f:
@@ -137,7 +152,7 @@ class RansomwarePipeline:
             logger.error(f"Failed to load prompts: {e}")
             raise
 
-        # Load Data
+        # Load Dataset
         try:
             raw_rel_path = self.model_config['paths']['raw_data']
             data_path = self.base_dir / raw_rel_path
@@ -153,7 +168,15 @@ class RansomwarePipeline:
             raise
 
     def _load_few_shot_examples(self, task_name: str) -> str:
-        """Load few-shot examples from config directory."""
+        """
+        Load few-shot examples from config directory.
+        
+        Args:
+            task_name: Name of the analysis task
+            
+        Returns:
+            Formatted few-shot examples string or empty string if unavailable
+        """
         if task_name in self.few_shot_cache: 
             return self.few_shot_cache[task_name]
         
@@ -183,8 +206,8 @@ class RansomwarePipeline:
 
     def _chunk_dialogue_if_needed(self, dialogue, max_chars=None):
         """
-        Split long dialogues to fit within model context.
-        Uses recursive 3-way split (from professor's code).
+        Split long dialogues to fit within model context window.
+        Uses recursive 3-way split for balanced chunks.
         
         Args:
             dialogue: List of message dictionaries
@@ -213,7 +236,12 @@ class RansomwarePipeline:
 
     def _validate_and_repair_json(self, text):
         """
-        Validate and repair malformed JSON output.
+        Validate and repair malformed JSON output from LLM.
+        
+        Applies multiple repair strategies:
+        1. Quick validation (already valid)
+        2. Regex extraction of JSON arrays/objects
+        3. Markdown code block removal
         
         Args:
             text: Raw model output (string, dict, or list)
@@ -223,7 +251,7 @@ class RansomwarePipeline:
         """
         # Protection: If input is already a list or dict, serialize it
         if isinstance(text, (list, dict)):
-            return json.dumps(text)
+            return json.dumps(text, ensure_ascii=False)
         
         if not isinstance(text, str):
             return str(text) if text is not None else None
@@ -233,16 +261,16 @@ class RansomwarePipeline:
         # 1. Quick validation: Already valid JSON
         try:
             parsed = json.loads(text)
-            return json.dumps(parsed)  # Re-serialize clean
+            return json.dumps(parsed, ensure_ascii=False)
         except json.JSONDecodeError:
             pass
         
-        # 2. Regex extraction
+        # 2. Regex extraction of JSON array
         match = re.search(r'\[.*\]', text, re.DOTALL)
         if match:
             try:
                 parsed = json.loads(match.group(0))
-                return json.dumps(parsed)
+                return json.dumps(parsed, ensure_ascii=False)
             except json.JSONDecodeError:
                 pass
         
@@ -250,7 +278,7 @@ class RansomwarePipeline:
         text = re.sub(r'```json\s*|\s*```', '', text)
         try:
             parsed = json.loads(text)
-            return json.dumps(parsed)
+            return json.dumps(parsed, ensure_ascii=False)
         except json.JSONDecodeError:
             pass
         
@@ -260,6 +288,14 @@ class RansomwarePipeline:
     def _process_single_chat(self, group_name, chat_id, chat_content, tasks):
         """
         Process a single chat with ALL models in ensemble.
+        
+        Workflow:
+        1. Clean and validate dialogue
+        2. Chunk if exceeds context window
+        3. Process with each model in ensemble
+        4. Apply JSON validation if enabled
+        5. Save reasoning traces if enabled
+        6. Run consensus if multi-model
         
         Args:
             group_name: Ransomware group name
@@ -276,12 +312,12 @@ class RansomwarePipeline:
 
         dialogue = clean_message_list(dialogue)
         
-        # NEW: Chunk dialogue if too long
+        # Chunk dialogue if too long
         dialogue_chunks = self._chunk_dialogue_if_needed(dialogue)
         if len(dialogue_chunks) > 1:
             logger.info(f"Chat {chat_id} split into {len(dialogue_chunks)} chunks")
         
-        # Iterate Models
+        # Iterate Models in Ensemble
         for model_name in self.models_list:
             client = UniBSLLMClient(config_path=str(self.model_config_path), model_override=model_name)
             
@@ -304,7 +340,7 @@ class RansomwarePipeline:
                     all_results = []
                     
                     for chunk_idx, chunk in enumerate(dialogue_chunks):
-                        chat_json_str = json.dumps(chunk, indent=2)
+                        chat_json_str = json.dumps(chunk, indent=2, ensure_ascii=False)
                         final_prompt = user_template.replace("{{chat_json}}", chat_json_str)
                         
                         # Add few-shot examples
@@ -320,13 +356,13 @@ class RansomwarePipeline:
                             {"role": "user", "content": final_prompt}
                         ]
                         
-                        # NEW: Use error handler with retry logic
+                        # Use error handler with retry logic (Handbook compliant)
                         response_obj = self.error_handler.with_retry(
                             client.generate_response,
                             messages
                         )
                         
-                        # NEW: Handle reasoning_content (Handbook page 2)
+                        # Handle reasoning_content (Handbook page 2)
                         resp_text = response_obj.get('content', '')
                         reasoning = response_obj.get('reasoning', None)
                         
@@ -351,7 +387,7 @@ class RansomwarePipeline:
                         
                         content = cleaned_json
 
-                    # Save final output
+                    # Save final output with UTF-8 encoding
                     with open(out_file, 'w', encoding='utf-8') as f:
                         f.write(content)
 
@@ -370,7 +406,7 @@ class RansomwarePipeline:
 
     def run(self, max_chats=None):
         """
-        Execute the full pipeline.
+        Execute the full pipeline with parallel processing.
         
         Args:
             max_chats: Maximum number of chats to process (None = all)
@@ -435,7 +471,7 @@ class RansomwarePipeline:
         print(f"📂  Output Dir:  {self.output_dir}")
         print(f"📝  Full Log:    {LOG_FILE}")
         
-        # NEW: Print error report (Handbook Section 9)
+        # Print error report (Handbook Section 9)
         error_report = self.error_handler.get_error_report()
         if error_report and "Nessun errore" not in error_report and "No errors" not in error_report:
             print("\n⚠️  ERRORS DETECTED - See error_report.txt")
@@ -450,7 +486,7 @@ if __name__ == "__main__":
     try:
         pipeline.load_resources()
         # Set to desired number for test run (None = all chats)
-        pipeline.run(max_chats=5)
+        pipeline.run(max_chats=1)
     except KeyboardInterrupt:
         print("\n\n⚠️  Pipeline interrupted by user.")
         sys.exit(0)

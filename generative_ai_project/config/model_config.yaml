@@ -45,9 +45,9 @@ active_model: "phi4-mini"
 # ------------------------------------------------------------------------------
 # List of models to run in parallel for consensus voting
 ensemble_models:
-  - phi4-mini
+  - phi4
   - qwen3
-  - llama3.2
+  - gpt-oss
 
 # Note: If ensemble_models is empty or has only 1 element,
 # consensus will not be executed
