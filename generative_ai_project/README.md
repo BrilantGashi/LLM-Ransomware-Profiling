@@ -1,153 +1,262 @@
-# Generative AI Project Template
+# LLM Ransomware Negotiation Profiling
 
-A structured template for building robust generative AI applications, with modular organization and best practices built-in.
+Advanced psychological profiling and tactical extraction from ransomware negotiations using Large Language Models and Speech Act Theory.
 
-![genai_project](https://github.com/honestsoul/generative_ai_project/blob/96dae125f58ede47f1bc3034790498f103903772/examples/genai_project.jpg)
+**Bachelor's Thesis Project** - University of Brescia (2024-2025)
 
+---
+
+## 🎓 Academic Information
+
+**Student**: Brilant Gashi  
+**Institution**: University of Brescia (Università degli Studi di Brescia)  
+**Degree Program**: Computer Science (Informatica)  
+**Academic Year**: 2024-2025
+
+### Supervisors
+
+- **Prof. Federico Cerutti** -  Supervisor
+- **Prof. Pietro Baroni** - Supervisor
+
+**Department**: Department of Information Engineering (Dipartimento di Ingegneria dell'Informazione)
+
+---
+
+## 🎯 Thesis Overview
+
+This bachelor's thesis investigates the application of Large Language Models (LLMs) for automated analysis of ransomware negotiation chats. The research leverages the **UniBS experimental LLM cluster** to process real-world negotiation data from the Ransomchats dataset, applying Speech Act Theory and multi-model ensemble techniques.
+
+### Research Objectives
+
+1. **Automated Negotiation Analysis**: Develop a scalable pipeline for processing ransomware negotiations
+2. **Speech Act Classification**: Apply linguistic theory to categorize negotiation messages
+3. **Psychological Profiling**: Extract behavioral patterns and negotiation tactics
+4. **Multi-Model Validation**: Compare and consensus across 7 different LLMs
+5. **Academic Contribution**: Advance cybersecurity research and negotiation analysis
+
+### Key Research Questions
+
+- Can LLMs accurately classify speech acts in ransomware negotiations?
+- How do different models compare in understanding malicious communication?
+- What consensus mechanisms provide the most reliable results?
+- What psychological patterns emerge from automated analysis?
 
 
 ## 🌟 Features
 
-- Modular project structure for scalability
-- Pre-configured support for multiple LLM providers (Claude, GPT)
-- Built-in prompt engineering utilities
-- Rate limiting and token management
-- Robust error handling
-- Caching mechanism for API responses
-- Example implementations and notebooks
+### Core Capabilities
+
+- ✅ **7 LLM Models**: qwen3, phi4-mini, phi4, llama3.2, gpt-oss, granite3.3, gemma3
+- ✅ **UniBS Cluster Integration**: Production-ready API client (Handbook-compliant)
+- ✅ **Multi-Task Pipeline**: Speech acts, psychological profiling, tactical extraction
+- ✅ **Consensus Mechanisms**: Majority vote and weighted averaging
+- ✅ **Robust Error Handling**: Exponential backoff with comprehensive logging
+- ✅ **Few-Shot Learning**: Template-based prompt engineering
+- ✅ **Dataset Management**: Automated updates from Ransomchats repository
+- ✅ **Reasoning Capture**: Model thinking process extraction
+
+---
 
 ## 📁 Project Structure
 
-```
 generative_ai_project/
-├── config/                  # Configuration directory
-│   ├── __init__.py
-│   ├── model_config.yaml    # Model-specific configurations
-│   ├── prompt_templates.yaml # Prompt templates
-│   └── logging_config.yaml  # Logging settings
+├── config/ # Configuration files
+│ ├── model_config.yaml # LLM parameters & cluster settings
+│ ├── prompt_templates.yaml # Task prompts & instructions
+│ ├── logging_config.yaml # Multi-level logging setup
+│ └── few_shot_examples/ # Few-shot learning templates
 │
-├── src/                     # Source code
-│   ├── llm/                # LLM clients
-│   │   ├── base.py         # Base LLM client
-│   │   ├── claude_client.py # Anthropic Claude client
-│   │   ├── gpt_client.py   # OpenAI GPT client
-│   │   └── utils.py        # Shared utilities
-│   │
-│   ├── prompt_engineering/ # Prompt engineering tools
-│   │   ├── templates.py    # Template management
-│   │   ├── few_shot.py    # Few-shot prompt utilities
-│   │   └── chain.py       # Prompt chaining logic
-│   │
-│   ├── utils/             # Utility functions
-│   │   ├── rate_limiter.py # API rate limiting
-│   │   ├── token_counter.py # Token counting
-│   │   ├── cache.py       # Response caching
-│   │   └── logger.py      # Logging utilities
-│   │
-│   └── handlers/          # Error handling
-│       └── error_handler.py
+├── src/ # Source code
+│ ├── llm/
+│ │ └── unibs_client.py # UniBS cluster API client
+│ ├── handlers/
+│ │ └── error_handler.py # Retry logic & error reporting
+│ ├── utils/
+│ │ ├── data_loader.py # Dataset loading utilities
+│ │ └── debug_helper.py # Debugging tools
+│ └── analysis/
+│ ├── consensus.py # Multi-model consensus
+│ ├── aggregator.py # Result aggregation
+│ └── visualizer.py # Data visualization
 │
-├── data/                   # Data directory
-│   ├── cache/             # Cache storage
-│   ├── prompts/           # Prompt storage
-│   ├── outputs/           # Output storage
-│   └── embeddings/        # Embedding storage
+├── data/ # Data storage
+│ ├── raw/
+│ │ ├── messages.json # Unified dataset
+│ │ ├── DATA_MANIFEST.json # Dataset metadata
+│ │ └── Ransomchats-main/ # Raw GitHub data
+│ ├── outputs/ # Pipeline results
+│ └── consensus/ # Cross-model validation
 │
-├── examples/              # Example implementations
-│   ├── basic_completion.py
-│   ├── chat_session.py
-│   └── chain_prompts.py
+├── logs/ # Execution logs
 │
-└── notebooks/            # Jupyter notebooks
-    ├── prompt_testing.ipynb
-    ├── response_analysis.ipynb
-    └── model_experimentation.ipynb
-```
+├── run_pipeline.py # Main execution script
+├── update_database.py # Dataset updater
+└── requirements.txt # Python dependencies
+
 
 ## 🚀 Getting Started
 
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/generative_ai_project.git
-cd generative_ai_project
-```
+### Prerequisites
 
-2. Install dependencies:
+- **Python 3.9+**
+- **UniBS Network Access** (on-campus or via VPN)
+- **UniBS GPUStack API Key** (provided by thesis supervisors)
+
+### Installation
+
+#### 1. Clone the Repository
+
 ```bash
+git clone https://github.com/BrilantGashi/LLM-Ransomware-Profiling.git
+cd LLM-Ransomware-Profiling/generative_ai_project
+2. Create Virtual Environment
+bash
+python3 -m venv .venv
+source .venv/bin/activate   # Linux/Mac
+.venv\Scripts\activate      # Windows
+3. Install Dependencies
+bash
+pip install --upgrade pip
 pip install -r requirements.txt
-```
+4. Configure Environment
+bash
+# Create .env file from template
+cp .env.example .env
 
-3. Configure your environment:
-   - Copy `config/model_config.yaml.example` to `config/model_config.yaml`
-   - Add your API keys and configurations
+# Edit and add your API key
+nano .env
+.env content:
 
-4. Review the examples in `examples/` directory
+bash
+GPUSTACK_API_KEY=your-api-key-here
+GPUSTACK_BASE_URL=https://gpustack.ing.unibs.it/v1
+⚠️ Security: Never commit .env to Git!
 
-5. Start with the notebooks in `notebooks/` for experimentation
+5. Download Dataset
+bash
+python update_database.py
+🎮 Usage
+Quick Test Run (5 chats)
+bash
+python run_pipeline.py
+Full Dataset Processing
+Edit run_pipeline.py line 385:
 
-## 📘 Documentation
+python
+pipeline.run(max_chats=None)  # Process all chats
+Then run:
 
-### Configuration
+bash
+python run_pipeline.py
+Configuration
+Change Active Model
+Edit config/model_config.yaml:
 
-- `model_config.yaml`: Configure API keys and model parameters
-- `prompt_templates.yaml`: Define reusable prompt templates
-- `logging_config.yaml`: Configure logging behavior
+text
+# Single model
+active_model: "phi4-mini"
 
-### Key Components
+# Ensemble (multiple models)
+ensemble_models:
+  - phi4-mini
+  - qwen3
+  - llama3.2
+Adjust LLM Parameters
+text
+llm_parameters:
+  temperature: 0.6
+  top_p: 0.95
+  max_tokens: 1024
+📊 Output Structure
+Results are saved in data/outputs/:
 
-1. **LLM Clients** (`src/llm/`)
-   - Base client with common functionality
-   - Specific implementations for different providers
-   - Utility functions for token counting and rate limiting
+text
+data/outputs/
+├── speech_act_analysis/
+│   ├── phi4-mini/
+│   │   └── [group_name]/
+│   │       └── [chat_id].json
+│   └── qwen3/
+├── psychological_profiling/
+└── tactical_extraction/
+Consensus Results
+When using ensemble mode:
 
-2. **Prompt Engineering** (`src/prompt_engineering/`)
-   - Template management system
-   - Few-shot prompt utilities
-   - Prompt chaining capabilities
+text
+data/consensus/
+└── [group_name]/
+    └── [chat_id]_consensus.json
+🔬 Research Methodology
+Pipeline Architecture
+Data Ingestion: Load and clean ransomware negotiation chats
 
-3. **Utilities** (`src/utils/`)
-   - Rate limiting for API calls
-   - Token counting
-   - Response caching
-   - Logging
+Prompt Engineering: Apply task-specific templates with few-shot examples
 
-## 🛠️ Development
+Multi-Model Inference: Process with 7 different LLMs
 
-### Best Practices
+Result Validation: JSON parsing and schema validation
 
-1. Keep configuration in YAML files
-2. Implement proper error handling
-3. Use rate limiting for APIs
-4. Maintain separation between model clients
-5. Cache results when appropriate
-6. Document your code
-7. Use notebooks for experimentation
+Consensus Generation: Cross-model agreement voting
 
-### Tips
+Statistical Analysis: Aggregate results and extract patterns
 
-- Follow modular design principles
-- Write tests for new components
-- Use proper version control
-- Keep documentation updated
-- Monitor API usage and limits
+Speech Act Theory
+Classification based on Searle's taxonomy:
 
-## 🤝 Contributing
+Assertives: Claims, statements, descriptions
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Directives: Demands, requests, questions
 
-## 📄 License
+Commissives: Promises, threats, offers
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Expressives: Emotional expressions
 
-## 👤 Author
+Declarations: Status changes, confirmations
 
-- **Brij Kishore Pandey**
+🧪 Testing
+Test Logging Configuration
+bash
+python -m tests.test_logging
+Verify API Connectivity
+bash
+cd src/utils
+python debug_helper.py
+📚 Documentation
+Key Files
+UniBS Cluster Handbook: Official API documentation
 
-## 📧 Contact
+Configuration Guide: YAML configuration reference
 
-For any queries, reach out to:
-- GitHub: [@honestsoul](https://github.com/honestsoul)
-- Email: brij.pydata@gmail.com
+API Reference: Source code documentation
 
----
-⭐ If you find this template useful, please consider giving it a star!
+Related Research
+Ransomchats Dataset: github.com/Casualtek/Ransomchats
+
+Speech Act Theory: Searle, J.R. (1969)
+
+LLM Ensembles: Multi-model consensus techniques
+
+🔒 Security & Ethics
+✅ API Keys via Environment Variables (never committed)
+
+✅ VPN-Only Access to UniBS cluster
+
+✅ No Sensitive Data in public repository
+
+Copyright © 2026 Brilant Gashi - University of Brescia
+
+👤 Author
+Brilant Gashi
+Computer Science Student
+University of Brescia
+
+🔗 GitHub: @BrilantGashi
+
+🙏 Acknowledgments
+Prof. Federico Cerutti, Pietro Baroni - Thesis supervision and guidance
+
+UniBS IT Services - Access to experimental LLM cluster
+
+Casualtek - Ransomchats dataset maintainers
+
+⭐ Academic Project - University of Brescia, 2025-2026
