@@ -1,9 +1,15 @@
+"""
+Ransomware Negotiation Analysis Pipeline
+Main execution script with multi-model ensemble support and robust error handling.
+Compliant with UniBS Cluster Handbook (February 2026)
+"""
+
 import sys
 import json
 import yaml
 import logging.config
 import time
-import re  # <--- AGGIUNTO: Necessario per il parser "cattivo"
+import re
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
@@ -44,7 +50,6 @@ class TqdmLoggingHandler(logging.Handler):
 root_logger = logging.getLogger()
 root_logger.setLevel(logging.DEBUG)
 
-
 # 1. File Handler (Verbose - DEBUG level)
 file_handler = logging.FileHandler(LOG_FILE, encoding='utf-8')
 file_handler.setLevel(logging.DEBUG)
@@ -52,14 +57,12 @@ file_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(m
 file_handler.setFormatter(file_formatter)
 root_logger.addHandler(file_handler)
 
-
 # 2. Console Handler (Clean - WARNING+ level only)
 console_handler = TqdmLoggingHandler()
 console_handler.setLevel(logging.WARNING) 
 console_formatter = logging.Formatter('⚠️  %(message)s')
 console_handler.setFormatter(console_formatter)
 root_logger.addHandler(console_handler)
-
 
 # Specific logger for this script
 logger = logging.getLogger("RansomPipeline")
@@ -70,16 +73,16 @@ try:
     from src.llm.unibs_client import UniBSLLMClient
     from src.utils.data_loader import download_and_load_messages_db, clean_message_list
     from src.analysis.consensus import ConsensusManager
+    from src.handlers.error_handler import UniBSErrorHandler
 except ImportError as e:
     logger.critical(f"Error importing modules: {e}")
     sys.exit(1)
 
 
-
 def print_banner(config, models, max_chats):
     """Prints a professional academic-style banner."""
     print("\n" + "="*70)
-    print(f"🔬  RANSOMWARE NEGOTIATION ANALYSIS PIPELINE  |  v1.2.2 (Robust Parser)")
+    print(f"🔬  RANSOMWARE NEGOTIATION ANALYSIS PIPELINE  |  v1.3.0")
     print("="*70)
     print(f"📅  Date:      {datetime.now().strftime('%Y-%m-%d %H:%M')}")
     print(f"📊  Target:    {max_chats if max_chats else 'Full Dataset'} chats")
@@ -87,7 +90,6 @@ def print_banner(config, models, max_chats):
     print(f"⚙️   Workers:   {config.get('processing', {}).get('max_workers', 4)}")
     print(f"📝  Logs:      {LOG_FILE.name}")
     print("="*70 + "\n")
-
 
 
 class RansomwarePipeline:
@@ -102,16 +104,26 @@ class RansomwarePipeline:
         with open(self.model_config_path, 'r') as f:
             self.model_config = yaml.safe_load(f)
 
-
         # Use ensemble list if present, otherwise single active model
         self.models_list = self.model_config.get('ensemble_models', [self.model_config.get('active_model')])
         self.max_workers = self.model_config.get('processing', {}).get('max_workers', 4)
+        self.chunk_max_chars = self.model_config.get('processing', {}).get('chunk_max_chars', 10000)
+        
+        # NEW: Initialize error handler (Handbook Section 9 compliant)
+        retry_config = self.model_config.get('processing', {}).get('retry', {})
+        self.error_handler = UniBSErrorHandler(
+            max_retries=retry_config.get('max_attempts', 3),
+            backoff_factor=retry_config.get('backoff_factor', 2)
+        )
         
         self.consensus_manager = ConsensusManager(self.base_dir)
         self.prompts_config = {}
         self.full_dataset = {}
         self.few_shot_cache = {}
-
+        
+        # NEW: Feature flags
+        self.save_reasoning = self.model_config.get('logging', {}).get('save_reasoning', True)
+        self.validate_json = self.model_config.get('features', {}).get('validate_json_output', True)
 
     def load_resources(self):
         """Quietly loads resources, logging details only to file."""
@@ -124,7 +136,6 @@ class RansomwarePipeline:
         except Exception as e:
             logger.error(f"Failed to load prompts: {e}")
             raise
-
 
         # Load Data
         try:
@@ -141,76 +152,134 @@ class RansomwarePipeline:
             logger.critical(f"Failed to load dataset: {e}")
             raise
 
-
     def _load_few_shot_examples(self, task_name: str) -> str:
-        if task_name in self.few_shot_cache: return self.few_shot_cache[task_name]
+        """Load few-shot examples from config directory."""
+        if task_name in self.few_shot_cache: 
+            return self.few_shot_cache[task_name]
         
         example_file = self.config_dir / "few_shot_examples" / f"{task_name}.json"
-        if not example_file.exists(): return ""
+        if not example_file.exists(): 
+            return ""
         
         try:
             with open(example_file, 'r', encoding='utf-8') as f:
                 data = json.load(f)
             
             examples = data.get('examples', [])
-            if not examples: return ""
+            if not examples: 
+                return ""
             
             formatted = "\n\n" + "="*60 + "\n📚 FEW-SHOT EXAMPLES:\n" + "="*60 + "\n"
             for i, ex in enumerate(examples, 1):
-                formatted += f"\n🔹 Ex {i}:\nINPUT:\n{json.dumps(ex['input'], indent=2)}\nOUTPUT:\n{json.dumps(ex['output'], indent=2)}\n" + "-"*60
+                formatted += f"\n🔹 Example {i}:\nINPUT:\n{json.dumps(ex['input'], indent=2)}\nOUTPUT:\n{json.dumps(ex['output'], indent=2)}\n" + "-"*60
             
             formatted += "\nNow analyze the actual chat below:\n" + "="*60 + "\n"
             self.few_shot_cache[task_name] = formatted
             logger.info(f"Loaded {len(examples)} shots for {task_name}")
             return formatted
-        except Exception:
+        except Exception as e:
+            logger.warning(f"Failed to load few-shot examples for {task_name}: {e}")
             return ""
 
+    def _chunk_dialogue_if_needed(self, dialogue, max_chars=None):
+        """
+        Split long dialogues to fit within model context.
+        Uses recursive 3-way split (from professor's code).
+        
+        Args:
+            dialogue: List of message dictionaries
+            max_chars: Maximum characters before splitting (default from config)
+        
+        Returns:
+            List of dialogue chunks
+        """
+        if max_chars is None:
+            max_chars = self.chunk_max_chars
+        
+        chat_json = json.dumps(dialogue, ensure_ascii=False)
+        
+        if len(chat_json) <= max_chars or len(dialogue) <= 1:
+            return [dialogue]
+        
+        # Recursive 3-way split
+        third = max(1, len(dialogue) // 3)
+        two_third = max(third + 1, 2 * len(dialogue) // 3)
+        
+        return (
+            self._chunk_dialogue_if_needed(dialogue[:third], max_chars) +
+            self._chunk_dialogue_if_needed(dialogue[third:two_third], max_chars) +
+            self._chunk_dialogue_if_needed(dialogue[two_third:], max_chars)
+        )
 
-    def _clean_json_output(self, text):
+    def _validate_and_repair_json(self, text):
         """
-        Versione 'Cattiva' (Robust Parser) + Protezione Input Non-Stringa.
+        Validate and repair malformed JSON output.
+        
+        Args:
+            text: Raw model output (string, dict, or list)
+        
+        Returns:
+            str: Valid JSON string or None if unrepairable
         """
-        # PROTEZIONE: Se l'input è già una lista o un dizionario, convertilo in stringa JSON
+        # Protection: If input is already a list or dict, serialize it
         if isinstance(text, (list, dict)):
             return json.dumps(text)
-            
+        
         if not isinstance(text, str):
-            # Se è None o altro tipo strano, converti in stringa vuota o repr
-            return str(text) if text is not None else ""
-
+            return str(text) if text is not None else None
+        
         text = text.strip()
         
-        # 1. Tentativo veloce: Se è già un JSON valido, ottimo.
+        # 1. Quick validation: Already valid JSON
         try:
-            json.loads(text)
-            return text
+            parsed = json.loads(text)
+            return json.dumps(parsed)  # Re-serialize clean
         except json.JSONDecodeError:
             pass
-
-        # 2. Tentativo chirurgico con Regex
+        
+        # 2. Regex extraction
         match = re.search(r'\[.*\]', text, re.DOTALL)
         if match:
-            candidate = match.group(0)
             try:
-                json.loads(candidate)
-                return candidate
+                parsed = json.loads(match.group(0))
+                return json.dumps(parsed)
             except json.JSONDecodeError:
                 pass
-                
-        return text
-
+        
+        # 3. Remove markdown code blocks
+        text = re.sub(r'```json\s*|\s*```', '', text)
+        try:
+            parsed = json.loads(text)
+            return json.dumps(parsed)
+        except json.JSONDecodeError:
+            pass
+        
+        logger.error(f"JSON unrepairable: {text[:200]}")
+        return None
 
     def _process_single_chat(self, group_name, chat_id, chat_content, tasks):
         """
-        Processes a single chat with ALL models defined in self.models_list.
+        Process a single chat with ALL models in ensemble.
+        
+        Args:
+            group_name: Ransomware group name
+            chat_id: Unique chat identifier
+            chat_content: Chat data with 'dialogue' key
+            tasks: Dictionary of tasks to execute
+        
+        Returns:
+            str: "SUCCESS", "SKIPPED_EMPTY", or "ERROR"
         """
         dialogue = chat_content.get('dialogue', [])
-        if not dialogue: return "SKIPPED_EMPTY"
-
+        if not dialogue: 
+            return "SKIPPED_EMPTY"
 
         dialogue = clean_message_list(dialogue)
-        chat_json_str = json.dumps(dialogue, indent=2)
+        
+        # NEW: Chunk dialogue if too long
+        dialogue_chunks = self._chunk_dialogue_if_needed(dialogue)
+        if len(dialogue_chunks) > 1:
+            logger.info(f"Chat {chat_id} split into {len(dialogue_chunks)} chunks")
         
         # Iterate Models
         for model_name in self.models_list:
@@ -222,52 +291,73 @@ class RansomwarePipeline:
                 
                 out_file = task_out_dir / f"{chat_id}.{task_cfg.get('output_format', 'txt')}"
 
-
-                if out_file.exists(): continue 
-
+                # Skip if already processed
+                if out_file.exists(): 
+                    continue 
 
                 try:
                     sys_msg = task_cfg['system_prompt']
                     user_template = task_cfg['user_template']
                     examples = self._load_few_shot_examples(task_name)
                     
-                    final_prompt = user_template.replace("{{chat_json}}", chat_json_str)
+                    # Process all chunks and aggregate results
+                    all_results = []
                     
-                    if examples:
-                        marker = "Chat to analyze:"
-                        if marker in final_prompt:
-                            final_prompt = final_prompt.replace(marker, examples + "\n" + marker)
-                        else:
-                            final_prompt = examples + "\n\n" + final_prompt
-
-
-                    messages = [{"role": "system", "content": sys_msg}, {"role": "user", "content": final_prompt}]
-                    resp_text = client.generate_response(messages)
-                    
-                    # Clean and Validate JSON
-                    content = resp_text
-                    if task_cfg.get('output_format') == 'json':
-                        # Qui usiamo il nuovo parser "cattivo"
-                        cleaned_resp = self._clean_json_output(resp_text)
+                    for chunk_idx, chunk in enumerate(dialogue_chunks):
+                        chat_json_str = json.dumps(chunk, indent=2)
+                        final_prompt = user_template.replace("{{chat_json}}", chat_json_str)
                         
-                        # Validate JSON before saving
-                        try:
-                            json.loads(cleaned_resp)
-                            content = cleaned_resp
-                        except json.JSONDecodeError as e:
-                            logger.warning(f"⚠️ Invalid JSON from {model_name} on {chat_id}: {e}")
-                            # Skip saving corrupted file to avoid consensus errors
+                        # Add few-shot examples
+                        if examples:
+                            marker = "Chat to analyze:"
+                            if marker in final_prompt:
+                                final_prompt = final_prompt.replace(marker, examples + "\n" + marker)
+                            else:
+                                final_prompt = examples + "\n\n" + final_prompt
+
+                        messages = [
+                            {"role": "system", "content": sys_msg}, 
+                            {"role": "user", "content": final_prompt}
+                        ]
+                        
+                        # NEW: Use error handler with retry logic
+                        response_obj = self.error_handler.with_retry(
+                            client.generate_response,
+                            messages
+                        )
+                        
+                        # NEW: Handle reasoning_content (Handbook page 2)
+                        resp_text = response_obj.get('content', '')
+                        reasoning = response_obj.get('reasoning', None)
+                        
+                        # Save reasoning if enabled and available
+                        if self.save_reasoning and reasoning:
+                            reasoning_file = task_out_dir / f"{chat_id}_chunk{chunk_idx}_reasoning.txt"
+                            reasoning_file.write_text(reasoning, encoding='utf-8')
+                            logger.debug(f"Saved reasoning for {chat_id} chunk {chunk_idx}")
+                        
+                        all_results.append(resp_text)
+                    
+                    # Aggregate chunks (simple concatenation for now)
+                    content = "\n\n".join(all_results) if len(all_results) > 1 else all_results[0]
+                    
+                    # Validate and clean JSON output
+                    if task_cfg.get('output_format') == 'json' and self.validate_json:
+                        cleaned_json = self._validate_and_repair_json(content)
+                        
+                        if cleaned_json is None:
+                            logger.warning(f"⚠️ Invalid JSON from {model_name} on {chat_id}, skipping save")
                             continue
+                        
+                        content = cleaned_json
 
-
+                    # Save final output
                     with open(out_file, 'w', encoding='utf-8') as f:
                         f.write(content)
 
-
                 except Exception as e:
-                    logger.error(f"Error {task_name}/{model_name}/{chat_id}: {e}")
+                    logger.error(f"Error {task_name}/{model_name}/{chat_id}: {e}", exc_info=True)
                     return "ERROR"
-
 
         # Run Consensus (if enabled and applicable)
         if len(self.models_list) > 1 and 'speech_act_analysis' in tasks:
@@ -276,11 +366,15 @@ class RansomwarePipeline:
             except Exception as e:
                 logger.error(f"Consensus error {chat_id}: {e}")
 
-
         return "SUCCESS"
 
-
     def run(self, max_chats=None):
+        """
+        Execute the full pipeline.
+        
+        Args:
+            max_chats: Maximum number of chats to process (None = all)
+        """
         print_banner(self.model_config, self.models_list, max_chats)
         
         tasks = self.prompts_config.get('tasks', {})
@@ -291,48 +385,47 @@ class RansomwarePipeline:
             for chat_id, chat_content in chats.items():
                 all_jobs.append((group_name, chat_id, chat_content))
 
-
         # Slice dataset if max_chats is set
         if max_chats and len(all_jobs) > max_chats:
             all_jobs = all_jobs[:max_chats]
 
-
         print(f"🚀  Initialization complete. Processing {len(all_jobs)} chats...\n")
-
 
         success_count = 0
         skip_count = 0
         error_count = 0
 
-
         with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
-            # FIX: Properly unpack the job tuple (group, id, content)
             future_to_chat = {
                 executor.submit(self._process_single_chat, job[0], job[1], job[2], tasks): job[1] 
                 for job in all_jobs
             }
 
-
-            pbar = tqdm(as_completed(future_to_chat), total=len(all_jobs), 
-                        unit="chat",
-                        bar_format="{l_bar}{bar:30}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]",
-                        colour="green")
+            pbar = tqdm(
+                as_completed(future_to_chat), 
+                total=len(all_jobs), 
+                unit="chat",
+                bar_format="{l_bar}{bar:30}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]",
+                colour="green"
+            )
             
             for future in pbar:
                 chat_id = future_to_chat[future]
                 try:
                     status = future.result()
-                    if status == "SUCCESS": success_count += 1
-                    elif status == "SKIPPED_EMPTY": skip_count += 1
-                    else: error_count += 1
+                    if status == "SUCCESS": 
+                        success_count += 1
+                    elif status == "SKIPPED_EMPTY": 
+                        skip_count += 1
+                    else: 
+                        error_count += 1
                 except Exception as e:
                     logger.error(f"Thread execution failed for {chat_id}: {e}", exc_info=True)
                     error_count += 1
 
-
                 pbar.set_description(f"🔍 Processing")
 
-
+        # Print execution summary
         print("\n" + "="*70)
         print("✅  EXECUTION SUMMARY")
         print("="*70)
@@ -341,15 +434,22 @@ class RansomwarePipeline:
         print(f"🔴  Errors:      {error_count}")
         print(f"📂  Output Dir:  {self.output_dir}")
         print(f"📝  Full Log:    {LOG_FILE}")
+        
+        # NEW: Print error report (Handbook Section 9)
+        error_report = self.error_handler.get_error_report()
+        if error_report and "Nessun errore" not in error_report and "No errors" not in error_report:
+            print("\n⚠️  ERRORS DETECTED - See error_report.txt")
+            error_report_file = LOG_DIR / "error_report.txt"
+            error_report_file.write_text(error_report, encoding='utf-8')
+        
         print("="*70 + "\n")
-
 
 
 if __name__ == "__main__":
     pipeline = RansomwarePipeline()
     try:
         pipeline.load_resources()
-        # Set to 30 for your test run
+        # Set to desired number for test run (None = all chats)
         pipeline.run(max_chats=5)
     except KeyboardInterrupt:
         print("\n\n⚠️  Pipeline interrupted by user.")

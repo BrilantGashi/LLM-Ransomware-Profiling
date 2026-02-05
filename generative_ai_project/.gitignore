@@ -1,11 +1,61 @@
-# --- Security ---
+# ==============================================================================
+# .gitignore - LLM Ransomware Profiling Project
+# ==============================================================================
+
+
+# ------------------------------------------------------------------------------
+# CRITICAL SECURITY - API Keys & Secrets 
+# ------------------------------------------------------------------------------
 .env
 .env.local
+.env.*.local
+*.key
+*_API_KEY*
 keys/
 secrets/
 credentials.json
+config/secrets.yaml
+.secrets
 
-# --- Python ---
+
+# ------------------------------------------------------------------------------
+# Logs (may contain sensitive info or API keys)
+# ------------------------------------------------------------------------------
+logs/
+*.log
+*.log.*
+log_*.txt
+pipeline_*.log
+error_report.txt
+api_errors.log
+
+# Keep logs directory structure but ignore contents
+!logs/.gitkeep
+
+
+# ------------------------------------------------------------------------------
+# Project Outputs (generated data and results)
+# ------------------------------------------------------------------------------
+# Processed outputs
+data/outputs/
+data/processed/
+data/consensus/
+
+# Raw data (large files, may contain sensitive negotiation data)
+data/raw/messages.json
+data/raw/Ransomchats-main/
+data/raw/*.zip
+data/raw/archive/
+
+# Keep directory structure
+!data/outputs/.gitkeep
+!data/processed/.gitkeep
+!data/raw/.gitkeep
+
+
+# ------------------------------------------------------------------------------
+# Python
+# ------------------------------------------------------------------------------
 __pycache__/
 *.py[cod]
 *$py.class
@@ -23,35 +73,185 @@ parts/
 sdist/
 var/
 wheels/
+pip-wheel-metadata/
+share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
-# --- Virtual Environments ---
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+notebooks/*.ipynb
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# Poetry
+poetry.lock
+
+
+# ------------------------------------------------------------------------------
+# Virtual Environments
+# ------------------------------------------------------------------------------
 venv/
 .venv/
 env/
 ENV/
 env.bak/
 venv.bak/
+.virtualenv/
 
-# --- IDE Settings ---
+
+# ------------------------------------------------------------------------------
+# IDE Settings
+# ------------------------------------------------------------------------------
+# VSCode
 .vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# PyCharm
 .idea/
+*.iml
+*.iws
+*.ipr
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
 *.swp
 *.swo
+*~
 
-# --- Logs and Databases ---
-*.log
-*.sqlite
-db.sqlite3
+# Emacs
+*~
+\#*\#
+.\#*
 
-# --- OS Generated Files ---
+# Spyder
+.spyderproject
+.spyproject
+
+
+# ------------------------------------------------------------------------------
+# OS Generated Files
+# ------------------------------------------------------------------------------
+# macOS
 .DS_Store
-Thumbs.db
-*.ini
+.AppleDouble
+.LSOverride
+._*
 
-# --- Project Outputs (Optional - customize as needed) ---
-# Uncomment if you don't want to track generated outputs
-# data/outputs/
-# data/processed/
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+.Trash-*
+
+
+# ------------------------------------------------------------------------------
+# Database Files
+# ------------------------------------------------------------------------------
+*.sqlite
+*.sqlite3
+*.db
+db.sqlite3
+*.sql
+
+
+# ------------------------------------------------------------------------------
+# Temporary Files
+# ------------------------------------------------------------------------------
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*.backup
+~$*
+tmp/
+temp/
+.temp/
+
+
+# ------------------------------------------------------------------------------
+# Model Checkpoints & Large Files (for training)
+# ------------------------------------------------------------------------------
+*.ckpt
+*.pth
+*.pt
+*.h5
+*.pkl
+*.pickle
+models/checkpoints/
+!models/.gitkeep
+
+
+# ------------------------------------------------------------------------------
+# Documentation Build Artifacts
+# ------------------------------------------------------------------------------
+docs/_build/
+docs/.doctrees/
+site/
+
+
+# ------------------------------------------------------------------------------
+# Config Overrides (keep templates, ignore personal configs)
+# ------------------------------------------------------------------------------
+config/local_*.yaml
+config/*_local.yaml
+config/*.yaml.local
+
+
+# ------------------------------------------------------------------------------
+# Test Artifacts
+# ------------------------------------------------------------------------------
+.pytest_cache/
+tests/__pycache__/
+tests/test_outputs/
+tests/fixtures/generated/
+
+
+# ------------------------------------------------------------------------------
+# Misc
+# ------------------------------------------------------------------------------
+.DS_Store?
+Icon?
+.Spotlight-V100
+.Trashes

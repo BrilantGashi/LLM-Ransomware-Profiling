@@ -49,7 +49,6 @@ class UniBSLLMClient:
         
         logger.info(f"🤖 LLM Client initialized. Target: {self.model_name}")
 
-    def generate_response(self, messages: List[Dict[str, str]], **kwargs) -> str:
         params = {**self.llm_params, **kwargs}
         params['model'] = self.model_name
         params['messages'] = messages
@@ -65,3 +64,34 @@ class UniBSLLMClient:
                 logger.error(f"Error: {e}")
                 break
         return ""
+
+def generate_response(self, messages: List[Dict[str, str]], **kwargs) -> Dict[str, str]:
+    """
+    Ritorna sia content che reasoning_content se disponibile.
+    
+    Returns:
+        dict: {'content': str, 'reasoning': str|None}
+    """
+    params = {**self.llm_params, **kwargs}
+    params['model'] = self.model_name
+    params['messages'] = messages
+    
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            response = self.client.chat.completions.create(**params)
+            choice = response.choices[0]
+            
+            return {
+                'content': choice.message.content or "",
+                'reasoning': getattr(choice.message, 'reasoning_content', None)
+            }
+        except (APITimeoutError, RateLimitError) as e:
+            if attempt == max_retries - 1:
+                raise
+            time.sleep(2 ** attempt)
+        except Exception as e:
+            logger.error(f"Error: {e}")
+            break
+    
+    return {'content': "", 'reasoning': None}
