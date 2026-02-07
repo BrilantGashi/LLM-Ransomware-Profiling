@@ -221,6 +221,7 @@ Verify API Connectivity
 bash
 cd src/utils
 python debug_helper.py
+
 📚 Documentation
 Key Files
 UniBS Cluster Handbook: Official API documentation
@@ -243,8 +244,6 @@ LLM Ensembles: Multi-model consensus techniques
 
 ✅ No Sensitive Data in public repository
 
-Copyright © 2026 Brilant Gashi - University of Brescia
-
 👤 Author
 Brilant Gashi
 Computer Science Student
@@ -259,4 +258,4 @@ UniBS IT Services - Access to experimental LLM cluster
 
 Casualtek - Ransomchats dataset maintainers
 
-⭐ Academic Project - University of Brescia, 2025-2026
+⭐ Academic Project - University of Brescia, 2024-2025
