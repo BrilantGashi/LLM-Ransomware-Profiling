@@ -1,11 +1,12 @@
 {
   "dataset_name": "Ransomchats Snapshot",
-  "last_updated": "2026-01-28T11:30:30.629265",
+  "last_updated": "2026-02-08T15:52:30.002876",
   "source_repository": "https://github.com/Casualtek/Ransomchats",
+  "file_hash_sha256": "cd114d281aabd196cb6d4fc48e90d20c59be94849ba3db8d24065156dad7b24f",
   "statistics": {
     "total_groups": 24,
-    "total_chats": 233,
-    "total_messages": 11092,
+    "total_chats": 234,
+    "total_messages": 11106,
     "groups": {
       "Akira": {
         "chat_count": 60,
@@ -100,9 +101,13 @@
         "message_count": 27
       },
       "trinity": {
-        "chat_count": 13,
-        "message_count": 699
+        "chat_count": 14,
+        "message_count": 713
       }
     }
+  },
+  "config": {
+    "ignored_groups": [],
+    "source_type": "local"
   }
 }

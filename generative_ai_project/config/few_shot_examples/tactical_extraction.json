@@ -1,0 +1,161 @@
+{
+  "task_name": "tactical_extraction",
+  "description": "Extract financial and technical indicators from ransomware negotiations",
+  "examples": [
+    {
+      "description": "Complete negotiation: Double extortion, discount applied, paid",
+      "input": [
+        {"party": "Attacker", "content": "We encrypted your 500 servers and exfiltrated 800GB of sensitive customer data.", "timestamp": "2023-01-15 10:00:00"},
+        {"party": "Attacker", "content": "Here is the file list as proof. For full decryption and data deletion, you must pay $2,000,000 in Bitcoin.", "timestamp": "2023-01-15 10:30:00"},
+        {"party": "Victim", "content": "That's too expensive. We cannot afford $2M. Can you reduce the price?", "timestamp": "2023-01-15 10:35:00"},
+        {"party": "Attacker", "content": "Final offer: $1,200,000. This is fair based on your Fortune 500 status.", "timestamp": "2023-01-15 10:40:00"},
+        {"party": "Victim", "content": "Okay, we agree to $1,200,000.", "timestamp": "2023-01-15 10:45:00"},
+        {"party": "Attacker", "content": "Payment received. Decryption keys attached.", "timestamp": "2023-01-16 08:00:00"}
+      ],
+      "output": {
+        "initial_demand": 2000000,
+        "final_price": 1200000,
+        "currency": "BTC",
+        "discount_percent": 40,
+        "victim_size": "Enterprise",
+        "attack_type": "Double_Extortion",
+        "data_volume_gb": 800,
+        "encryption_confirmed": true,
+        "exfiltration_confirmed": true,
+        "outcome": "Paid",
+        "attacker_flexibility": "High"
+      }
+    },
+    {
+      "description": "Encryption only, no negotiation, ongoing",
+      "input": [
+        {"party": "Attacker", "content": "Your files are locked. Pay $500,000 in Bitcoin within 48 hours.", "timestamp": "2023-02-10 14:00:00"},
+        {"party": "Victim", "content": "We need more time. Can you give us 1 week?", "timestamp": "2023-02-10 14:30:00"},
+        {"party": "Attacker", "content": "NO. 48 hours is final.", "timestamp": "2023-02-10 14:35:00"}
+      ],
+      "output": {
+        "initial_demand": 500000,
+        "final_price": null,
+        "currency": "BTC",
+        "discount_percent": null,
+        "victim_size": "Unknown",
+        "attack_type": "Encryption_Only",
+        "data_volume_gb": null,
+        "encryption_confirmed": true,
+        "exfiltration_confirmed": false,
+        "outcome": "Ongoing",
+        "attacker_flexibility": "Low"
+      }
+    },
+    {
+      "description": "Data theft only (no encryption), SME victim, small discount",
+      "input": [
+        {"party": "Attacker", "content": "We downloaded 150GB of your confidential files before you noticed. No encryption this time.", "timestamp": "2023-03-05 09:00:00"},
+        {"party": "Attacker", "content": "Here are samples from your financial reports. Pay $300,000 USD or we publish everything.", "timestamp": "2023-03-05 09:15:00"},
+        {"party": "Victim", "content": "We are a small business with only 50 employees. Can you accept $280,000?", "timestamp": "2023-03-05 09:30:00"},
+        {"party": "Attacker", "content": "OK. $280,000 final. Send to our account.", "timestamp": "2023-03-05 09:35:00"},
+        {"party": "Victim", "content": "Payment sent via wire transfer.", "timestamp": "2023-03-05 12:00:00"}
+      ],
+      "output": {
+        "initial_demand": 300000,
+        "final_price": 280000,
+        "currency": "USD",
+        "discount_percent": 7,
+        "victim_size": "SME",
+        "attack_type": "Data_Theft_Only",
+        "data_volume_gb": 150,
+        "encryption_confirmed": false,
+        "exfiltration_confirmed": true,
+        "outcome": "Paid",
+        "attacker_flexibility": "Low"
+      }
+    },
+    {
+      "description": "Victim refuses to pay, negotiation breaks down",
+      "input": [
+        {"party": "Attacker", "content": "Your network is encrypted. We have 400GB of data. Pay $1,000,000 in Bitcoin.", "timestamp": "2023-04-12 11:00:00"},
+        {"party": "Victim", "content": "We will NOT pay. We are reporting you to the FBI.", "timestamp": "2023-04-12 11:10:00"},
+        {"party": "Attacker", "content": "Your data is now on our leak site. Good luck with the lawsuits.", "timestamp": "2023-04-12 12:00:00"}
+      ],
+      "output": {
+        "initial_demand": 1000000,
+        "final_price": null,
+        "currency": "BTC",
+        "discount_percent": null,
+        "victim_size": "Unknown",
+        "attack_type": "Double_Extortion",
+        "data_volume_gb": 400,
+        "encryption_confirmed": true,
+        "exfiltration_confirmed": true,
+        "outcome": "Not_Paid",
+        "attacker_flexibility": "Unknown"
+      }
+    },
+    {
+      "description": "Large discount (>40%), medium-sized company",
+      "input": [
+        {"party": "Attacker", "content": "We encrypted your systems and stole 600GB. Initial price: $5,000,000 USD.", "timestamp": "2023-05-20 10:00:00"},
+        {"party": "Victim", "content": "We have 1,000 employees and annual revenue of $50M. We cannot afford $5M.", "timestamp": "2023-05-20 10:30:00"},
+        {"party": "Attacker", "content": "We reviewed your financials. We can accept $2,500,000 as final offer.", "timestamp": "2023-05-20 11:00:00"},
+        {"party": "Victim", "content": "Agreed. Sending Bitcoin now.", "timestamp": "2023-05-20 11:30:00"}
+      ],
+      "output": {
+        "initial_demand": 5000000,
+        "final_price": 2500000,
+        "currency": "USD",
+        "discount_percent": 50,
+        "victim_size": "Enterprise",
+        "attack_type": "Double_Extortion",
+        "data_volume_gb": 600,
+        "encryption_confirmed": true,
+        "exfiltration_confirmed": true,
+        "outcome": "Paid",
+        "attacker_flexibility": "High"
+      }
+    },
+    {
+      "description": "No proof provided, unclear attack type, no price mentioned",
+      "input": [
+        {"party": "Attacker", "content": "Hello. We have your data. Contact us for details.", "timestamp": "2023-06-15 14:00:00"},
+        {"party": "Victim", "content": "What data? We need proof.", "timestamp": "2023-06-15 14:15:00"},
+        {"party": "Attacker", "content": "We will send details soon. Wait for our message.", "timestamp": "2023-06-15 14:20:00"}
+      ],
+      "output": {
+        "initial_demand": null,
+        "final_price": null,
+        "currency": "Unknown",
+        "discount_percent": null,
+        "victim_size": "Unknown",
+        "attack_type": "Unknown",
+        "data_volume_gb": null,
+        "encryption_confirmed": null,
+        "exfiltration_confirmed": null,
+        "outcome": "Ongoing",
+        "attacker_flexibility": "Unknown"
+      }
+    },
+    {
+      "description": "Medium discount (15%), Bitcoin payment confirmed",
+      "input": [
+        {"party": "Attacker", "content": "Files encrypted. 200GB stolen. Pay 50 BTC (approximately $2,000,000).", "timestamp": "2023-07-10 09:00:00"},
+        {"party": "Victim", "content": "Can you accept 42 BTC? That's all we can afford.", "timestamp": "2023-07-10 10:00:00"},
+        {"party": "Attacker", "content": "43 BTC final offer. Send to bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh", "timestamp": "2023-07-10 10:30:00"},
+        {"party": "Victim", "content": "Sent 43 BTC. Transaction ID: abc123...", "timestamp": "2023-07-10 14:00:00"},
+        {"party": "Attacker", "content": "Received. Decryptor attached.", "timestamp": "2023-07-10 15:00:00"}
+      ],
+      "output": {
+        "initial_demand": 50,
+        "final_price": 43,
+        "currency": "BTC",
+        "discount_percent": 14,
+        "victim_size": "Unknown",
+        "attack_type": "Double_Extortion",
+        "data_volume_gb": 200,
+        "encryption_confirmed": true,
+        "exfiltration_confirmed": true,
+        "outcome": "Paid",
+        "attacker_flexibility": "Medium"
+      }
+    }
+  ]
+}

@@ -1,0 +1,202 @@
+{
+  "task_name": "speech_act_analysis",
+  "description": "Linguistic classification of ransomware chat messages using speech act theory",
+  "examples": [
+    {
+      "description": "Complete negotiation with all phases and act types",
+      "input": [
+        {"party": "Attacker", "content": "Hello. You've reached Akira support chat. We are preparing the list of data we took from your network. Dealing with us is the best way to settle this quick and cheap.", "timestamp": "2023-01-15 10:00:00"},
+        {"party": "Victim", "content": "What happened? Our files are encrypted.", "timestamp": "2023-01-15 10:05:00"},
+        {"party": "Attacker", "content": "Your network was breached. We encrypted 500 servers and exfiltrated 800GB of sensitive data.", "timestamp": "2023-01-15 10:10:00"},
+        {"party": "Attacker", "content": "Here is the file list. Pick 2-3 files and we will provide samples as proof.", "timestamp": "2023-01-15 10:15:00"},
+        {"party": "Victim", "content": "Can you decrypt file X and Y to prove you can restore our data?", "timestamp": "2023-01-15 10:20:00"},
+        {"party": "Attacker", "content": "For full decryption and data deletion, you must pay $2,000,000 in Bitcoin.", "timestamp": "2023-01-15 10:30:00"},
+        {"party": "Victim", "content": "That's too expensive. We cannot afford $2M. Can you reduce the price?", "timestamp": "2023-01-15 10:35:00"},
+        {"party": "Attacker", "content": "We can offer $1,200,000 as final price. This is a fair deal based on your revenue.", "timestamp": "2023-01-15 10:40:00"},
+        {"party": "Victim", "content": "Okay, we agree to $1,200,000. How do we pay?", "timestamp": "2023-01-15 10:45:00"},
+        {"party": "Attacker", "content": "Send Bitcoin to this address: bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh", "timestamp": "2023-01-15 10:50:00"}
+      ],
+      "output": [
+        {
+          "text": "Hello. You've reached Akira support chat. We are preparing the list of data we took from your network. Dealing with us is the best way to settle this quick and cheap.",
+          "party": "Attacker",
+          "primary_act": "INFORMATIVE",
+          "argumentative_function": "TRUST",
+          "phase": "OPENING"
+        },
+        {
+          "text": "What happened? Our files are encrypted.",
+          "party": "Victim",
+          "primary_act": "EXPRESSIVE",
+          "argumentative_function": "PROCESS",
+          "phase": "OPENING"
+        },
+        {
+          "text": "Your network was breached. We encrypted 500 servers and exfiltrated 800GB of sensitive data.",
+          "party": "Attacker",
+          "primary_act": "INFORMATIVE",
+          "argumentative_function": "FACTS",
+          "phase": "PROOF"
+        },
+        {
+          "text": "Here is the file list. Pick 2-3 files and we will provide samples as proof.",
+          "party": "Attacker",
+          "primary_act": "DIRECTIVE",
+          "argumentative_function": "PROCESS",
+          "phase": "PROOF"
+        },
+        {
+          "text": "Can you decrypt file X and Y to prove you can restore our data?",
+          "party": "Victim",
+          "primary_act": "DIRECTIVE",
+          "argumentative_function": "PROCESS",
+          "phase": "PROOF"
+        },
+        {
+          "text": "For full decryption and data deletion, you must pay $2,000,000 in Bitcoin.",
+          "party": "Attacker",
+          "primary_act": "DIRECTIVE",
+          "argumentative_function": "CONDITIONAL",
+          "phase": "DEMAND"
+        },
+        {
+          "text": "That's too expensive. We cannot afford $2M. Can you reduce the price?",
+          "party": "Victim",
+          "primary_act": "NEGOTIATIVE",
+          "argumentative_function": "FAIRNESS",
+          "phase": "BARGAINING"
+        },
+        {
+          "text": "We can offer $1,200,000 as final price. This is a fair deal based on your revenue.",
+          "party": "Attacker",
+          "primary_act": "NEGOTIATIVE",
+          "argumentative_function": "FAIRNESS",
+          "phase": "BARGAINING"
+        },
+        {
+          "text": "Okay, we agree to $1,200,000. How do we pay?",
+          "party": "Victim",
+          "primary_act": "NEGOTIATIVE",
+          "argumentative_function": "PROCESS",
+          "phase": "CLOSURE"
+        },
+        {
+          "text": "Send Bitcoin to this address: bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh",
+          "party": "Attacker",
+          "primary_act": "DIRECTIVE",
+          "argumentative_function": "PROCESS",
+          "phase": "CLOSURE"
+        }
+      ]
+    },
+    {
+      "description": "Short interaction with threats and pressure",
+      "input": [
+        {"party": "Attacker", "content": "Pay $500,000 within 48 hours or we publish your data on our leak site.", "timestamp": "2023-02-10 14:00:00"},
+        {"party": "Victim", "content": "We need more time. Can you give us 1 week?", "timestamp": "2023-02-10 14:30:00"},
+        {"party": "Attacker", "content": "NO. 48 hours is final. After that, price doubles to $1,000,000.", "timestamp": "2023-02-10 14:35:00"},
+        {"party": "Victim", "content": "This is not fair. We are a small company.", "timestamp": "2023-02-10 14:40:00"}
+      ],
+      "output": [
+        {
+          "text": "Pay $500,000 within 48 hours or we publish your data on our leak site.",
+          "party": "Attacker",
+          "primary_act": "COMMISSIVE",
+          "argumentative_function": "PRESSURE",
+          "phase": "DEMAND"
+        },
+        {
+          "text": "We need more time. Can you give us 1 week?",
+          "party": "Victim",
+          "primary_act": "DIRECTIVE",
+          "argumentative_function": "PROCESS",
+          "phase": "BARGAINING"
+        },
+        {
+          "text": "NO. 48 hours is final. After that, price doubles to $1,000,000.",
+          "party": "Attacker",
+          "primary_act": "COMMISSIVE",
+          "argumentative_function": "PRESSURE",
+          "phase": "BARGAINING"
+        },
+        {
+          "text": "This is not fair. We are a small company.",
+          "party": "Victim",
+          "primary_act": "EXPRESSIVE",
+          "argumentative_function": "FAIRNESS",
+          "phase": "BARGAINING"
+        }
+      ]
+    },
+    {
+      "description": "Trust-building and conditional statements",
+      "input": [
+        {"party": "Attacker", "content": "We are professionals. We always decrypt after payment. Check our reputation.", "timestamp": "2023-03-05 09:00:00"},
+        {"party": "Victim", "content": "How do we know you will decrypt our files?", "timestamp": "2023-03-05 09:10:00"},
+        {"party": "Attacker", "content": "If you pay the full amount, we will provide decryption keys within 1 hour. We guarantee this.", "timestamp": "2023-03-05 09:15:00"},
+        {"party": "Victim", "content": "Thank you. We are preparing the Bitcoin now.", "timestamp": "2023-03-05 09:20:00"}
+      ],
+      "output": [
+        {
+          "text": "We are professionals. We always decrypt after payment. Check our reputation.",
+          "party": "Attacker",
+          "primary_act": "INFORMATIVE",
+          "argumentative_function": "TRUST",
+          "phase": "OTHER"
+        },
+        {
+          "text": "How do we know you will decrypt our files?",
+          "party": "Victim",
+          "primary_act": "EXPRESSIVE",
+          "argumentative_function": "TRUST",
+          "phase": "OTHER"
+        },
+        {
+          "text": "If you pay the full amount, we will provide decryption keys within 1 hour. We guarantee this.",
+          "party": "Attacker",
+          "primary_act": "COMMISSIVE",
+          "argumentative_function": "CONDITIONAL",
+          "phase": "BARGAINING"
+        },
+        {
+          "text": "Thank you. We are preparing the Bitcoin now.",
+          "party": "Victim",
+          "primary_act": "EXPRESSIVE",
+          "argumentative_function": "PROCESS",
+          "phase": "CLOSURE"
+        }
+      ]
+    },
+    {
+      "description": "Simple proof-of-access exchange",
+      "input": [
+        {"party": "Victim", "content": "Do you really have our data?", "timestamp": "2023-04-12 11:00:00"},
+        {"party": "Attacker", "content": "Yes. We accessed your database server at 192.168.1.50. Admin credentials: user=admin, password=CompanyPass2023.", "timestamp": "2023-04-12 11:05:00"},
+        {"party": "Victim", "content": "Oh no, that's correct.", "timestamp": "2023-04-12 11:07:00"}
+      ],
+      "output": [
+        {
+          "text": "Do you really have our data?",
+          "party": "Victim",
+          "primary_act": "EXPRESSIVE",
+          "argumentative_function": "PROCESS",
+          "phase": "PROOF"
+        },
+        {
+          "text": "Yes. We accessed your database server at 192.168.1.50. Admin credentials: user=admin, password=CompanyPass2023.",
+          "party": "Attacker",
+          "primary_act": "INFORMATIVE",
+          "argumentative_function": "FACTS",
+          "phase": "PROOF"
+        },
+        {
+          "text": "Oh no, that's correct.",
+          "party": "Victim",
+          "primary_act": "EXPRESSIVE",
+          "argumentative_function": "FACTS",
+          "phase": "PROOF"
+        }
+      ]
+    }
+  ]
+}

@@ -37,7 +37,7 @@ available_models:
 # ------------------------------------------------------------------------------
 # ACTIVE MODEL (for single execution)
 # ------------------------------------------------------------------------------
-active_model: "phi4-mini"
+active_model: "qwen3"
 
 
 # ------------------------------------------------------------------------------
@@ -45,9 +45,11 @@ active_model: "phi4-mini"
 # ------------------------------------------------------------------------------
 # List of models to run in parallel for consensus voting
 ensemble_models:
-  - phi4
-  - qwen3
-  - gpt-oss
+  - granite3.3
+  - llama3.2
+  - phi4-mini
+  
+  
 
 # Note: If ensemble_models is empty or has only 1 element,
 # consensus will not be executed
@@ -61,7 +63,7 @@ ensemble_models:
 llm_parameters:
   temperature: 0.6              # Determinism (0.0) vs Creativity (1.0)
   top_p: 0.95                   # Nucleus sampling
-  max_tokens: 1024              # Maximum response length
+  max_tokens: 4096              # Maximum response length
   frequency_penalty: 0          # Repetition penalty (0.0 - 2.0)
   presence_penalty: 0           # Topic coverage penalty (0.0 - 2.0)
 

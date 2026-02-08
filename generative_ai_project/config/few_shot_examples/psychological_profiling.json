@@ -1,0 +1,81 @@
+{
+  "task_name": "psychological_profiling",
+  "description": "Behavioral analysis of ransomware negotiations using predefined labels",
+  "examples": [
+    {
+      "description": "Professional attacker, victim pleads poverty, high payment likelihood",
+      "input": [
+        {"party": "Attacker", "text": "We are a serious organization with proven track record. Your security was breached by our elite team. Price: $3M. Deadline: 48 hours."},
+        {"party": "Victim", "text": "Please, we are a non-profit charity. We cannot afford $3M. Our annual budget is only $5M for all operations."},
+        {"party": "Attacker", "text": "We respect your situation. Final offer: $500k. Price doubles after 48 hours."},
+        {"party": "Victim", "text": "Thank you for understanding. We will find a way to pay $500k."}
+      ],
+      "output": {
+        "attacker_tone": "Professional",
+        "attacker_competence": "Organized_Group",
+        "attacker_strategy": "Compromising",
+        "primary_influence_tactic": "Authority",
+        "victim_emotion": "Resignation",
+        "victim_tactic": "Poverty_Pleading",
+        "power_balance": "Attacker_Dominant",
+        "negotiation_outcome_likelihood": "High"
+      }
+    },
+    {
+      "description": "Aggressive attacker, victim defiant, negotiation breaks down",
+      "input": [
+        {"party": "Attacker", "text": "PAY $10,000,000 NOW OR WE LEAK EVERYTHING! PRICE DOUBLES EVERY 24 HOURS! YOU HAVE 24 HOURS!"},
+        {"party": "Victim", "text": "You are criminals and we will report you to the FBI immediately. We will NOT pay."},
+        {"party": "Attacker", "text": "Too late. Your customer database is on our blog. Enjoy the lawsuits."}
+      ],
+      "output": {
+        "attacker_tone": "Aggressive",
+        "attacker_competence": "Semi_Professional",
+        "attacker_strategy": "Competing",
+        "primary_influence_tactic": "Pressure",
+        "victim_emotion": "Panic",
+        "victim_tactic": "Defiance",
+        "power_balance": "Attacker_Dominant",
+        "negotiation_outcome_likelihood": "Low"
+      }
+    },
+    {
+      "description": "Professional group, victim stalls technically, balanced negotiation",
+      "input": [
+        {"party": "Attacker", "text": "We understand your situation. We appreciate your cooperation. We already gave you a discount from $5M to $2M. Now please send funds."},
+        {"party": "Victim", "text": "We need time to purchase Bitcoin. Can we have 72 hours to arrange the funds?"},
+        {"party": "Attacker", "text": "You're a good partner. We can give you 48 hours. That's our final flexibility."},
+        {"party": "Victim", "text": "Thank you. We will send within 48 hours."}
+      ],
+      "output": {
+        "attacker_tone": "Professional",
+        "attacker_competence": "Organized_Group",
+        "attacker_strategy": "Problem_Solving",
+        "primary_influence_tactic": "Trust",
+        "victim_emotion": "Professional_Detachment",
+        "victim_tactic": "Technical_Stalling",
+        "power_balance": "Balanced",
+        "negotiation_outcome_likelihood": "High"
+      }
+    },
+    {
+      "description": "Chaotic attacker, victim panics, rapid capitulation",
+      "input": [
+        {"party": "Attacker", "text": "hello pay 1000000$ i have ur files lol"},
+        {"party": "Victim", "text": "OH NO! We need those files urgently! We will pay! How do we send money?"},
+        {"party": "Attacker", "text": "send bitcoin here: 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"},
+        {"party": "Victim", "text": "Sending now!"}
+      ],
+      "output": {
+        "attacker_tone": "Chaotic",
+        "attacker_competence": "Script_Kiddie",
+        "attacker_strategy": "Competing",
+        "primary_influence_tactic": "None",
+        "victim_emotion": "Panic",
+        "victim_tactic": "Rapid_Capitulation",
+        "power_balance": "Attacker_Dominant",
+        "negotiation_outcome_likelihood": "High"
+      }
+    }
+  ]
+}

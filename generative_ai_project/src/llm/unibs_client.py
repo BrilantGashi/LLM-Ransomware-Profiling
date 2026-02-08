@@ -1,209 +1,148 @@
 """
-UniBS LLM Cluster Client
-OpenAI-compatible client for the University of Brescia GPU cluster.
-Compliant with UniBS Cluster Handbook (February 2026).
-
-Author: Brilant Gashi
+UniBS LLM Client - OpenAI SDK Implementation
+Compliant with UniBS Cluster Handbook (February 2026)
 """
 
 import os
 import yaml
 import logging
 from pathlib import Path
+from typing import List, Dict, Optional
 from openai import OpenAI
 from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
-
+# Setup logger
 logger = logging.getLogger(__name__)
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 class UniBSLLMClient:
     """
-    Client for interacting with UniBS LLM cluster via OpenAI-compatible API.
+    Client for UniBS LLM cluster using official OpenAI SDK.
     
-    Features:
-    - Automatic API key loading from .env
-    - Model override support for ensemble processing
-    - Reasoning content extraction (for supported models)
-    - Robust error handling
+    Reference: UniBS Cluster Handbook, Section 4
+    Endpoint: https://gpustack.ing.unibs.it/v1
     """
     
-    def __init__(self, config_path: str, model_override: str = None, **kwargs):
+    def __init__(self, config_path: str, model_override: Optional[str] = None):
         """
-        Initialize UniBS LLM client.
+        Initialize the UniBS LLM client with OpenAI SDK.
         
         Args:
             config_path: Path to model_config.yaml
             model_override: Optional model name to override config
-            **kwargs: Additional parameters for OpenAI client
         """
         # Load configuration
         with open(config_path, 'r', encoding='utf-8') as f:
             self.config = yaml.safe_load(f)
         
-        # Get credentials from environment
-        self.api_key = os.getenv('GPUSTACK_API_KEY')
-        self.base_url = os.getenv('GPUSTACK_BASE_URL', 
-                                   'https://gpustack.ing.unibs.it/v1')
+        # Model selection
+        self.model_name = model_override or self.config.get('active_model', 'qwen3')
         
-        if not self.api_key:
-            logger.warning("⚠️  No API Key in env. Checking if code runs without auth (unlikely).")
+        # API configuration
+        api_key = os.environ.get("GPUSTACK_API_KEY")
+        if not api_key:
+            raise ValueError(
+                "GPUSTACK_API_KEY not found. "
+                "Ensure .env file exists in project root with: GPUSTACK_API_KEY=your_key"
+            )
         
-        # Initialize OpenAI client
-        self.client = OpenAI(base_url=self.base_url, api_key=self.api_key)
+        # Initialize OpenAI client with UniBS endpoint
+        self.client = OpenAI(
+            base_url="https://gpustack.ing.unibs.it/v1",
+            api_key=api_key,
+            timeout=480.0  # 8 minutes timeout
+        )
         
-        # Set model (override or from config)
-        self.model = model_override or self.config.get('active_model')
+        # Get LLM parameters from config
+        self.llm_params = self.config.get('llm_parameters', {})
         
-        # Load LLM parameters from config
-        self.llm_params = self.config.get('llm_params', {})
-        
-        # Merge with any additional kwargs
-        self.llm_params = {**self.llm_params, **kwargs}
-        
-        logger.info(f"✅ UniBSLLMClient initialized | Model: {self.model} | Base URL: {self.base_url}")
+        # ✅ CHANGED: print() → logger.debug()
+        logger.debug(f"UniBSLLMClient initialized | Model: {self.model_name}")
     
-    def generate_response(self, messages: list, **override_params) -> dict:
+    def generate_response(self, messages: List[Dict[str, str]]) -> Dict[str, str]:
         """
-        Generate a response from the LLM.
+        Generate response using OpenAI SDK.
         
         Args:
-            messages: List of message dictionaries with 'role' and 'content'
-            **override_params: Optional parameters to override config
+            messages: List of message dicts with 'role' and 'content'
         
         Returns:
-            dict: Response with 'content' and optional 'reasoning' keys
-        """
-        # Merge parameters: config < instance < call-time
-        params = {
-            **self.llm_params,
-            **override_params,
-            'model': self.model,
-            'messages': messages
-        }
+            Dict with 'content' and optional 'reasoning' keys
         
+        Raises:
+            Exception: If API call fails
+        """
         try:
-            response = self.client.chat.completions.create(**params)
+            # Call API using OpenAI SDK (handbook compliant)
+            response = self.client.chat.completions.create(
+                model=self.model_name,
+                messages=messages,
+                temperature=self.llm_params.get('temperature', 0.6),
+                top_p=self.llm_params.get('top_p', 0.95),
+                max_tokens=self.llm_params.get('max_tokens', 1024),
+                frequency_penalty=self.llm_params.get('frequency_penalty', 0),
+                presence_penalty=self.llm_params.get('presence_penalty', 0),
+            )
             
-            # Extract content
-            content = response.choices[0].message.content
-            
-            # Extract reasoning if available (from extended_thinking models)
-            reasoning = None
-            if hasattr(response.choices[0].message, 'reasoning_content'):
-                reasoning = response.choices[0].message.reasoning_content
+            # Extract response (handbook Section 4)
+            choice = response.choices[0]
             
             result = {
-                'content': content,
-                'reasoning': reasoning,
-                'model': response.model,
-                'usage': response.usage.model_dump() if response.usage else None
+                'content': choice.message.content
             }
             
-            logger.debug(f"✅ Response generated | Model: {result['model']} | Tokens: {result.get('usage', {}).get('total_tokens', 'N/A')}")
+            # Add reasoning if available (handbook page 2)
+            if hasattr(choice.message, 'reasoning_content') and choice.message.reasoning_content:
+                result['reasoning'] = choice.message.reasoning_content
             
             return result
             
         except Exception as e:
-            logger.error(f"❌ Error generating response: {e}")
-            raise
-    
-    def test_connection(self) -> bool:
-        """
-        Test connection to UniBS cluster.
-        
-        Returns:
-            bool: True if connection successful
-        """
-        try:
-            test_messages = [
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": "Say 'test' if you can hear me."}
-            ]
-            
-            response = self.generate_response(test_messages)
-            
-            if response.get('content'):
-                logger.info(f"✅ Connection test successful! Model responded: {response['content'][:50]}...")
-                return True
-            
-        except Exception as e:
-            logger.error(f"❌ Connection test failed: {e}")
-            return False
+            raise RuntimeError(f"API call failed for model {self.model_name}: {e}")
 
 
-# ==============================================================================
-# UTILITY FUNCTIONS
-# ==============================================================================
-
-def get_available_models(config_path: str) -> list:
-    """
-    Get list of available models from config.
-    
-    Args:
-        config_path: Path to model_config.yaml
-    
-    Returns:
-        list: Available model names
-    """
-    with open(config_path, 'r', encoding='utf-8') as f:
-        config = yaml.safe_load(f)
-    
-    ensemble = config.get('ensemble_models', [])
-    active = config.get('active_model')
-    
-    models = list(set(ensemble + [active])) if ensemble else [active]
-    return [m for m in models if m]  # Remove None values
-
-
-def estimate_tokens(text: str) -> int:
-    """
-    Rough token estimation (4 chars ≈ 1 token).
-    
-    Args:
-        text: Input text
-    
-    Returns:
-        int: Estimated token count
-    """
-    return len(text) // 4
-
-
-# ==============================================================================
-# MAIN BLOCK (for standalone testing)
-# ==============================================================================
-
+# Test when run directly
 if __name__ == "__main__":
-    # Setup logging for test
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    )
-    
-    # Test configuration
-    config_path = Path(__file__).parent.parent.parent / "config" / "model_config.yaml"
-    
-    print("\n" + "="*70)
+    print("="*70)
     print("🧪  UniBS LLM Client - Connection Test")
     print("="*70)
     
     try:
-        # Initialize client
-        client = UniBSLLMClient(config_path=str(config_path))
-        
-        # Test connection
-        if client.test_connection():
-            print("✅ Client is working correctly!")
-            
-            # Get available models
-            models = get_available_models(str(config_path))
-            print(f"\n📋 Available models: {', '.join(models)}")
+        # Check if API key is loaded
+        api_key = os.environ.get("GPUSTACK_API_KEY")
+        if api_key:
+            print(f"✅ API Key loaded: {api_key[:20]}...{api_key[-5:]}")
         else:
-            print("❌ Connection test failed. Check your .env configuration.")
-    
+            print("❌ API Key not found in environment")
+            exit(1)
+        
+        # Initialize client
+        client = UniBSLLMClient(
+            config_path="config/model_config.yaml",
+            model_override="phi4-mini"
+        )
+        
+        # Test message
+        test_messages = [
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": "Say 'Hello, UniBS cluster!' in one sentence."}
+        ]
+        
+        print("📤 Sending test request...")
+        response = client.generate_response(test_messages)
+        
+        print("\n✅ Connection test successful!")
+        print(f"📨 Response: {response['content']}")
+        
+        if 'reasoning' in response:
+            print(f"🧠 Reasoning: {response['reasoning'][:100]}...")
+        
+        print("="*70)
+        
     except Exception as e:
-        print(f"❌ Error: {e}")
-    
-    print("="*70 + "\n")
+        print(f"\n❌ Test failed: {e}")
+        print("="*70)
+        exit(1)
