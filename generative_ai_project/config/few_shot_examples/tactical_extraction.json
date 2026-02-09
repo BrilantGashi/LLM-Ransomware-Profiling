@@ -1,6 +1,6 @@
 {
   "task_name": "tactical_extraction",
-  "description": "Extract financial and technical indicators from ransomware negotiations",
+  "description": "Extraction of structured financial, technical, and operational indicators from ransomware negotiations",
   "examples": [
     {
       "description": "Complete negotiation: Double extortion, discount applied, paid",
@@ -13,17 +13,31 @@
         {"party": "Attacker", "content": "Payment received. Decryption keys attached.", "timestamp": "2023-01-16 08:00:00"}
       ],
       "output": {
-        "initial_demand": 2000000,
-        "final_price": 1200000,
-        "currency": "BTC",
-        "discount_percent": 40,
-        "victim_size": "Enterprise",
-        "attack_type": "Double_Extortion",
-        "data_volume_gb": 800,
-        "encryption_confirmed": true,
-        "exfiltration_confirmed": true,
-        "outcome": "Paid",
-        "attacker_flexibility": "High"
+        "metadata": {
+          "ransomware_group": "Unknown",
+          "victim_size": "Enterprise",
+          "attack_type": "Double Extortion"
+        },
+        "financial_negotiation": {
+          "initial_demand": 2000000,
+          "final_agreed_price": 1200000,
+          "currency": "BTC",
+          "discount_percentage": 40,
+          "payment_deadline": null,
+          "urgency_tactics": []
+        },
+        "technical_indicators": {
+          "data_volume_gb": 800,
+          "data_types_stolen": [],
+          "encryption_confirmed": true,
+          "exfiltration_confirmed": true,
+          "proof_of_life_provided": true
+        },
+        "negotiation_dynamics": {
+          "outcome_status": "Paid",
+          "attacker_flexibility": "High",
+          "trust_issues": []
+        }
       }
     },
     {
@@ -34,17 +48,31 @@
         {"party": "Attacker", "content": "NO. 48 hours is final.", "timestamp": "2023-02-10 14:35:00"}
       ],
       "output": {
-        "initial_demand": 500000,
-        "final_price": null,
-        "currency": "BTC",
-        "discount_percent": null,
-        "victim_size": "Unknown",
-        "attack_type": "Encryption_Only",
-        "data_volume_gb": null,
-        "encryption_confirmed": true,
-        "exfiltration_confirmed": false,
-        "outcome": "Ongoing",
-        "attacker_flexibility": "Low"
+        "metadata": {
+          "ransomware_group": "Unknown",
+          "victim_size": "Unknown",
+          "attack_type": "Encryption Only"
+        },
+        "financial_negotiation": {
+          "initial_demand": 500000,
+          "final_agreed_price": null,
+          "currency": "BTC",
+          "discount_percentage": null,
+          "payment_deadline": "48 hours",
+          "urgency_tactics": ["Countdown"]
+        },
+        "technical_indicators": {
+          "data_volume_gb": null,
+          "data_types_stolen": [],
+          "encryption_confirmed": true,
+          "exfiltration_confirmed": false,
+          "proof_of_life_provided": false
+        },
+        "negotiation_dynamics": {
+          "outcome_status": "Ongoing",
+          "attacker_flexibility": "Low",
+          "trust_issues": []
+        }
       }
     },
     {
@@ -57,17 +85,31 @@
         {"party": "Victim", "content": "Payment sent via wire transfer.", "timestamp": "2023-03-05 12:00:00"}
       ],
       "output": {
-        "initial_demand": 300000,
-        "final_price": 280000,
-        "currency": "USD",
-        "discount_percent": 7,
-        "victim_size": "SME",
-        "attack_type": "Data_Theft_Only",
-        "data_volume_gb": 150,
-        "encryption_confirmed": false,
-        "exfiltration_confirmed": true,
-        "outcome": "Paid",
-        "attacker_flexibility": "Low"
+        "metadata": {
+          "ransomware_group": "Unknown",
+          "victim_size": "SME",
+          "attack_type": "Data Theft Only"
+        },
+        "financial_negotiation": {
+          "initial_demand": 300000,
+          "final_agreed_price": 280000,
+          "currency": "USD",
+          "discount_percentage": 6,
+          "payment_deadline": null,
+          "urgency_tactics": ["Threat_to_Publish"]
+        },
+        "technical_indicators": {
+          "data_volume_gb": 150,
+          "data_types_stolen": ["Financials"],
+          "encryption_confirmed": false,
+          "exfiltration_confirmed": true,
+          "proof_of_life_provided": true
+        },
+        "negotiation_dynamics": {
+          "outcome_status": "Paid",
+          "attacker_flexibility": "Low",
+          "trust_issues": []
+        }
       }
     },
     {
@@ -78,17 +120,31 @@
         {"party": "Attacker", "content": "Your data is now on our leak site. Good luck with the lawsuits.", "timestamp": "2023-04-12 12:00:00"}
       ],
       "output": {
-        "initial_demand": 1000000,
-        "final_price": null,
-        "currency": "BTC",
-        "discount_percent": null,
-        "victim_size": "Unknown",
-        "attack_type": "Double_Extortion",
-        "data_volume_gb": 400,
-        "encryption_confirmed": true,
-        "exfiltration_confirmed": true,
-        "outcome": "Not_Paid",
-        "attacker_flexibility": "Unknown"
+        "metadata": {
+          "ransomware_group": "Unknown",
+          "victim_size": "Unknown",
+          "attack_type": "Double Extortion"
+        },
+        "financial_negotiation": {
+          "initial_demand": 1000000,
+          "final_agreed_price": null,
+          "currency": "BTC",
+          "discount_percentage": null,
+          "payment_deadline": null,
+          "urgency_tactics": []
+        },
+        "technical_indicators": {
+          "data_volume_gb": 400,
+          "data_types_stolen": [],
+          "encryption_confirmed": true,
+          "exfiltration_confirmed": true,
+          "proof_of_life_provided": false
+        },
+        "negotiation_dynamics": {
+          "outcome_status": "Not_Paid",
+          "attacker_flexibility": "Unknown",
+          "trust_issues": ["Data_Leaked_Anyway"]
+        }
       }
     },
     {
@@ -100,17 +156,31 @@
         {"party": "Victim", "content": "Agreed. Sending Bitcoin now.", "timestamp": "2023-05-20 11:30:00"}
       ],
       "output": {
-        "initial_demand": 5000000,
-        "final_price": 2500000,
-        "currency": "USD",
-        "discount_percent": 50,
-        "victim_size": "Enterprise",
-        "attack_type": "Double_Extortion",
-        "data_volume_gb": 600,
-        "encryption_confirmed": true,
-        "exfiltration_confirmed": true,
-        "outcome": "Paid",
-        "attacker_flexibility": "High"
+        "metadata": {
+          "ransomware_group": "Unknown",
+          "victim_size": "Enterprise",
+          "attack_type": "Double Extortion"
+        },
+        "financial_negotiation": {
+          "initial_demand": 5000000,
+          "final_agreed_price": 2500000,
+          "currency": "USD",
+          "discount_percentage": 50,
+          "payment_deadline": null,
+          "urgency_tactics": []
+        },
+        "technical_indicators": {
+          "data_volume_gb": 600,
+          "data_types_stolen": [],
+          "encryption_confirmed": true,
+          "exfiltration_confirmed": true,
+          "proof_of_life_provided": false
+        },
+        "negotiation_dynamics": {
+          "outcome_status": "Paid",
+          "attacker_flexibility": "High",
+          "trust_issues": []
+        }
       }
     },
     {
@@ -121,21 +191,35 @@
         {"party": "Attacker", "content": "We will send details soon. Wait for our message.", "timestamp": "2023-06-15 14:20:00"}
       ],
       "output": {
-        "initial_demand": null,
-        "final_price": null,
-        "currency": "Unknown",
-        "discount_percent": null,
-        "victim_size": "Unknown",
-        "attack_type": "Unknown",
-        "data_volume_gb": null,
-        "encryption_confirmed": null,
-        "exfiltration_confirmed": null,
-        "outcome": "Ongoing",
-        "attacker_flexibility": "Unknown"
+        "metadata": {
+          "ransomware_group": "Unknown",
+          "victim_size": "Unknown",
+          "attack_type": "Unknown"
+        },
+        "financial_negotiation": {
+          "initial_demand": null,
+          "final_agreed_price": null,
+          "currency": "Unknown",
+          "discount_percentage": null,
+          "payment_deadline": null,
+          "urgency_tactics": []
+        },
+        "technical_indicators": {
+          "data_volume_gb": null,
+          "data_types_stolen": [],
+          "encryption_confirmed": null,
+          "exfiltration_confirmed": null,
+          "proof_of_life_provided": false
+        },
+        "negotiation_dynamics": {
+          "outcome_status": "Ongoing",
+          "attacker_flexibility": "Unknown",
+          "trust_issues": []
+        }
       }
     },
     {
-      "description": "Medium discount (15%), Bitcoin payment confirmed",
+      "description": "Medium discount (14%), Bitcoin payment confirmed",
       "input": [
         {"party": "Attacker", "content": "Files encrypted. 200GB stolen. Pay 50 BTC (approximately $2,000,000).", "timestamp": "2023-07-10 09:00:00"},
         {"party": "Victim", "content": "Can you accept 42 BTC? That's all we can afford.", "timestamp": "2023-07-10 10:00:00"},
@@ -144,17 +228,31 @@
         {"party": "Attacker", "content": "Received. Decryptor attached.", "timestamp": "2023-07-10 15:00:00"}
       ],
       "output": {
-        "initial_demand": 50,
-        "final_price": 43,
-        "currency": "BTC",
-        "discount_percent": 14,
-        "victim_size": "Unknown",
-        "attack_type": "Double_Extortion",
-        "data_volume_gb": 200,
-        "encryption_confirmed": true,
-        "exfiltration_confirmed": true,
-        "outcome": "Paid",
-        "attacker_flexibility": "Medium"
+        "metadata": {
+          "ransomware_group": "Unknown",
+          "victim_size": "Unknown",
+          "attack_type": "Double Extortion"
+        },
+        "financial_negotiation": {
+          "initial_demand": 50,
+          "final_agreed_price": 43,
+          "currency": "BTC",
+          "discount_percentage": 14,
+          "payment_deadline": null,
+          "urgency_tactics": []
+        },
+        "technical_indicators": {
+          "data_volume_gb": 200,
+          "data_types_stolen": [],
+          "encryption_confirmed": true,
+          "exfiltration_confirmed": true,
+          "proof_of_life_provided": false
+        },
+        "negotiation_dynamics": {
+          "outcome_status": "Paid",
+          "attacker_flexibility": "Medium",
+          "trust_issues": []
+        }
       }
     }
   ]

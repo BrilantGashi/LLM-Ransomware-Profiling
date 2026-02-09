@@ -1,6 +1,6 @@
 {
   "task_name": "psychological_profiling",
-  "description": "Behavioral analysis of ransomware negotiations using predefined labels",
+  "description": "Behavioral analysis grounded in negotiation psychology (Cialdini, Dual-Concern Model)",
   "examples": [
     {
       "description": "Professional attacker, victim pleads poverty, high payment likelihood",
@@ -11,14 +11,30 @@
         {"party": "Victim", "text": "Thank you for understanding. We will find a way to pay $500k."}
       ],
       "output": {
-        "attacker_tone": "Professional",
-        "attacker_competence": "Organized_Group",
-        "attacker_strategy": "Compromising",
-        "primary_influence_tactic": "Authority",
-        "victim_emotion": "Resignation",
-        "victim_tactic": "Poverty_Pleading",
-        "power_balance": "Attacker_Dominant",
-        "negotiation_outcome_likelihood": "High"
+        "attacker_profile": {
+          "communication_tone": "Professional_Business",
+          "competence_level": "Organized_Group",
+          "primary_strategy_dual_concern": "Compromising",
+          "cialdini_influence_tactics": ["Authority", "Scarcity"],
+          "deception_indicators": [],
+          "evidence_quote": "We are a serious organization with proven track record"
+        },
+        "victim_profile": {
+          "emotional_trajectory": "Panic_to_Resignation",
+          "primary_negotiation_tactic": "Poverty_Pleading",
+          "tactic_effectiveness": "High",
+          "stress_markers_observed": ["Plea_Bargaining"],
+          "evidence_quote": "Please, we are a non-profit charity"
+        },
+        "negotiation_dynamics": {
+          "power_balance": "Attacker_Dominant",
+          "outcome_status": "Ongoing",
+          "effectiveness_rating": {
+            "attacker_score": 5,
+            "victim_score": 4
+          },
+          "theoretical_model_fit": "Integrative"
+        }
       }
     },
     {
@@ -29,14 +45,30 @@
         {"party": "Attacker", "text": "Too late. Your customer database is on our blog. Enjoy the lawsuits."}
       ],
       "output": {
-        "attacker_tone": "Aggressive",
-        "attacker_competence": "Semi_Professional",
-        "attacker_strategy": "Competing",
-        "primary_influence_tactic": "Pressure",
-        "victim_emotion": "Panic",
-        "victim_tactic": "Defiance",
-        "power_balance": "Attacker_Dominant",
-        "negotiation_outcome_likelihood": "Low"
+        "attacker_profile": {
+          "communication_tone": "Aggressive_Threatening",
+          "competence_level": "Semi_Professional",
+          "primary_strategy_dual_concern": "Competing",
+          "cialdini_influence_tactics": ["Pressure", "Scarcity"],
+          "deception_indicators": [],
+          "evidence_quote": "PAY $10,000,000 NOW OR WE LEAK EVERYTHING!"
+        },
+        "victim_profile": {
+          "emotional_trajectory": "Anger_to_Compliance",
+          "primary_negotiation_tactic": "Defiance",
+          "tactic_effectiveness": "Low",
+          "stress_markers_observed": ["Caps_Lock"],
+          "evidence_quote": "We will NOT pay"
+        },
+        "negotiation_dynamics": {
+          "power_balance": "Attacker_Dominant",
+          "outcome_status": "Not_Paid",
+          "effectiveness_rating": {
+            "attacker_score": 2,
+            "victim_score": 1
+          },
+          "theoretical_model_fit": "Positional"
+        }
       }
     },
     {
@@ -48,14 +80,30 @@
         {"party": "Victim", "text": "Thank you. We will send within 48 hours."}
       ],
       "output": {
-        "attacker_tone": "Professional",
-        "attacker_competence": "Organized_Group",
-        "attacker_strategy": "Problem_Solving",
-        "primary_influence_tactic": "Trust",
-        "victim_emotion": "Professional_Detachment",
-        "victim_tactic": "Technical_Stalling",
-        "power_balance": "Balanced",
-        "negotiation_outcome_likelihood": "High"
+        "attacker_profile": {
+          "communication_tone": "Professional_Business",
+          "competence_level": "Organized_Group",
+          "primary_strategy_dual_concern": "Problem_Solving",
+          "cialdini_influence_tactics": ["Authority", "Reciprocity"],
+          "deception_indicators": [],
+          "evidence_quote": "We understand your situation. We appreciate your cooperation."
+        },
+        "victim_profile": {
+          "emotional_trajectory": "Professional_Detachment",
+          "primary_negotiation_tactic": "Technical_Stalling",
+          "tactic_effectiveness": "Medium",
+          "stress_markers_observed": [],
+          "evidence_quote": "We need time to purchase Bitcoin"
+        },
+        "negotiation_dynamics": {
+          "power_balance": "Balanced_Equilibrium",
+          "outcome_status": "Ongoing",
+          "effectiveness_rating": {
+            "attacker_score": 4,
+            "victim_score": 3
+          },
+          "theoretical_model_fit": "Integrative"
+        }
       }
     },
     {
@@ -67,14 +115,30 @@
         {"party": "Victim", "text": "Sending now!"}
       ],
       "output": {
-        "attacker_tone": "Chaotic",
-        "attacker_competence": "Script_Kiddie",
-        "attacker_strategy": "Competing",
-        "primary_influence_tactic": "None",
-        "victim_emotion": "Panic",
-        "victim_tactic": "Rapid_Capitulation",
-        "power_balance": "Attacker_Dominant",
-        "negotiation_outcome_likelihood": "High"
+        "attacker_profile": {
+          "communication_tone": "Chaotic_Disorganized",
+          "competence_level": "Script_Kiddie",
+          "primary_strategy_dual_concern": "Competing",
+          "cialdini_influence_tactics": [],
+          "deception_indicators": ["Over_Specification"],
+          "evidence_quote": "hello pay 1000000$ i have ur files lol"
+        },
+        "victim_profile": {
+          "emotional_trajectory": "Panic_Loop",
+          "primary_negotiation_tactic": "Rapid_Capitulation",
+          "tactic_effectiveness": "None",
+          "stress_markers_observed": ["Caps_Lock", "Repetition"],
+          "evidence_quote": "OH NO! We need those files urgently!"
+        },
+        "negotiation_dynamics": {
+          "power_balance": "Attacker_Dominant",
+          "outcome_status": "Paid",
+          "effectiveness_rating": {
+            "attacker_score": 3,
+            "victim_score": 1
+          },
+          "theoretical_model_fit": "Positional"
+        }
       }
     }
   ]

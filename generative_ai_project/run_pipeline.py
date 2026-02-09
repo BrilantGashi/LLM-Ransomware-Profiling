@@ -1,7 +1,7 @@
 """
-Ransomware Negotiation Analysis Pipeline - v1.9.1 MODEL-FIRST CLEAN
+Ransomware Negotiation Analysis Pipeline - v2.0.0 WITH FEW-SHOT SUPPORT
 Each model processes ONE chat at a time (all 3 tasks sequentially)
-Max 3 concurrent requests (one per model) - CLEAN OUTPUT
+Max 3 concurrent requests (one per model) - CLEAN OUTPUT + FEW-SHOT EXAMPLES
 """
 
 import sys
@@ -96,6 +96,7 @@ class PipelineStats:
         self.chat_warnings = defaultdict(list)
         self.chat_errors = defaultdict(list)
         self.model_stats = defaultdict(lambda: {'valid': 0, 'invalid': 0, 'tasks': 0})
+        self.few_shot_stats = defaultdict(int)
         self._lock = Lock()
         
     def add_warning(self, chat_id: str, message: str, model: str = None):
@@ -118,6 +119,10 @@ class PipelineStats:
         with self._lock:
             self.model_stats[model]['tasks'] += 1
     
+    def add_few_shot_loaded(self, task_name: str, count: int):
+        with self._lock:
+            self.few_shot_stats[task_name] = count
+    
     def duration(self):
         elapsed = datetime.now() - self.start_time
         return str(elapsed).split('.')[0]
@@ -136,6 +141,12 @@ class PipelineStats:
         print(f"  ├─ ✅ Completed:     {self.completed_chats} ({self.completed_chats/self.total_chats*100:.1f}%)")
         print(f"  ├─ ⚠️  With Warnings:  {len(self.chat_warnings)}")
         print(f"  └─ ❌ Errors:        {len(self.chat_errors)}")
+        
+        if self.few_shot_stats:
+            print()
+            print("📚 FEW-SHOT EXAMPLES LOADED")
+            for task_name, count in sorted(self.few_shot_stats.items()):
+                print(f"  ├─ {task_name:25s}: {count} examples")
         
         if self.model_stats:
             print()
@@ -177,12 +188,13 @@ class PipelineStats:
 def print_banner(config, models, max_chats):
     print()
     print("━" * 70)
-    print("🔬  RANSOMWARE NEGOTIATION PIPELINE  │  v1.9.1 CLEAN")
+    print("🔬  RANSOMWARE NEGOTIATION PIPELINE  │  v2.0.0 FEW-SHOT")
     print("━" * 70)
     print(f"📅  Date:       {datetime.now().strftime('%Y-%m-%d %H:%M')}")
     print(f"📊  Target:     {max_chats if max_chats else 'All'} chats")
     print(f"🤖  Models:     {', '.join(models)}")
     print(f"🧪  Tasks:      {len(config.get('tasks', {}))} per chat")
+    print(f"📚  Few-Shot:   ✅ ENABLED")
     print(f"⚡  Strategy:   MODEL-FIRST (max 3 concurrent requests)")
     print(f"📝  Log:        {LOG_FILE.name}")
     print("━" * 70)
@@ -193,7 +205,7 @@ def print_banner(config, models, max_chats):
 # ═══════════════════════════════════════════════════════════════════
 
 class RansomwarePipeline:
-    """v1.9.1 MODEL-FIRST CLEAN: Clean output with suppressed logs"""
+    """v2.0.0 MODEL-FIRST WITH FEW-SHOT: Clean output with few-shot examples"""
     
     def __init__(self):
         self.base_dir = BASE_DIR
@@ -210,6 +222,9 @@ class RansomwarePipeline:
         self.prompts_config = {}
         self.full_dataset = {}
         self.stats = PipelineStats()
+        
+        # Cache for few-shot examples
+        self.few_shot_cache = {}
 
     def load_resources(self):
         """Load prompts and dataset."""
@@ -235,6 +250,48 @@ class RansomwarePipeline:
         except Exception as e:
             logger.critical(f"Failed to load dataset: {e}")
             raise
+    
+    def _load_few_shot_examples(self, task_name: str) -> list:
+        """Load few-shot examples for a specific task (with caching)."""
+        
+        # Check cache first
+        if task_name in self.few_shot_cache:
+            return self.few_shot_cache[task_name]
+        
+        few_shot_path = self.config_dir / "few_shot_examples" / f"{task_name}.json"
+        
+        if not few_shot_path.exists():
+            logger.warning(f"⚠️  No few-shot file found: {few_shot_path}")
+            self.few_shot_cache[task_name] = []
+            return []
+        
+        try:
+            with open(few_shot_path, 'r', encoding='utf-8') as f:
+                few_shot_data = json.load(f)
+            
+            examples = few_shot_data.get('examples', [])
+            
+            if not examples:
+                logger.warning(f"⚠️  No examples in few-shot file for {task_name}")
+                self.few_shot_cache[task_name] = []
+                return []
+            
+            logger.info(f"✅ Loaded {len(examples)} few-shot examples for {task_name}")
+            self.stats.add_few_shot_loaded(task_name, len(examples))
+            
+            # Cache the results
+            self.few_shot_cache[task_name] = examples
+            return examples
+        
+        except json.JSONDecodeError as e:
+            logger.error(f"❌ Invalid JSON in few-shot file {task_name}: {e}")
+            self.few_shot_cache[task_name] = []
+            return []
+        
+        except Exception as e:
+            logger.error(f"❌ Failed to load few-shot for {task_name}: {e}")
+            self.few_shot_cache[task_name] = []
+            return []
 
     def _clean_json_output(self, text):
         """Robust JSON parser."""
@@ -269,6 +326,46 @@ class RansomwarePipeline:
                 
         logger.debug(f"JSON unrepairable: {text[:200]}")
         return None
+
+    def _build_messages_with_few_shot(self, task_name: str, task_cfg: dict, 
+                                      chat_json_str: str, user_template: str) -> list:
+        """Build messages array with system prompt, few-shot examples, and actual query."""
+        
+        sys_msg = task_cfg['system_prompt']
+        messages = [{"role": "system", "content": sys_msg}]
+        
+        # Load few-shot examples
+        few_shot_examples = self._load_few_shot_examples(task_name)
+        
+        # Add few-shot examples as user/assistant pairs
+        for example in few_shot_examples:
+            # Format input
+            input_data = example.get('input', [])
+            if isinstance(input_data, list):
+                # Convert to same format as main prompt
+                input_json = json.dumps(input_data, indent=2, ensure_ascii=False)
+                user_example = user_template.replace("{{chat_json}}", input_json)
+            else:
+                user_example = str(input_data)
+            
+            # Format output
+            output_data = example.get('output')
+            if isinstance(output_data, (dict, list)):
+                assistant_response = json.dumps(output_data, indent=2, ensure_ascii=False)
+            else:
+                assistant_response = str(output_data)
+            
+            # Add to messages
+            messages.append({"role": "user", "content": user_example})
+            messages.append({"role": "assistant", "content": assistant_response})
+        
+        # Add actual query
+        final_prompt = user_template.replace("{{chat_json}}", chat_json_str)
+        messages.append({"role": "user", "content": final_prompt})
+        
+        logger.debug(f"Built message with {len(few_shot_examples)} few-shot examples for {task_name}")
+        
+        return messages
 
     def _process_model_pipeline(self, model_name: str, chat_queue: list, tasks: dict, pbar):
         """ONE MODEL processes ALL chats sequentially."""
@@ -305,14 +402,12 @@ class RansomwarePipeline:
                     continue
 
                 try:
-                    sys_msg = task_cfg['system_prompt']
                     user_template = task_cfg['user_template']
-                    final_prompt = user_template.replace("{{chat_json}}", chat_json_str)
-
-                    messages = [
-                        {"role": "system", "content": sys_msg}, 
-                        {"role": "user", "content": final_prompt}
-                    ]
+                    
+                    # ✅ Build messages with few-shot examples
+                    messages = self._build_messages_with_few_shot(
+                        task_name, task_cfg, chat_json_str, user_template
+                    )
 
                     response_obj = client.generate_response(messages)
                     
@@ -408,7 +503,7 @@ if __name__ == "__main__":
     pipeline = RansomwarePipeline()
     try:
         pipeline.load_resources()
-        pipeline.run(max_chats=10)
+        pipeline.run(max_chats=25)
     except KeyboardInterrupt:
         print("\n\n⚠️  Pipeline interrupted by user.")
         sys.exit(0)
