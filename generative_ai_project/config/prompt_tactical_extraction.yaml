@@ -1,0 +1,123 @@
+# Tactical Extraction - Chat-level financial and technical indicators
+# Output: Single JSON object with extracted facts
+
+task_name: tactical_extraction
+description: "Extract financial and technical indicators from ransomware negotiations"
+output_format: "json_object"
+
+system_prompt: |
+  You are a cyber threat intelligence data extractor.
+  You MUST return ONLY a valid JSON object. No explanations, no markdown, no extra text.
+  
+  CRITICAL RULES:
+  - First character must be "{"
+  - Last character must be "}"
+  - NO text before or after the JSON
+  - NO markdown code blocks (```json)
+  - Extract ONLY facts explicitly stated in the chat
+  - Use JSON null (not string "null") for missing data
+
+user_prompt: |
+  TASK: Extract structured indicators from this ransomware negotiation.
+  
+  You will receive a chat transcript as a JSON list of messages.
+  Analyze the entire conversation and extract the following indicators.
+  Return a SINGLE JSON object (not an array).
+  
+  OUTPUT SCHEMA (strict JSON object):
+  {
+    "metadata": {
+      "victim_size": "Enterprise" | "SME" | "Unknown",
+      "attack_type": "Encryption_Only" | "Data_Theft_Only" | "Double_Extortion" | "Unknown"
+    },
+    "financial_negotiation": {
+      "initial_demand": integer | null,
+      "final_agreed_price": integer | null,
+      "discount_percentage": integer | null,
+      "currency": "USD" | "BTC" | "Unknown"
+    },
+    "technical_indicators": {
+      "data_volume_gb": integer | null,
+      "exfiltration_confirmed": true | false | null
+    },
+    "negotiation_dynamics": {
+      "outcome_status": "Paid" | "Not_Paid" | "Ongoing" | "Unknown",
+      "attacker_flexibility": "High" | "Medium" | "Low" | "Unknown"
+    }
+  }
+  
+  EXTRACTION RULES (follow strictly):
+  
+  metadata.victim_size:
+  - "Enterprise" if clearly a large organization (Fortune 500, 5000+ employees mentioned)
+  - "SME" if clearly small/medium business is stated
+  - "Unknown" if not mentioned
+  
+  metadata.attack_type:
+  - "Encryption_Only": Files locked, no evidence of data theft
+  - "Data_Theft_Only": Data stolen but not encrypted
+  - "Double_Extortion": BOTH encryption AND data theft (most common)
+  - "Unknown": Cannot determine from chat
+  
+  financial_negotiation.initial_demand:
+  - FIRST price the ATTACKER states (not victim's offer)
+  - Extract only the number (no $, commas, or currency symbols)
+  - Example: "Pay $5,000,000" → 5000000
+  - If attacker never states a price → null
+  
+  financial_negotiation.final_agreed_price:
+  - LAST price that both parties clearly agree on
+  - Agreement indicators: "OK", "Agreed", "Yes", attacker provides payment address
+  - If no clear agreement → null
+  
+  financial_negotiation.discount_percentage:
+  - ONLY calculate if both initial_demand and final_agreed_price are not null
+  - Formula: ((initial_demand - final_agreed_price) / initial_demand) * 100
+  - Round to nearest integer
+  - Otherwise → null
+  
+  financial_negotiation.currency:
+  - "BTC" if bitcoin address or "bitcoin"/"crypto" is mentioned
+  - "USD" if dollar amounts mentioned and no crypto indicated
+  - "Unknown" if unclear
+  
+  technical_indicators.data_volume_gb:
+  - Extract number if explicitly stated ("We have 400GB of your data")
+  - If not mentioned → null
+  
+  technical_indicators.exfiltration_confirmed:
+  - true: Attacker provides convincing proof (file samples, directory listings)
+  - false: Explicitly denied or no evidence
+  - null: Not clearly specified
+  
+  negotiation_dynamics.outcome_status:
+  - "Paid": Clear confirmation of payment OR attacker confirms decryption
+  - "Not_Paid": Negotiation ended with refusal or no payment
+  - "Ongoing": Chat continues without resolution
+  - "Unknown": Cannot determine outcome
+  
+  negotiation_dynamics.attacker_flexibility:
+  - "High": discount_percentage > 40
+  - "Medium": 10 ≤ discount_percentage ≤ 40
+  - "Low": 0 ≤ discount_percentage < 10
+  - "Unknown": discount_percentage is null (cannot calculate)
+  
+  IMPORTANT:
+  - Do NOT invent or guess values not stated in the chat
+  - All numeric fields use integers (no decimals, no commas)
+  - Use JSON null for missing data (not the string "null")
+  - Preserve exact field names (case-sensitive)
+  
+  Chat data:
+  {{chat_json}}
+  
+  Remember: Output ONLY the JSON object. Nothing else.
+
+# Expected output structure for validation
+expected_output:
+  type: "object"
+  required_fields:
+    - metadata
+    - financial_negotiation
+    - technical_indicators
+    - negotiation_dynamics

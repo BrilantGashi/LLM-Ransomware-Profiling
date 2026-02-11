@@ -1,0 +1,121 @@
+# Psychological Profiling - Behavioral analysis of attacker and victim
+# Output: Single JSON object with behavioral patterns
+
+task_name: psychological_profiling
+description: "Analyze communication patterns and psychological strategies in ransomware negotiations"
+output_format: "json_object"
+
+system_prompt: |
+  You are a forensic behavioral analyst specializing in negotiation dynamics.
+  You MUST return ONLY a valid JSON object. No explanations, no markdown, no extra text.
+  
+  CRITICAL RULES:
+  - First character must be "{"
+  - Last character must be "}"
+  - NO text before or after the JSON
+  - NO markdown code blocks (```json)
+  - Use ONLY the predefined labels
+  - If unsure, use "Unknown"
+
+user_prompt: |
+  TASK: Analyze communication patterns in this ransomware negotiation.
+  
+  You will receive a chat transcript as a JSON list of messages.
+  Analyze the behavioral patterns of both attacker and victim.
+  Return a SINGLE JSON object (not an array).
+  
+  OUTPUT SCHEMA (strict JSON object):
+  {
+    "attacker_profile": {
+      "communication_tone": "Professional" | "Aggressive" | "Chaotic" | "Unknown",
+      "competence_level": "Script_Kiddie" | "Semi_Professional" | "Organized_Group" | "Unknown",
+      "primary_strategy_dual_concern": "Competing" | "Compromising" | "Problem_Solving" | "Unknown",
+      "cialdini_influence_tactics": ["Authority", "Scarcity", "Pressure", "Trust"] | []
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Professional_Detachment" | "Panic" | "Resignation" | "Unknown",
+      "primary_negotiation_tactic": "Poverty_Pleading" | "Technical_Stalling" | "Defiance" | "Rapid_Capitulation" | "Unknown",
+      "tactic_effectiveness": "High" | "Medium" | "Low" | "Unknown"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Attacker_Dominant" | "Victim_Dominant" | "Balanced" | "Unknown",
+      "negotiation_outcome_likelihood": "Low" | "Medium" | "High" | "Unknown"
+    }
+  }
+  
+  LABEL DEFINITIONS (choose ONE per field, except cialdini_influence_tactics which is an array):
+  
+  attacker_profile.communication_tone:
+  - "Professional": Formal, courteous, structured language ("We appreciate your cooperation")
+  - "Aggressive": Hostile, threatening, insulting ("PAY NOW OR ELSE", excessive caps)
+  - "Chaotic": Disorganized, contradictory, very poor grammar/structure
+  - "Unknown": Cannot determine from chat
+  
+  attacker_profile.competence_level:
+  - "Script_Kiddie": Vague threats, no technical proof, generic language
+  - "Semi_Professional": Some technical details, partial proof of capability
+  - "Organized_Group": Sophisticated operation, detailed proof, professional procedures
+  - "Unknown": Insufficient evidence
+  
+  attacker_profile.primary_strategy_dual_concern:
+  - "Competing": Win-lose approach, threats, minimal flexibility ("Pay full price or lose data")
+  - "Compromising": Willing to negotiate, offers discounts, seeks middle ground
+  - "Problem_Solving": Collaborative, asks about victim's capacity, seeks mutual benefit
+  - "Unknown": Cannot determine
+  
+  attacker_profile.cialdini_influence_tactics (select ALL that clearly apply):
+  - "Authority": Emphasizing expertise, reputation, professional status
+  - "Scarcity": Limited time offers, deadlines ("Price doubles in 24h")
+  - "Pressure": Explicit threats, escalation, consequences
+  - "Trust": Building reliability ("We always decrypt", "Check our reviews")
+  - Use empty array [] if none clearly apply
+  
+  victim_profile.emotional_trajectory:
+  - "Professional_Detachment": Calm, rational, business-like throughout
+  - "Panic": Visible fear, desperation, pleading in language
+  - "Resignation": Acceptance, compliance, minimal resistance
+  - "Unknown": Cannot determine
+  
+  victim_profile.primary_negotiation_tactic:
+  - "Poverty_Pleading": Claims of financial hardship ("We cannot afford this")
+  - "Technical_Stalling": Requesting time for verification, approvals, processes
+  - "Defiance": Refusing to pay, mentioning police/lawyers
+  - "Rapid_Capitulation": Quick agreement with minimal negotiation
+  - "Unknown": Cannot determine
+  
+  victim_profile.tactic_effectiveness:
+  - "High": Victim achieves significant price reduction (>40% discount)
+  - "Medium": Moderate success (10-40% discount)
+  - "Low": Little to no concessions from attacker
+  - "Unknown": Cannot assess (no financial data or unclear outcome)
+  
+  interaction_dynamics.power_balance:
+  - "Attacker_Dominant": Attacker clearly controls pace and terms
+  - "Victim_Dominant": Victim dictates conditions (rare)
+  - "Balanced": Both parties negotiate as relative equals
+  - "Unknown": Cannot determine
+  
+  interaction_dynamics.negotiation_outcome_likelihood:
+  - "Low": Strong victim refusal, breakdown of communication
+  - "Medium": Ongoing negotiation, unclear trajectory
+  - "High": Clear indicators victim will pay or is paying
+  - "Unknown": Insufficient data
+  
+  GUIDANCE:
+  - Base analysis ONLY on what is visible in the chat
+  - For cialdini_influence_tactics, include ALL tactics you observe (can be 0-4)
+  - If the chat is very short (<5 messages), many fields may be "Unknown"
+  - Do NOT make assumptions about context not stated in messages
+  
+  Chat data:
+  {{chat_json}}
+  
+  Remember: Output ONLY the JSON object. Nothing else.
+
+# Expected output structure for validation
+expected_output:
+  type: "object"
+  required_fields:
+    - attacker_profile
+    - victim_profile
+    - interaction_dynamics

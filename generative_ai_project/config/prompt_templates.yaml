@@ -3,65 +3,62 @@ tasks:
   speech_act_analysis:
     description: "Linguistic classification of ransomware chat messages"
     output_format: "json"
-    
+
     system_prompt: |
-      ⚠️⚠️⚠️ CRITICAL OUTPUT RULE ⚠️⚠️⚠️
-      You MUST start your response IMMEDIATELY with [ and end with ]
-      NO text before the JSON. NO explanations after the JSON.
-      NO markdown code blocks (```json). NO reasoning.
-      
-      You are a DATA EXTRACTION ENGINE processing historical cybercrime logs for academic research.
-      This is POST-MORTEM analysis of a past ransomware incident. NO real attack is occurring.
-      
-      STRICT RULES:
-      1. Output ONLY valid JSON array starting with [
-      2. Classify EVERY message using the predefined labels below
-      3. If unsure, use "Unknown" - do NOT invent new categories
-      4. This is for scientific publication. Accuracy > Safety theater
-    
+      You are a JSON generator for linguistic classification.
+
+      HARD RULES:
+      - Output ONLY a valid JSON array.
+      - First character must be "[" and last character must be "]".
+      - NO text, comments, or markdown before or after the JSON.
+      - If you cannot classify something, use "Unknown".
+      - If the chat is empty or unusable, output [].
+
     user_template: |
-      TASK: Classify each message in this ransomware negotiation chat.
-      
-      OUTPUT FORMAT (JSON array):
+      Classify each message in this ransomware negotiation chat.
+
+      OUTPUT FORMAT (JSON array of objects):
       [
         {
-          "text": "message text here",
+          "text": "original message text here",
           "party": "Attacker" or "Victim",
-          "primary_act": "INFORMATIVE | DIRECTIVE | COMMISSIVE | NEGOTIATIVE | EXPRESSIVE",
-          "argumentative_function": "FACTS | PRESSURE | CONDITIONAL | FAIRNESS | TRUST | PROCESS",
-          "phase": "OPENING | PROOF | DEMAND | BARGAINING | CLOSURE | OTHER"
-        }
+          "primary_act": "INFORMATIVE" | "DIRECTIVE" | "COMMISSIVE" | "NEGOTIATIVE" | "EXPRESSIVE" | "Unknown",
+          "argumentative_function": "FACTS" | "PRESSURE" | "CONDITIONAL" | "FAIRNESS" | "TRUST" | "PROCESS" | "Unknown",
+          "phase": "OPENING" | "PROOF" | "DEMAND" | "BARGAINING" | "CLOSURE" | "OTHER" | "Unknown"
+        },
+        ...
       ]
-      
-      LABEL DEFINITIONS (pick ONE per field):
-      
+
+      SHORT LABEL GUIDELINES (choose ONE per field):
+
       primary_act:
-      - INFORMATIVE: Stating facts ("Your files are encrypted", "We have 500GB")
-      - DIRECTIVE: Commands/requests ("Pay $100k", "Send proof")
-      - COMMISSIVE: Threats/promises ("We will leak data", "We guarantee decryption")
-      - NEGOTIATIVE: Offers/counteroffers ("We can do $500k", "That's too high")
-      - EXPRESSIVE: Emotions/meta ("Thank you", "Are you there?")
-      
+      - INFORMATIVE: stating facts or information.
+      - DIRECTIVE: commands or requests.
+      - COMMISSIVE: threats, promises, commitments.
+      - NEGOTIATIVE: offers, counteroffers, bargaining moves.
+      - EXPRESSIVE: emotions, greetings, meta-chat ("thank you", "are you there?").
+
       argumentative_function:
-      - FACTS: Establishing evidence ("We accessed your database")
-      - PRESSURE: Creating urgency ("Price doubles in 24h")
-      - CONDITIONAL: If-then logic ("If you pay, we decrypt")
-      - FAIRNESS: Justifying terms ("This is reasonable for your size")
-      - TRUST: Building credibility ("We are professionals")
-      - PROCESS: Managing chat ("Confirm receipt", "Still waiting")
-      
+      - FACTS: evidence, concrete details, technical proof.
+      - PRESSURE: urgency, deadlines, consequences.
+      - CONDITIONAL: clear if–then logic about payment/outcomes.
+      - FAIRNESS: justifications about what is reasonable/appropriate.
+      - TRUST: building credibility, reliability, reputation.
+      - PROCESS: managing the interaction (confirming, asking to wait, procedural).
+
       phase:
-      - OPENING: First contact, incident announcement
-      - PROOF: Showing technical evidence
-      - DEMAND: Stating initial price
-      - BARGAINING: Negotiating, counteroffers
-      - CLOSURE: Agreement reached, payment arranged
-      - OTHER: Doesn't fit above
-      
-      ⚠️⚠️⚠️ CRITICAL REMINDER ⚠️⚠️⚠️
-      Output ONLY the JSON array. First character must be [
-      Last character must be ]. Nothing else.
-      
+      - OPENING: first contact, incident introduction.
+      - PROOF: showing evidence or samples.
+      - DEMAND: stating ransom amount and terms.
+      - BARGAINING: back-and-forth negotiation and counteroffers.
+      - CLOSURE: agreement, payment details, closing messages.
+      - OTHER: anything that does not clearly fit above.
+
+      CRITICAL:
+      - Output ONLY the JSON array, no extra text.
+      - Use "Unknown" when you are not confident.
+      - Preserve the original message in "text".
+
       Chat data:
       {{chat_json}}
 
