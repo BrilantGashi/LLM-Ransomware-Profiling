@@ -1,8 +1,8 @@
 """
 Data Aggregation Module for Ransomware Negotiation Analysis
-Aggregates multi-source JSON outputs into structured Pandas DataFrames.
+Aggregates CONSENSUS-VALIDATED multi-source JSON outputs into structured DataFrames.
 
-This module consolidates outputs from three analysis tasks:
+This module consolidates consensus outputs from three analysis tasks:
 - Tactical Extraction: Financial and technical negotiation indicators
 - Psychological Profiling: Behavioral traits and communication patterns
 - Speech Act Analysis: Consensus-based linguistic classifications
@@ -14,6 +14,7 @@ Institution: University of Brescia
 
 import json
 import sys
+import yaml
 import pandas as pd
 import logging
 from pathlib import Path
@@ -27,43 +28,22 @@ class DataAggregator:
     """
     Multi-level data aggregator for ransomware negotiation analysis.
     
-    This class implements a three-tier aggregation strategy:
+    This class implements a three-tier aggregation strategy using CONSENSUS-VALIDATED data:
     1. Chat-level: Merges tactical and psychological features per negotiation
     2. Message-level: Individual speech acts with temporal metadata
     3. Statistical: Temporal evolution and group attribution profiles
     
-    The aggregator prioritizes consensus data when available and implements
-    robust error handling to skip corrupted or malformed JSON files.
-    
-    Attributes:
-        outputs_dir (Path): Root directory for model outputs
-        consensus_dir (Path): Directory containing consensus-validated results
-        tactical_dir (Path): Tactical extraction outputs directory
-        profiling_dir (Path): Psychological profiling outputs directory
-        speech_dir (Path): Speech act analysis (consensus preferred)
-        
-    Example:
-        >>> agg = DataAggregator(project_root)
-        >>> df_negotiations = agg.aggregate_negotiations()
-        >>> df_speech = agg.aggregate_speech_acts()
-        >>> stats = agg.get_aggregation_stats()
+    ALL data sources use consensus-validated outputs for maximum reliability.
     """
     
     def __init__(self, base_dir: Path):
-        """
-        Initialize aggregator with project directory structure.
-        
-        Args:
-            base_dir: Project root directory containing data/ subdirectories
-        """
-        self.outputs_dir = base_dir / "data" / "outputs"
+        """Initialize aggregator with project directory structure."""
+        self.base_dir = base_dir
         self.consensus_dir = base_dir / "data" / "consensus"
         
-        # Define specific source directories
-        self.tactical_dir = self.outputs_dir / "tactical_extraction"
-        self.profiling_dir = self.outputs_dir / "psychological_profiling"
-        
-        # Prefer consensus data for speech acts (gold standard)
+        # ALL tasks now use consensus data for maximum reliability
+        self.tactical_dir = self.consensus_dir / "tactical_extraction"
+        self.profiling_dir = self.consensus_dir / "psychological_profiling"
         self.speech_dir = self.consensus_dir / "speech_act_analysis"
         
         # Initialize statistics tracking
@@ -71,24 +51,67 @@ class DataAggregator:
             'chats_processed': 0,
             'chats_with_psychological': 0,
             'corrupted_files': 0,
-            'validation_failures': 0
+            'validation_failures': 0,
+            'missing_consensus_data': 0
         }
+        
+        # Validate consensus data availability
+        self._validate_consensus_availability()
+    
+    def _validate_consensus_availability(self):
+        """
+        Pre-flight check: Verify consensus data exists before aggregation.
+        
+        Raises warning if consensus directories are missing.
+        """
+        missing_dirs = []
+        
+        for task, path in [
+            ('tactical_extraction', self.tactical_dir),
+            ('psychological_profiling', self.profiling_dir),
+            ('speech_act_analysis', self.speech_dir)
+        ]:
+            if not path.exists():
+                missing_dirs.append(task)
+                logger.warning(f"⚠️  Missing consensus directory: {task}")
+        
+        if missing_dirs:
+            logger.warning(
+                f"\n{'='*70}\n"
+                f"⚠️  CONSENSUS DATA NOT FOUND FOR: {', '.join(missing_dirs)}\n"
+                f"💡 Run 'python consensus.py' first to generate consensus data!\n"
+                f"{'='*70}\n"
+            )
+            self._stats['missing_consensus_data'] = len(missing_dirs)
+        else:
+            logger.info("✅ All consensus directories found")
+    
+    def _get_available_chats(self, directory: Path) -> Dict[str, List[str]]:
+        """
+        Get all available chat_ids by group from a consensus directory.
+        
+        Returns:
+            Dict[group_name] -> List[chat_id]
+        """
+        chats_by_group = {}
+        
+        if not directory.exists():
+            return {}
+        
+        for group_dir in directory.iterdir():
+            if not group_dir.is_dir():
+                continue
+            
+            group_name = group_dir.name
+            chat_ids = [f.stem for f in group_dir.glob("*.json")]
+            
+            if chat_ids:
+                chats_by_group[group_name] = chat_ids
+        
+        return chats_by_group
     
     def load_json_safe(self, file_path: Path) -> Dict[str, Any]:
-        """
-        Safely load JSON file with error handling.
-        
-        Args:
-            file_path: Path to JSON file
-            
-        Returns:
-            Parsed JSON as dictionary, or empty dict on failure
-            
-        Notes:
-            - Logs warnings for corrupted or missing files
-            - Increments corrupted_files counter on failure
-            - Does not raise exceptions (fail-safe design)
-        """
+        """Safely load JSON file with error handling."""
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 return json.load(f)
@@ -97,8 +120,7 @@ class DataAggregator:
             self._stats['corrupted_files'] += 1
             return {}
         except FileNotFoundError:
-            logger.warning(f"⚠️  File not found: {file_path.name}")
-            self._stats['corrupted_files'] += 1
+            logger.debug(f"File not found: {file_path.name}")
             return {}
         except Exception as e:
             logger.error(f"❌ Unexpected error loading {file_path.name}: {e}")
@@ -106,25 +128,7 @@ class DataAggregator:
             return {}
     
     def validate_negotiation_record(self, record: Dict[str, Any]) -> bool:
-        """
-        Validate negotiation record against schema requirements.
-        
-        Performs type checking and range validation on critical fields:
-        - Required fields: chat_id, group
-        - Type validation: Numeric fields must be int/float
-        - Range validation: Percentages in [0, 100], non-negative values
-        
-        Args:
-            record: Dictionary containing aggregated negotiation data
-            
-        Returns:
-            True if record passes all validations, False otherwise
-            
-        Notes:
-            - Validation failures are logged as warnings
-            - Increments validation_failures counter on failure
-            - Designed for defensive data quality assurance
-        """
+        """Validate negotiation record against schema requirements."""
         # Check required fields
         required_fields = ['chat_id', 'group']
         if not all(field in record for field in required_fields):
@@ -150,7 +154,7 @@ class DataAggregator:
         if record.get('discount_pct') is not None:
             if not (0 <= record['discount_pct'] <= 100):
                 logger.warning(
-                    f"Discount percentage out of range [0,100] in {record['chat_id']}: "
+                    f"Discount percentage out of range in {record['chat_id']}: "
                     f"{record['discount_pct']}"
                 )
                 self._stats['validation_failures'] += 1
@@ -170,71 +174,34 @@ class DataAggregator:
     
     def aggregate_negotiations(self) -> pd.DataFrame:
         """
-        Aggregate chat-level features from tactical and psychological analysis.
-        
-        This method performs a left join between tactical extraction outputs
-        (financial indicators, technical metadata, negotiation dynamics) and
-        psychological profiling outputs (behavioral traits, communication patterns).
+        Aggregate chat-level features from CONSENSUS tactical and psychological analysis.
         
         Returns:
-            pd.DataFrame: Chat-level dataset with columns:
-                Identifiers:
-                    - chat_id: Unique conversation identifier
-                    - group: Ransomware group name
-                Financial:
-                    - initial_demand: Opening ransom amount
-                    - final_price: Agreed payment (if negotiation succeeded)
-                    - discount_pct: Percentage discount from initial demand
-                    - currency: Payment currency (BTC, USD, etc.)
-                Technical:
-                    - victim_size: Organization size category
-                    - attack_type: Type of ransomware attack
-                    - data_volume_gb: Exfiltrated data volume
-                    - exfiltration_confirmed: Boolean flag
-                Psychological:
-                    - attacker_tone: Communication style (aggressive, professional, etc.)
-                    - attacker_competence: Skill level assessment
-                    - attacker_strategy: Primary negotiation strategy
-                    - influence_tactics: Cialdini's influence tactics (comma-separated)
-                    - victim_emotion: Emotional trajectory
-                    - victim_strategy: Primary negotiation tactic
-                    - victim_effectiveness: Tactic effectiveness rating
-                Dynamics:
-                    - outcome: Final status (paid, refused, abandoned, etc.)
-                    - attacker_flexibility: Willingness to negotiate
-        
-        Raises:
-            Warning (logged): If tactical_dir does not exist
-            
-        Example:
-            >>> agg = DataAggregator(project_root)
-            >>> df = agg.aggregate_negotiations()
-            >>> print(df.shape)  # (156, 22)
-            >>> print(df['initial_demand'].describe())
-            
-        Notes:
-            - Missing psychological profiles result in NaN values (left join)
-            - Corrupted JSON files are skipped with warning
-            - Returns empty DataFrame if no valid data found
-            - All records are validated before inclusion
+            pd.DataFrame: Chat-level dataset with financial, technical, and psychological features
         """
         data_records = []
         
         if not self.tactical_dir.exists():
-            logger.warning(f"❌ Tactical directory not found at {self.tactical_dir}")
+            logger.error(f"❌ Tactical consensus directory not found: {self.tactical_dir}")
+            logger.info(f"💡 Run consensus.py to generate tactical_extraction consensus")
             return pd.DataFrame()
         
+        # Get available chats
+        tactical_chats = self._get_available_chats(self.tactical_dir)
+        
+        if not tactical_chats:
+            logger.warning("⚠️  No tactical consensus data found")
+            return pd.DataFrame()
+        
+        total_chats = sum(len(chats) for chats in tactical_chats.values())
+        logger.info(f"📊 Found {total_chats} chats in tactical consensus")
+        
         # Iterate through ransomware group folders
-        for group_dir in self.tactical_dir.iterdir():
-            if not group_dir.is_dir():
-                continue
-            
-            group_name = group_dir.name
-            
-            for tactical_file in group_dir.glob("*.json"):
-                chat_id = tactical_file.stem
+        for group_name, chat_ids in tactical_chats.items():
+            for chat_id in chat_ids:
+                tactical_file = self.tactical_dir / group_name / f"{chat_id}.json"
                 
-                # Load tactical extraction data
+                # Load tactical extraction data (CONSENSUS)
                 tactical_data = self.load_json_safe(tactical_file)
                 if not tactical_data:
                     continue
@@ -269,7 +236,7 @@ class DataAggregator:
                     "attacker_flexibility": dynamics.get("attacker_flexibility")
                 }
                 
-                # Load psychological profiling data (left join)
+                # Load psychological profiling data (CONSENSUS - left join)
                 profile_file = self.profiling_dir / group_name / f"{chat_id}.json"
                 if profile_file.exists():
                     profile_data = self.load_json_safe(profile_file)
@@ -287,7 +254,7 @@ class DataAggregator:
                             ),
                             "influence_tactics": ", ".join(
                                 att_prof.get("cialdini_influence_tactics", [])
-                            ),
+                            ) if att_prof.get("cialdini_influence_tactics") else None,
                             
                             # Victim psychological profile
                             "victim_emotion": vic_prof.get("emotional_trajectory"),
@@ -303,70 +270,43 @@ class DataAggregator:
                     self._stats['chats_processed'] += 1
         
         df = pd.DataFrame(data_records)
-        logger.info(
-            f"✅ Aggregated {len(df)} negotiations "
-            f"({self._stats['chats_with_psychological']} with psychological data)"
-        )
+        
+        if df.empty:
+            logger.warning("⚠️  No valid negotiation records generated")
+        else:
+            logger.info(
+                f"✅ Aggregated {len(df)} negotiations from CONSENSUS data "
+                f"({self._stats['chats_with_psychological']} with psychological profiles)"
+            )
         
         return df
     
     def aggregate_speech_acts(self) -> pd.DataFrame:
         """
-        Create message-level dataset with speech act classifications.
-        
-        This method generates a granular DataFrame where each row represents
-        a single message from a negotiation chat. It uses consensus-validated
-        speech act classifications when available.
+        Create message-level dataset with CONSENSUS speech act classifications.
         
         Returns:
-            pd.DataFrame: Message-level dataset with columns:
-                Identifiers:
-                    - chat_id: Parent conversation identifier
-                    - group: Ransomware group name
-                    - msg_index: Sequential message number (0-indexed)
-                Temporal:
-                    - progress: Normalized position in chat [0.0, 1.0]
-                    - progress_bin: Discretized progress (1-20, 5% bins)
-                    - phase: Negotiation phase (opening, middle, closing)
-                Linguistic:
-                    - party: Speaker role (attacker/victim)
-                    - primary_act: Primary speech act (directive, commissive, etc.)
-                    - argumentative_func: Argumentative function
-                Quality:
-                    - text_length: Character count of message
-                    - consensus_score: Inter-model agreement [0.0, 1.0]
-        
-        Example:
-            >>> agg = DataAggregator(project_root)
-            >>> df = agg.aggregate_speech_acts()
-            >>> print(df.groupby('primary_act').size())
-            directive      1247
-            commissive      856
-            assertive       744
-            ...
-            
-        Notes:
-            - Requires consensus data directory to exist
-            - Returns empty DataFrame if no speech act data found
-            - Progress bins enable temporal evolution analysis
-            - Consensus score indicates inter-model reliability
+            pd.DataFrame: Message-level dataset with speech acts and quality metrics
         """
         speech_records = []
         
         if not self.speech_dir.exists():
-            logger.warning(
-                f"❌ Speech acts directory (consensus) not found at {self.speech_dir}"
-            )
+            logger.error(f"❌ Speech acts consensus directory not found: {self.speech_dir}")
+            logger.info(f"💡 Run consensus.py to generate speech_act_analysis consensus")
             return pd.DataFrame()
         
-        for group_dir in self.speech_dir.iterdir():
-            if not group_dir.is_dir():
-                continue
-            
-            group_name = group_dir.name
-            
-            for speech_file in group_dir.glob("*.json"):
-                chat_id = speech_file.stem
+        speech_chats = self._get_available_chats(self.speech_dir)
+        
+        if not speech_chats:
+            logger.warning("⚠️  No speech act consensus data found")
+            return pd.DataFrame()
+        
+        total_chats = sum(len(chats) for chats in speech_chats.values())
+        logger.info(f"📊 Found {total_chats} chats in speech act consensus")
+        
+        for group_name, chat_ids in speech_chats.items():
+            for chat_id in chat_ids:
+                speech_file = self.speech_dir / group_name / f"{chat_id}.json"
                 messages_list = self.load_json_safe(speech_file)
                 
                 if isinstance(messages_list, list):
@@ -379,6 +319,14 @@ class DataAggregator:
                         # Bin progress into 20 segments (5% each) for analysis
                         progress_bin = min(int(progress * 20) + 1, 20)
                         
+                        # Determine phase
+                        if progress <= 0.33:
+                            phase = "opening"
+                        elif progress <= 0.67:
+                            phase = "middle"
+                        else:
+                            phase = "closing"
+                        
                         speech_records.append({
                             # Identifiers
                             "chat_id": chat_id,
@@ -388,20 +336,26 @@ class DataAggregator:
                             # Temporal metadata
                             "progress": round(progress, 3),
                             "progress_bin": progress_bin,
-                            "phase": msg.get("phase"),
+                            "phase": msg.get("phase", phase),
                             
                             # Linguistic features
                             "party": msg.get("party"),
                             "primary_act": msg.get("primary_act"),
                             "argumentative_func": msg.get("argumentative_function"),
                             
-                            # Quality metrics
+                            # Quality metrics (from consensus)
                             "text_length": len(msg.get("text", "") or ""),
                             "consensus_score": msg.get("consensus_score", 1.0)
                         })
         
         df = pd.DataFrame(speech_records)
-        logger.info(f"✅ Aggregated {len(df)} individual speech acts")
+        
+        if df.empty:
+            logger.warning("⚠️  No valid speech act records generated")
+        else:
+            logger.info(
+                f"✅ Aggregated {len(df)} individual speech acts from CONSENSUS data"
+            )
         
         return df
     
@@ -409,30 +363,8 @@ class DataAggregator:
         """
         Generate temporal evolution matrices for time-series analysis.
         
-        Creates pivot tables showing how speech act distributions change
-        over the course of negotiations (binned into 20 temporal segments).
-        
         Returns:
-            Tuple[pd.DataFrame, pd.DataFrame]: Two pivot tables:
-                1. primary_acts_pivot: Speech acts × time bins
-                2. argumentative_funcs_pivot: Argumentative functions × time bins
-                
-            Both tables contain absolute counts (not normalized) to preserve
-            information about negotiation activity levels.
-        
-        Example:
-            >>> primary, argumentative = agg.aggregate_temporal_evolution()
-            >>> print(primary.iloc[:, :5])  # First 5 time bins
-                         bin_1  bin_2  bin_3  bin_4  bin_5
-            directive       45     52     38     41     35
-            commissive      23     28     31     29     27
-            ...
-            
-        Notes:
-            - Returns empty DataFrames if no speech act data available
-            - Removes 'Unnamed' columns resulting from parsing artifacts
-            - Bins enable statistical analysis of negotiation dynamics
-            - Useful for identifying tactical pattern evolution
+            Tuple[pd.DataFrame, pd.DataFrame]: Speech acts and argumentative functions over time
         """
         df_speech = self.aggregate_speech_acts()
         
@@ -478,34 +410,8 @@ class DataAggregator:
         """
         Generate group attribution profiles for cross-group comparison.
         
-        Creates normalized proportion matrices showing linguistic patterns
-        specific to each ransomware group. Normalization ensures fair
-        comparison across groups with different activity levels.
-        
         Returns:
-            Tuple[pd.DataFrame, pd.DataFrame]: Two pivot tables:
-                1. group_primary_pivot: Groups × speech acts (normalized)
-                2. group_arg_pivot: Groups × argumentative functions (normalized)
-                
-            All rows sum to 1.0 (proportion normalization).
-        
-        Example:
-            >>> group_primary, group_arg = agg.aggregate_group_profiles()
-            >>> print(group_primary.loc['lockbit'])
-            directive      0.387
-            commissive     0.265
-            assertive      0.193
-            ...
-            >>> print(group_primary.sum(axis=1))  # Verify normalization
-            lockbit    1.000
-            conti      1.000
-            ...
-            
-        Notes:
-            - Proportions enable fair comparison across group sizes
-            - Useful for group attribution and behavioral fingerprinting
-            - Returns empty DataFrames if no speech act data available
-            - Automatically removes parsing artifacts
+            Tuple[pd.DataFrame, pd.DataFrame]: Normalized group profiles
         """
         df_speech = self.aggregate_speech_acts()
         
@@ -568,108 +474,71 @@ class DataAggregator:
         return group_primary_pivot, group_arg_pivot
     
     def get_aggregation_stats(self) -> Dict[str, Any]:
-        """
-        Generate comprehensive statistics about the aggregation process.
-        
-        Returns:
-            Dictionary containing:
-                Data Quality:
-                    - total_chats: Number of negotiations processed
-                    - chats_with_psychological: Chats with psychological profiles
-                    - psychological_coverage_pct: Percentage with psych data
-                    - corrupted_files: Number of unreadable JSON files
-                    - validation_failures: Records that failed validation
-                Message Statistics:
-                    - total_messages: Total speech acts processed
-                    - avg_messages_per_chat: Mean conversation length
-                Financial Completeness:
-                    - financial_completeness_pct: Non-null financial data %
-                Group Coverage:
-                    - groups_processed: Number of ransomware groups
-                    
-        Example:
-            >>> agg = DataAggregator(project_root)
-            >>> df_neg = agg.aggregate_negotiations()
-            >>> stats = agg.get_aggregation_stats()
-            >>> print(f"Coverage: {stats['psychological_coverage_pct']:.1f}%")
-            Coverage: 87.3%
-            
-        Notes:
-            - Call after running aggregation methods
-            - Useful for data quality assessment
-            - Supports reproducibility reporting
-        """
+        """Generate comprehensive statistics about the aggregation process."""
         df_neg = self.aggregate_negotiations()
         df_speech = self.aggregate_speech_acts()
         
-        if df_neg.empty or df_speech.empty:
+        if df_neg.empty and df_speech.empty:
             logger.warning("⚠️  Cannot generate stats: empty datasets")
-            return {}
+            return {
+                'status': 'NO_DATA',
+                'missing_consensus_data': self._stats['missing_consensus_data']
+            }
         
-        # Calculate metrics
-        total_chats = len(df_neg)
-        chats_with_psych = df_neg['attacker_tone'].notna().sum()
-        avg_messages = df_speech.groupby('chat_id').size().mean()
-        groups = df_neg['group'].nunique()
+        stats = {}
         
-        # Data completeness (financial fields)
-        financial_cols = ['initial_demand', 'final_price', 'discount_pct']
-        completeness = (
-            df_neg[financial_cols].notna().sum().sum() / 
-            (len(df_neg) * len(financial_cols))
-        ) * 100
+        # Negotiation stats
+        if not df_neg.empty:
+            total_chats = len(df_neg)
+            chats_with_psych = df_neg['attacker_tone'].notna().sum()
+            groups = df_neg['group'].nunique()
+            
+            # Data completeness (financial fields)
+            financial_cols = ['initial_demand', 'final_price', 'discount_pct']
+            completeness = (
+                df_neg[financial_cols].notna().sum().sum() / 
+                (len(df_neg) * len(financial_cols))
+            ) * 100
+            
+            stats.update({
+                'total_chats': total_chats,
+                'chats_with_psychological': int(chats_with_psych),
+                'psychological_coverage_pct': round(
+                    (chats_with_psych / total_chats) * 100, 2
+                ) if total_chats > 0 else 0,
+                'financial_completeness_pct': round(completeness, 2),
+                'groups_processed': groups
+            })
         
-        return {
-            # Data quality
-            'total_chats': total_chats,
-            'chats_with_psychological': int(chats_with_psych),
-            'psychological_coverage_pct': round(
-                (chats_with_psych / total_chats) * 100, 2
-            ),
+        # Message stats
+        if not df_speech.empty:
+            avg_messages = df_speech.groupby('chat_id').size().mean()
+            avg_consensus = df_speech['consensus_score'].mean()
+            
+            stats.update({
+                'total_messages': len(df_speech),
+                'avg_messages_per_chat': round(avg_messages, 2),
+                'avg_consensus_score': round(avg_consensus, 3)
+            })
+        
+        # Quality metrics
+        stats.update({
             'corrupted_files': self._stats['corrupted_files'],
             'validation_failures': self._stats['validation_failures'],
-            
-            # Message statistics
-            'total_messages': len(df_speech),
-            'avg_messages_per_chat': round(avg_messages, 2),
-            
-            # Financial completeness
-            'financial_completeness_pct': round(completeness, 2),
-            
-            # Group coverage
-            'groups_processed': groups
-        }
+            'missing_consensus_data': self._stats['missing_consensus_data']
+        })
+        
+        return stats
     
     def save_aggregation_metadata(self, output_dir: Path) -> None:
-        """
-        Save metadata about the aggregation process for reproducibility.
-        
-        Generates a JSON file containing:
-        - Timestamp of aggregation
-        - Source directory paths
-        - Aggregation statistics
-        - Software versions (Python, Pandas)
-        
-        Args:
-            output_dir: Directory where CSV files are saved
-            
-        Example:
-            >>> agg = DataAggregator(project_root)
-            >>> # ... run aggregations ...
-            >>> agg.save_aggregation_metadata(processed_dir)
-            💾 Saved aggregation metadata: AGGREGATION_METADATA.json
-            
-        Notes:
-            - Essential for research reproducibility
-            - Includes data provenance information
-            - Useful for thesis documentation
-        """
+        """Save metadata about the aggregation process for reproducibility."""
         metadata = {
             # Provenance
             'aggregation_timestamp': datetime.now().isoformat(),
-            'aggregator_version': '1.0.0',
+            'aggregator_version': '2.0.0',
+            'data_source': 'CONSENSUS_VALIDATED',
             
-            # Source directories
+            # Source directories (ALL CONSENSUS)
             'source_directories': {
                 'tactical': str(self.tactical_dir),
                 'profiling': str(self.profiling_dir),
@@ -704,25 +573,7 @@ class DataAggregator:
             logger.error(f"❌ Failed to save metadata: {e}")
     
     def _clean_pivot_columns(self, df: pd.DataFrame) -> pd.DataFrame:
-        """
-        Remove artifact columns from pivot tables.
-        
-        Cleans:
-        - Columns starting with 'Unnamed' (Pandas artifacts)
-        - Fully empty columns (all NaN)
-        - Whitespace-only column names
-        
-        Args:
-            df: Pivot table DataFrame
-            
-        Returns:
-            Cleaned DataFrame
-            
-        Notes:
-            - Private helper method
-            - Prevents downstream analysis errors
-            - Improves data visualization quality
-        """
+        """Remove artifact columns from pivot tables."""
         # Remove 'Unnamed' columns
         df = df.loc[:, ~df.columns.str.contains('^Unnamed', na=False)]
         
@@ -740,7 +591,7 @@ if __name__ == "__main__":
     # Setup console logging
     logging.basicConfig(
         level=logging.INFO,
-        format='%(message)s'
+        format='%(asctime)s - %(levelname)s - %(message)s'
     )
     
     # Define paths
@@ -749,67 +600,100 @@ if __name__ == "__main__":
     processed_dir.mkdir(parents=True, exist_ok=True)
     
     print("\n" + "=" * 70)
-    print("📊 DATA AGGREGATION & PROCESSING MODULE")
+    print("📊 DATA AGGREGATION & PROCESSING MODULE v2.0")
+    print("🔬 CONSENSUS-VALIDATED DATA ONLY")
     print("=" * 70)
     print(f"📂 Project Root:  {project_root}")
     print(f"📂 Output Dir:    {processed_dir}")
+    print(f"🎯 Data Source:   data/consensus/ (all tasks)")
     print("-" * 70)
     
-    # Initialize aggregator
+    # Initialize aggregator (includes pre-flight validation)
     agg = DataAggregator(project_root)
     
+    # Check if we have any consensus data
+    stats = agg.get_aggregation_stats()
+    if stats.get('status') == 'NO_DATA':
+        print("\n" + "=" * 70)
+        print("❌ NO CONSENSUS DATA FOUND")
+        print("=" * 70)
+        print("💡 Run these commands first:")
+        print("   1. cd src/analysis")
+        print("   2. python consensus.py")
+        print("   3. python aggregator.py")
+        print("=" * 70 + "\n")
+        sys.exit(1)
+    
     # 1. Negotiations dataset (chat-level)
+    print("\n🔄 Aggregating negotiations...")
     df_neg = agg.aggregate_negotiations()
     if not df_neg.empty:
         out_csv = processed_dir / "dataset_negotiations.csv"
         df_neg.to_csv(out_csv, index=False)
-        print(f"💾 Saved Negotiations DB:   {out_csv.name}")
+        print(f"   💾 Saved: {out_csv.name} ({len(df_neg)} rows)")
+    else:
+        print("   ⚠️  No negotiation data generated")
     
     # 2. Speech acts dataset (message-level)
+    print("\n🔄 Aggregating speech acts...")
     df_speech = agg.aggregate_speech_acts()
     if not df_speech.empty:
         out_csv = processed_dir / "dataset_speech_acts.csv"
         df_speech.to_csv(out_csv, index=False)
-        print(f"💾 Saved Speech Acts DB:    {out_csv.name}")
+        print(f"   💾 Saved: {out_csv.name} ({len(df_speech)} rows)")
+    else:
+        print("   ⚠️  No speech act data generated")
     
     # 3. Temporal evolution datasets
+    print("\n🔄 Generating temporal evolution...")
     temporal_primary, temporal_arg = agg.aggregate_temporal_evolution()
     if not temporal_primary.empty:
         out_csv_p = processed_dir / "temporal_speech_acts.csv"
         out_csv_a = processed_dir / "temporal_argumentative.csv"
         temporal_primary.to_csv(out_csv_p, index=True)
         temporal_arg.to_csv(out_csv_a, index=True)
-        print(f"💾 Saved Temporal Data:     temporal_*.csv")
+        print(f"   💾 Saved: temporal_*.csv ({len(temporal_primary)} time bins)")
+    else:
+        print("   ⚠️  No temporal data generated")
     
     # 4. Group attribution datasets
+    print("\n🔄 Generating group profiles...")
     group_primary, group_arg = agg.aggregate_group_profiles()
     if not group_primary.empty:
         out_csv_p = processed_dir / "group_speech_acts.csv"
         out_csv_a = processed_dir / "group_argumentative.csv"
         group_primary.to_csv(out_csv_p, index=True)
         group_arg.to_csv(out_csv_a, index=True)
-        print(f"💾 Saved Group Profiles:    group_*.csv")
+        print(f"   💾 Saved: group_*.csv ({len(group_primary)} groups)")
+    else:
+        print("   ⚠️  No group profile data generated")
     
     # 5. Save metadata for reproducibility
+    print("\n🔄 Saving metadata...")
     agg.save_aggregation_metadata(processed_dir)
     
     # 6. Print statistics
     print("\n" + "=" * 70)
-    print("📈 AGGREGATION STATISTICS")
+    print("📈 AGGREGATION STATISTICS (CONSENSUS DATA)")
     print("=" * 70)
     
-    stats = agg.get_aggregation_stats()
-    if stats:
-        print(f"  Total Chats Processed:        {stats['total_chats']}")
-        print(f"  With Psychological Data:      {stats['chats_with_psychological']} "
-              f"({stats['psychological_coverage_pct']:.1f}%)")
-        print(f"  Total Messages:               {stats['total_messages']}")
-        print(f"  Avg Messages per Chat:        {stats['avg_messages_per_chat']}")
-        print(f"  Financial Completeness:       {stats['financial_completeness_pct']:.1f}%")
-        print(f"  Groups Processed:             {stats['groups_processed']}")
-        print(f"  Corrupted Files:              {stats['corrupted_files']}")
-        print(f"  Validation Failures:          {stats['validation_failures']}")
+    final_stats = agg.get_aggregation_stats()
+    if final_stats and final_stats.get('status') != 'NO_DATA':
+        if 'total_chats' in final_stats:
+            print(f"  Total Chats Processed:        {final_stats['total_chats']}")
+            print(f"  With Psychological Data:      {final_stats['chats_with_psychological']} "
+                  f"({final_stats['psychological_coverage_pct']:.1f}%)")
+            print(f"  Financial Completeness:       {final_stats['financial_completeness_pct']:.1f}%")
+            print(f"  Groups Processed:             {final_stats['groups_processed']}")
+        
+        if 'total_messages' in final_stats:
+            print(f"  Total Messages:               {final_stats['total_messages']}")
+            print(f"  Avg Messages per Chat:        {final_stats['avg_messages_per_chat']}")
+            print(f"  Avg Consensus Score:          {final_stats['avg_consensus_score']:.3f}")
+        
+        print(f"  Corrupted Files:              {final_stats['corrupted_files']}")
+        print(f"  Validation Failures:          {final_stats['validation_failures']}")
     
     print("=" * 70)
-    print("✅  AGGREGATION COMPLETE")
+    print("✅  AGGREGATION COMPLETE - ALL DATA FROM CONSENSUS")
     print("=" * 70 + "\n")

@@ -1,7 +1,7 @@
 """
-Ransomware Negotiation Analysis Pipeline - v2.0.0 WITH FEW-SHOT SUPPORT
-Each model processes ONE chat at a time (all 3 tasks sequentially)
-Max 3 concurrent requests (one per model) - CLEAN OUTPUT + FEW-SHOT EXAMPLES
+Ransomware Negotiation Analysis Pipeline - v2.2.0 WITH PROFESSOR'S CHUNKING
+Each model processes ONE chat at a time with recursive 3-way chunking
+Max 3 concurrent requests (one per model) - CLEAN OUTPUT + FEW-SHOT + SMART CHUNKING
 """
 
 import sys
@@ -17,6 +17,7 @@ from collections import defaultdict
 from threading import Lock
 from io import StringIO
 from contextlib import contextmanager
+from typing import List, Dict, Any, Tuple
 
 # --- TQDM IMPORT ---
 try:
@@ -55,9 +56,9 @@ file_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(m
 file_handler.setFormatter(file_formatter)
 root_logger.addHandler(file_handler)
 
-# Console Handler - SOLO ERRORI (blocca INFO!)
+# Console Handler - SOLO ERRORI
 console_handler = TqdmLoggingHandler()
-console_handler.setLevel(logging.ERROR)  # ← CRITICAL: Blocca INFO/WARNING
+console_handler.setLevel(logging.ERROR)
 console_formatter = logging.Formatter('❌ %(levelname)s: %(message)s')
 console_handler.setFormatter(console_formatter)
 root_logger.addHandler(console_handler)
@@ -85,6 +86,15 @@ except ImportError as e:
     sys.exit(1)
 
 # ═══════════════════════════════════════════════════════════════════
+# CHUNKING CONFIGURATION (Professor's Approach)
+# ═══════════════════════════════════════════════════════════════════
+
+class ChunkConfig:
+    """Configuration for professor's chunking approach."""
+    MAX_PROMPT_CHARS = 10_000  # Safe limit based on actual prompt size
+    LONG_CHAT_THRESHOLD_MESSAGES = 50  # When to reduce few-shot examples
+
+# ═══════════════════════════════════════════════════════════════════
 # STATISTICS TRACKER (Thread-Safe)
 # ═══════════════════════════════════════════════════════════════════
 
@@ -93,10 +103,13 @@ class PipelineStats:
         self.start_time = datetime.now()
         self.total_chats = 0
         self.completed_chats = 0
+        self.chunked_chats = 0
+        self.total_chunks_processed = 0
         self.chat_warnings = defaultdict(list)
         self.chat_errors = defaultdict(list)
         self.model_stats = defaultdict(lambda: {'valid': 0, 'invalid': 0, 'tasks': 0})
         self.few_shot_stats = defaultdict(int)
+        self.chunk_stats = defaultdict(int)
         self._lock = Lock()
         
     def add_warning(self, chat_id: str, message: str, model: str = None):
@@ -123,6 +136,12 @@ class PipelineStats:
         with self._lock:
             self.few_shot_stats[task_name] = count
     
+    def add_chunked_chat(self, chat_id: str, num_chunks: int):
+        with self._lock:
+            self.chunked_chats += 1
+            self.total_chunks_processed += num_chunks
+            self.chunk_stats[chat_id] = num_chunks
+    
     def duration(self):
         elapsed = datetime.now() - self.start_time
         return str(elapsed).split('.')[0]
@@ -139,6 +158,7 @@ class PipelineStats:
         print("📊 SUMMARY")
         print(f"  ├─ Total Chats:     {self.total_chats}")
         print(f"  ├─ ✅ Completed:     {self.completed_chats} ({self.completed_chats/self.total_chats*100:.1f}%)")
+        print(f"  ├─ 🔪 Chunked:       {self.chunked_chats} chats → {self.total_chunks_processed} chunks")
         print(f"  ├─ ⚠️  With Warnings:  {len(self.chat_warnings)}")
         print(f"  └─ ❌ Errors:        {len(self.chat_errors)}")
         
@@ -147,6 +167,12 @@ class PipelineStats:
             print("📚 FEW-SHOT EXAMPLES LOADED")
             for task_name, count in sorted(self.few_shot_stats.items()):
                 print(f"  ├─ {task_name:25s}: {count} examples")
+        
+        if self.chunk_stats:
+            print()
+            print(f"🔪 TOP CHUNKED CHATS")
+            for chat_id, num_chunks in sorted(self.chunk_stats.items(), key=lambda x: x[1], reverse=True)[:5]:
+                print(f"  ├─ {chat_id:25s}: {num_chunks} chunks")
         
         if self.model_stats:
             print()
@@ -182,19 +208,105 @@ class PipelineStats:
         print("━" * 70 + "\n")
 
 # ═══════════════════════════════════════════════════════════════════
+# PROFESSOR'S CHUNKING STRATEGY
+# ═══════════════════════════════════════════════════════════════════
+
+class ProfessorChunker:
+    """
+    Professor's recursive 3-way chunking approach.
+    Splits chat until the ACTUAL rendered prompt fits under MAX_PROMPT_CHARS.
+    Simple, effective, and battle-tested.
+    """
+    
+    @staticmethod
+    def chunk_chat(
+        dialogue: List[Dict[str, Any]], 
+        system_prompt: str, 
+        user_template: str
+    ) -> List[List[Dict[str, Any]]]:
+        """
+        Split a chat into smaller chunks until the rendered prompt fits.
+        Uses recursive 3-way split (crude but effective).
+        
+        Args:
+            dialogue: List of message dictionaries
+            system_prompt: System message content
+            user_template: User message template (contains {{chat_json}})
+        
+        Returns:
+            List of dialogue chunks
+        """
+        # Render the full prompt to check size
+        chat_json = json.dumps(dialogue, ensure_ascii=False)
+        user_msg = user_template.replace("{{chat_json}}", chat_json)
+        combined_length = len(system_prompt) + len(user_msg)
+        
+        # Base case: fits in one chunk or can't split further
+        if combined_length <= ChunkConfig.MAX_PROMPT_CHARS or len(dialogue) <= 1:
+            return [dialogue]
+        
+        # Recursive case: split into 3 parts
+        third = max(1, len(dialogue) // 3)
+        two_third = max(third + 1, 2 * len(dialogue) // 3)
+        
+        logger.debug(f"Splitting {len(dialogue)} messages into 3 chunks: "
+                    f"[0:{third}], [{third}:{two_third}], [{two_third}:{len(dialogue)}]")
+        
+        return (
+            ProfessorChunker.chunk_chat(dialogue[:third], system_prompt, user_template) +
+            ProfessorChunker.chunk_chat(dialogue[third:two_third], system_prompt, user_template) +
+            ProfessorChunker.chunk_chat(dialogue[two_third:], system_prompt, user_template)
+        )
+    
+    @staticmethod
+    def merge_chunk_results(chunk_results: List[str]) -> str:
+        """
+        Merge JSON arrays from multiple chunks.
+        Simple concatenation - works for speech act labeling.
+        
+        Args:
+            chunk_results: List of JSON strings from each chunk
+        
+        Returns:
+            Merged JSON string
+        """
+        if not chunk_results:
+            return "[]"
+        
+        if len(chunk_results) == 1:
+            return chunk_results[0]
+        
+        # Parse all chunks and concatenate
+        all_items = []
+        for result in chunk_results:
+            try:
+                parsed = json.loads(result)
+                if isinstance(parsed, list):
+                    all_items.extend(parsed)
+                elif isinstance(parsed, dict):
+                    # If individual chunks return dicts, collect them
+                    all_items.append(parsed)
+            except json.JSONDecodeError as e:
+                logger.warning(f"Failed to parse chunk result: {e}")
+                continue
+        
+        return json.dumps(all_items, indent=2, ensure_ascii=False)
+
+# ═══════════════════════════════════════════════════════════════════
 # BANNER
 # ═══════════════════════════════════════════════════════════════════
 
 def print_banner(config, models, max_chats):
     print()
     print("━" * 70)
-    print("🔬  RANSOMWARE NEGOTIATION PIPELINE  │  v2.0.0 FEW-SHOT")
+    print("🔬  RANSOMWARE NEGOTIATION PIPELINE  │  v2.2.0 PROFESSOR'S CHUNKING")
     print("━" * 70)
     print(f"📅  Date:       {datetime.now().strftime('%Y-%m-%d %H:%M')}")
     print(f"📊  Target:     {max_chats if max_chats else 'All'} chats")
     print(f"🤖  Models:     {', '.join(models)}")
     print(f"🧪  Tasks:      {len(config.get('tasks', {}))} per chat")
-    print(f"📚  Few-Shot:   ✅ ENABLED")
+    print(f"📚  Few-Shot:   ✅ ADAPTIVE (reduced for long chats)")
+    print(f"🔪  Chunking:   ✅ RECURSIVE 3-WAY (max {ChunkConfig.MAX_PROMPT_CHARS:,} chars)")
     print(f"⚡  Strategy:   MODEL-FIRST (max 3 concurrent requests)")
     print(f"📝  Log:        {LOG_FILE.name}")
     print("━" * 70)
@@ -205,7 +317,7 @@ def print_banner(config, models, max_chats):
 # ═══════════════════════════════════════════════════════════════════
 
 class RansomwarePipeline:
-    """v2.0.0 MODEL-FIRST WITH FEW-SHOT: Clean output with few-shot examples"""
+    """v2.2.0 MODEL-FIRST WITH PROFESSOR'S RECURSIVE CHUNKING"""
     
     def __init__(self):
         self.base_dir = BASE_DIR
@@ -225,6 +337,7 @@ class RansomwarePipeline:
         
         # Cache for few-shot examples
         self.few_shot_cache = {}
+        self.chunker = ProfessorChunker()
 
     def load_resources(self):
         """Load prompts and dataset."""
@@ -251,47 +364,52 @@ class RansomwarePipeline:
             logger.critical(f"Failed to load dataset: {e}")
             raise
     
-    def _load_few_shot_examples(self, task_name: str) -> list:
-        """Load few-shot examples for a specific task (with caching)."""
+    def _load_few_shot_examples(self, task_name: str, max_examples: int = None) -> list:
+        """
+        Load few-shot examples for a specific task (with caching and limiting).
         
+        Args:
+            task_name: Name of the task
+            max_examples: Maximum number of examples to return (None = all)
+        """
         # Check cache first
         if task_name in self.few_shot_cache:
-            return self.few_shot_cache[task_name]
-        
-        few_shot_path = self.config_dir / "few_shot_examples" / f"{task_name}.json"
-        
-        if not few_shot_path.exists():
-            logger.warning(f"⚠️  No few-shot file found: {few_shot_path}")
-            self.few_shot_cache[task_name] = []
-            return []
-        
-        try:
-            with open(few_shot_path, 'r', encoding='utf-8') as f:
-                few_shot_data = json.load(f)
+            examples = self.few_shot_cache[task_name]
+        else:
+            few_shot_path = self.config_dir / "few_shot_examples" / f"{task_name}.json"
             
-            examples = few_shot_data.get('examples', [])
-            
-            if not examples:
-                logger.warning(f"⚠️  No examples in few-shot file for {task_name}")
+            if not few_shot_path.exists():
+                logger.warning(f"⚠️  No few-shot file found: {few_shot_path}")
                 self.few_shot_cache[task_name] = []
                 return []
             
-            logger.info(f"✅ Loaded {len(examples)} few-shot examples for {task_name}")
-            self.stats.add_few_shot_loaded(task_name, len(examples))
+            try:
+                with open(few_shot_path, 'r', encoding='utf-8') as f:
+                    few_shot_data = json.load(f)
+                
+                examples = few_shot_data.get('examples', [])
+                
+                if not examples:
+                    logger.warning(f"⚠️  No examples in few-shot file for {task_name}")
+                    self.few_shot_cache[task_name] = []
+                    return []
+                
+                logger.info(f"✅ Loaded {len(examples)} few-shot examples for {task_name}")
+                self.stats.add_few_shot_loaded(task_name, len(examples))
+                
+                # Cache the results
+                self.few_shot_cache[task_name] = examples
             
-            # Cache the results
-            self.few_shot_cache[task_name] = examples
-            return examples
+            except Exception as e:
+                logger.error(f"❌ Failed to load few-shot for {task_name}: {e}")
+                self.few_shot_cache[task_name] = []
+                return []
         
-        except json.JSONDecodeError as e:
-            logger.error(f"❌ Invalid JSON in few-shot file {task_name}: {e}")
-            self.few_shot_cache[task_name] = []
-            return []
+        # Limit examples if requested
+        if max_examples is not None and len(examples) > max_examples:
+            return examples[:max_examples]
         
-        except Exception as e:
-            logger.error(f"❌ Failed to load few-shot for {task_name}: {e}")
-            self.few_shot_cache[task_name] = []
-            return []
+        return examples
 
     def _clean_json_output(self, text):
         """Robust JSON parser."""
@@ -309,6 +427,7 @@ class RansomwarePipeline:
         except json.JSONDecodeError:
             pass
 
+        # Try to extract JSON array
         match = re.search(r'\[.*\]', text, re.DOTALL)
         if match:
             try:
@@ -317,6 +436,7 @@ class RansomwarePipeline:
             except json.JSONDecodeError:
                 pass
         
+        # Remove markdown code blocks
         text = re.sub(r'```json\s*|\s*```', '', text)
         try:
             parsed = json.loads(text)
@@ -327,22 +447,46 @@ class RansomwarePipeline:
         logger.debug(f"JSON unrepairable: {text[:200]}")
         return None
 
-    def _build_messages_with_few_shot(self, task_name: str, task_cfg: dict, 
-                                      chat_json_str: str, user_template: str) -> list:
-        """Build messages array with system prompt, few-shot examples, and actual query."""
+    def _build_messages_with_few_shot(
+        self, 
+        task_name: str, 
+        task_cfg: dict, 
+        chat_json_str: str, 
+        user_template: str,
+        dialogue_length: int
+    ) -> list:
+        """
+        Build messages array with adaptive few-shot examples.
         
+        Args:
+            task_name: Name of the task
+            task_cfg: Task configuration
+            chat_json_str: JSON string of the chat
+            user_template: Template for user message
+            dialogue_length: Number of messages in dialogue
+        
+        Returns:
+            List of message dictionaries for the API
+        """
         sys_msg = task_cfg['system_prompt']
         messages = [{"role": "system", "content": sys_msg}]
         
-        # Load few-shot examples
-        few_shot_examples = self._load_few_shot_examples(task_name)
+        # Adaptive few-shot loading based on chat size
+        if dialogue_length > ChunkConfig.LONG_CHAT_THRESHOLD_MESSAGES:
+            # Long chat - use minimal few-shot
+            max_few_shot = 1
+            logger.debug(f"Long chat detected ({dialogue_length} msgs), limiting few-shot to {max_few_shot}")
+        else:
+            # Normal chat - full few-shot
+            max_few_shot = None
+        
+        few_shot_examples = self._load_few_shot_examples(task_name, max_examples=max_few_shot)
         
         # Add few-shot examples as user/assistant pairs
         for example in few_shot_examples:
             # Format input
             input_data = example.get('input', [])
             if isinstance(input_data, list):
-                # Convert to same format as main prompt
                 input_json = json.dumps(input_data, indent=2, ensure_ascii=False)
                 user_example = user_template.replace("{{chat_json}}", input_json)
             else:
@@ -367,8 +511,81 @@ class RansomwarePipeline:
         
         return messages
 
+    def _process_single_chat(
+        self, 
+        client: UniBSLLMClient, 
+        model_name: str,
+        group_name: str, 
+        chat_id: str, 
+        dialogue: List[Dict],
+        task_name: str, 
+        task_cfg: dict
+    ) -> Tuple[bool, str]:
+        """
+        Process a single chat for a specific task, with automatic chunking.
+        Uses professor's recursive 3-way split based on actual prompt size.
+        
+        Returns:
+            (success: bool, content: str)
+        """
+        # Clean dialogue
+        dialogue = clean_message_list(dialogue)
+        original_length = len(dialogue)
+        
+        # Get prompts for chunking decision
+        system_prompt = task_cfg['system_prompt']
+        user_template = task_cfg['user_template']
+        
+        # Use professor's chunking strategy
+        chunks = self.chunker.chunk_chat(dialogue, system_prompt, user_template)
+        
+        if len(chunks) > 1:
+            logger.info(f"[{model_name}] Chat {chat_id} chunked: {original_length} msgs → {len(chunks)} chunks")
+            self.stats.add_chunked_chat(chat_id, len(chunks))
+        
+        # Process each chunk
+        chunk_results = []
+        
+        for idx, chunk in enumerate(chunks):
+            try:
+                chunk_json_str = json.dumps(chunk, ensure_ascii=False)
+                
+                # Build messages with adaptive few-shot
+                messages = self._build_messages_with_few_shot(
+                    task_name, task_cfg, chunk_json_str, 
+                    user_template, len(chunk)
+                )
+                
+                # Call LLM
+                response_obj = client.generate_response(messages)
+                
+                if isinstance(response_obj, dict):
+                    resp_text = response_obj.get('content', '')
+                else:
+                    resp_text = response_obj
+                
+                chunk_results.append(resp_text)
+                
+                if len(chunks) > 1:
+                    logger.info(f"[{model_name}] ✓ {chat_id}/{task_name} chunk {idx+1}/{len(chunks)}")
+                else:
+                    logger.info(f"[{model_name}] ✓ {chat_id}/{task_name}")
+                
+                time.sleep(0.5)
+            
+            except Exception as e:
+                logger.error(f"[{model_name}] Error processing chunk {idx+1}: {e}")
+                chunk_results.append("")  # Add empty to maintain order
+        
+        # Merge chunk results
+        if len(chunks) > 1:
+            merged_content = self.chunker.merge_chunk_results(chunk_results)
+            return True, merged_content
+        else:
+            return True, chunk_results[0] if chunk_results else ""
+
     def _process_model_pipeline(self, model_name: str, chat_queue: list, tasks: dict, pbar):
-        """ONE MODEL processes ALL chats sequentially."""
+        """ONE MODEL processes ALL chats sequentially with professor's chunking."""
         
         # ✅ Suppress stdout during client creation
         with suppress_stdout():
@@ -385,9 +602,6 @@ class RansomwarePipeline:
                 pbar.update(1)
                 continue
             
-            dialogue = clean_message_list(dialogue)
-            chat_json_str = json.dumps(dialogue, indent=2, ensure_ascii=False)
-            
             # Process ALL tasks sequentially
             for task_name, task_cfg in tasks.items():
                 self.stats.increment_task(model_name)
@@ -402,38 +616,31 @@ class RansomwarePipeline:
                     continue
 
                 try:
-                    user_template = task_cfg['user_template']
-                    
-                    # ✅ Build messages with few-shot examples
-                    messages = self._build_messages_with_few_shot(
-                        task_name, task_cfg, chat_json_str, user_template
+                    # Process chat (with automatic chunking if needed)
+                    success, content = self._process_single_chat(
+                        client, model_name, group_name, chat_id, 
+                        dialogue, task_name, task_cfg
                     )
-
-                    response_obj = client.generate_response(messages)
                     
-                    if isinstance(response_obj, dict):
-                        resp_text = response_obj.get('content', '')
-                    else:
-                        resp_text = response_obj
+                    if not success:
+                        continue
                     
-                    content = resp_text
-                    
-                    # Validate JSON
+                    # Validate JSON if required
                     if task_cfg.get('output_format') == 'json':
-                        cleaned_json = self._clean_json_output(resp_text)
+                        cleaned_json = self._clean_json_output(content)
                         
                         if cleaned_json is None:
                             warning = f"Invalid JSON in {task_name}"
                             self.stats.add_warning(chat_id, warning, model_name)
-                            content = resp_text
+                            content = content  # Keep original
                         else:
                             content = cleaned_json
                             self.stats.add_success(model_name)
 
+                    # Write output
                     with open(out_file, 'w', encoding='utf-8') as f:
                         f.write(content)
                     
-                    logger.info(f"[{model_name}] ✓ {chat_id}/{task_name}")
                     time.sleep(0.5)
 
                 except Exception as e:
@@ -446,7 +653,7 @@ class RansomwarePipeline:
         logger.info(f"[{model_name}] Completed all chats")
 
     def run(self, max_chats=None):
-        """Run pipeline with MODEL-FIRST strategy."""
+        """Run pipeline with MODEL-FIRST strategy and professor's chunking."""
         tasks = self.prompts_config.get('tasks', {})
         all_jobs = []
         
@@ -503,7 +710,7 @@ if __name__ == "__main__":
     pipeline = RansomwarePipeline()
     try:
         pipeline.load_resources()
-        pipeline.run(max_chats=25)
+        pipeline.run(max_chats=None)  # Process all chats
     except KeyboardInterrupt:
         print("\n\n⚠️  Pipeline interrupted by user.")
         sys.exit(0)
