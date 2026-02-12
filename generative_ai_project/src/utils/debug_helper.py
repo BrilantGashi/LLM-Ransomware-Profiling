@@ -1,18 +1,18 @@
 """
-Utility di debug per testare connessione al cluster UniBS.
-Basato su Sezione 8 del vademecum.
+Debug utility for testing LLM API connection.
 """
 import os
 import subprocess
 import json
 from pathlib import Path
 
+
 def test_cluster_connection():
-    """Testa connessione raw con cURL come da vademecum."""
+    """Test raw connection with cURL."""
     api_key = os.getenv("GPUSTACK_API_KEY")
     
     if not api_key:
-        print("❌ GPUSTACK_API_KEY non trovata!")
+        print("GPUSTACK_API_KEY not found!")
         return False
     
     curl_command = [
@@ -31,9 +31,9 @@ def test_cluster_connection():
         })
     ]
     
-    print("🔧 Test connessione cluster UniBS...")
-    print(f"🔗 Endpoint: https://gpustack.ing.unibs.it/v1")
-    print(f"🔑 API Key: {api_key[:10]}...")
+    print("Testing API connection...")
+    print(f"Endpoint: https://gpustack.ing.unibs.it/v1")
+    print(f"API Key: {api_key[:10]}...")
     
     try:
         result = subprocess.run(
@@ -44,16 +44,17 @@ def test_cluster_connection():
         )
         
         if result.returncode == 0:
-            print("✅ Connessione OK!")
-            print(f"📥 Risposta: {result.stdout[:200]}")
+            print("Connection OK!")
+            print(f"Response: {result.stdout[:200]}")
             return True
         else:
-            print(f"❌ Errore: {result.stderr}")
+            print(f"Error: {result.stderr}")
             return False
     
     except Exception as e:
-        print(f"❌ Eccezione: {e}")
+        print(f"Exception: {e}")
         return False
+
 
 if __name__ == "__main__":
     test_cluster_connection()

@@ -7,6 +7,7 @@ Supervisors: Prof. Federico Cerutti, Prof. Pietro Baroni
 Institution: University of Brescia
 """
 
+
 import json
 import yaml
 import logging
@@ -15,11 +16,12 @@ from collections import Counter, defaultdict
 from datetime import datetime
 from typing import List, Dict, Any, Tuple, Optional, Union
 
+
 logger = logging.getLogger(__name__)
 
 
 class ConsensusManager:
-    """Multi-model consensus aggregator for ALL analysis tasks."""
+    """Multi-model consensus aggregator for all analysis tasks."""
     
     def __init__(
         self,
@@ -29,7 +31,6 @@ class ConsensusManager:
         min_confidence: float = 0.5
     ):
         """Initialize consensus manager with quality thresholds."""
-        # Validation
         if min_models < 2:
             raise ValueError(f"min_models must be >= 2, got {min_models}")
         if not (0.0 <= min_confidence <= 1.0):
@@ -44,12 +45,10 @@ class ConsensusManager:
         self.min_models = min_models
         self.min_confidence = min_confidence
         
-        # Directory structure
         self.outputs_dir = base_dir / "data" / "outputs" / task_name
         self.consensus_dir = base_dir / "data" / "consensus" / task_name
         self.consensus_dir.mkdir(parents=True, exist_ok=True)
         
-        # Statistics tracking
         self.stats = {
             'chats_processed': 0,
             'items_processed': 0,
@@ -81,7 +80,6 @@ class ConsensusManager:
                 with open(file_path, 'r', encoding='utf-8') as f:
                     data = json.load(f)
                 
-                # Validate based on task type
                 if self.task_name == 'speech_act_analysis':
                     if not isinstance(data, list) or len(data) == 0:
                         continue
@@ -115,7 +113,7 @@ class ConsensusManager:
         model_data: Dict[str, List[Dict]],
         chat_id: str
     ) -> Tuple[List[Dict], Dict[str, Any]]:
-        """Compute consensus for speech act analysis (message-level)."""
+        """Compute consensus for speech act analysis at message level."""
         models = list(model_data.keys())
         max_len = max(len(data) for data in model_data.values())
         
@@ -187,7 +185,7 @@ class ConsensusManager:
         model_data: Dict[str, Dict],
         chat_id: str
     ) -> Tuple[Dict, Dict[str, Any]]:
-        """Compute consensus for tactical/psychological (field-level)."""
+        """Compute consensus for tactical and psychological profiling at field level."""
         models = list(model_data.keys())
         
         all_paths = set()
@@ -386,10 +384,6 @@ class ConsensusManager:
         }
 
 
-# =============================================================================
-# BATCH PROCESSING UTILITIES
-# =============================================================================
-
 def load_models_from_config(project_root: Path) -> List[str]:
     """Load ensemble models from model_config.yaml"""
     config_path = project_root / "config" / "model_config.yaml"
@@ -436,31 +430,31 @@ def find_all_chats(outputs_dir: Path, models: List[str]) -> Dict[str, set]:
 def run_batch_consensus(project_root: Path, tasks: List[str]):
     """Run consensus for all tasks on all available chats."""
     print("\n" + "=" * 70)
-    print("🎯 BATCH CONSENSUS GENERATION")
+    print("BATCH CONSENSUS GENERATION")
     print("=" * 70)
     
     models = load_models_from_config(project_root)
     
     if not models:
-        print("❌ No models found in config")
+        print("No models found in configuration")
         return
     
-    print(f"🤖 Models: {', '.join(models)}")
-    print(f"📋 Tasks:  {', '.join(tasks)}\n")
+    print(f"Models: {', '.join(models)}")
+    print(f"Tasks:  {', '.join(tasks)}\n")
     
     for task in tasks:
-        print(f"📌 {task}")
+        print(f"Processing: {task}")
         
         outputs_dir = project_root / "data" / "outputs" / task
         
         if not outputs_dir.exists():
-            print(f"   ⚠️  No outputs directory\n")
+            print(f"   No outputs directory\n")
             continue
         
         chats_by_group = find_all_chats(outputs_dir, models)
         
         if not chats_by_group:
-            print(f"   ⚠️  No chats found\n")
+            print(f"   No chats found\n")
             continue
         
         total_chats = sum(len(chats) for chats in chats_by_group.values())
@@ -479,7 +473,6 @@ def run_batch_consensus(project_root: Path, tasks: List[str]):
             for chat_id in sorted(chat_ids):
                 processed += 1
                 
-                # Progress indicator (every 10%)
                 if processed % max(1, total_chats // 10) == 0 or processed == total_chats:
                     pct = int((processed / total_chats) * 100)
                     print(f"   [{pct:3d}%] {processed}/{total_chats}", end='\r', flush=True)
@@ -490,21 +483,15 @@ def run_batch_consensus(project_root: Path, tasks: List[str]):
                 except Exception:
                     pass
         
-        # Final stats
         stats = cm.get_consensus_stats()
-        print(f"   ✅ {success_count}/{total_chats} chats (conf: {stats['avg_confidence']:.1%})   \n")
+        print(f"   Complete: {success_count}/{total_chats} chats (confidence: {stats['avg_confidence']:.1%})   \n")
     
     print("=" * 70)
-    print("✅ CONSENSUS COMPLETE")
+    print("CONSENSUS COMPLETE")
     print("=" * 70 + "\n")
 
 
-# =============================================================================
-# MAIN EXECUTION
-# =============================================================================
-
 if __name__ == "__main__":
-    # Minimal logging (only errors to console)
     logging.basicConfig(
         level=logging.ERROR,
         format='%(message)s'

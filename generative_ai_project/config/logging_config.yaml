@@ -2,29 +2,25 @@
 # LOGGING CONFIGURATION - LLM Ransomware Profiling Project
 # ==============================================================================
 
-version: 1
-disable_existing_loggers: False
-
-
 # ------------------------------------------------------------------------------
 # FORMATTERS
 # ------------------------------------------------------------------------------
 formatters:
-  # Standard format for console output (clean, minimal)
+  # Standard format for console output
   standard:
     format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     datefmt: "%H:%M:%S"
   
-  # Detailed format for file logs (includes module and line number)
+  # Detailed format for file logs
   detailed:
     format: "%(asctime)s - %(name)s - %(levelname)s - %(module)s:%(lineno)d - %(message)s"
     datefmt: "%Y-%m-%d %H:%M:%S"
   
-  # Minimal format for console (clean output, as per run_pipeline design)
+  # Minimal format for console output
   minimal:
-    format: "⚠️  %(message)s"
+    format: "%(message)s"
   
-  # Error report format 
+  # Error report format
   error_report:
     format: "[%(asctime)s] %(levelname)s in %(name)s (%(module)s:%(lineno)d)\n%(message)s\n"
     datefmt: "%Y-%m-%d %H:%M:%S"
@@ -34,14 +30,14 @@ formatters:
 # HANDLERS
 # ------------------------------------------------------------------------------
 handlers:
-  # Console handler - WARNING level only (clean stdout)
+  # Console handler for warning-level messages
   console:
     class: logging.StreamHandler
     level: WARNING
     formatter: minimal
     stream: ext://sys.stdout
   
-  # Main file handler - DEBUG level (verbose logging)
+  # Main file handler for debug-level logging
   file_handler:
     class: logging.FileHandler
     level: DEBUG
@@ -50,7 +46,7 @@ handlers:
     mode: "a"
     encoding: "utf8"
   
-  # Rotating file handler for production (prevents huge log files)
+  # Rotating file handler with size-based rotation
   rotating_file:
     class: logging.handlers.RotatingFileHandler
     level: DEBUG
@@ -60,7 +56,7 @@ handlers:
     backupCount: 5
     encoding: "utf8"
   
-  # Error-only handler (for critical issues reporting)
+  # Error-level file handler for critical issues
   error_file:
     class: logging.FileHandler
     level: ERROR
@@ -69,7 +65,7 @@ handlers:
     mode: "a"
     encoding: "utf8"
   
-  # API errors handler (UniBS cluster specific,)
+  # API error handler for external service issues
   api_error_file:
     class: logging.FileHandler
     level: WARNING
@@ -80,7 +76,7 @@ handlers:
 
 
 # ------------------------------------------------------------------------------
-# LOGGERS (Module-specific configurations)
+# LOGGERS
 # ------------------------------------------------------------------------------
 loggers:
   # Main pipeline logger
@@ -89,13 +85,13 @@ loggers:
     handlers: [console, file_handler, error_file]
     propagate: False
   
-  # UniBS LLM Client logger (API calls, retries, timeouts)
-  UniBS_Client:
+  # LLM client logger for API interactions
+  LLMClient:
     level: INFO
     handlers: [file_handler, api_error_file]
     propagate: False
   
-  # Error handler logger (retry logic, exponential backoff)
+  # Error handler logger for retry mechanisms
   ErrorHandler:
     level: DEBUG
     handlers: [file_handler, error_file]
@@ -119,7 +115,7 @@ loggers:
     handlers: [file_handler]
     propagate: False
   
-  # Embedding client logger (future feature)
+  # Embedding client logger
   EmbeddingClient:
     level: INFO
     handlers: [file_handler, api_error_file]
@@ -137,7 +133,7 @@ loggers:
     handlers: [file_handler]
     propagate: False
   
-  # External libraries (suppress verbose output)
+  # External library loggers
   openai:
     level: WARNING
     handlers: [file_handler]
@@ -160,7 +156,7 @@ loggers:
 
 
 # ------------------------------------------------------------------------------
-# ROOT LOGGER (Fallback for unconfigured loggers)
+# ROOT LOGGER
 # ------------------------------------------------------------------------------
 root:
   level: WARNING
@@ -170,10 +166,8 @@ root:
 # ------------------------------------------------------------------------------
 # NOTES
 # ------------------------------------------------------------------------------
-# 1. Console shows only WARNING+ (clean output during pipeline execution)
-# 2. File logs capture everything at DEBUG level for troubleshooting
-# 3. api_errors.log:
-#    - Records timestamp, model, and error message
-#    - Can be submitted to professor for persistent issues
-# 4. errors.log captures all ERROR+ events across all modules
-# 5. Rotating handler prevents disk space issues in production
+# Console output displays WARNING level and above for operational clarity
+# File logs capture DEBUG level and above for comprehensive troubleshooting
+# API errors are logged separately for systematic monitoring
+# Error logs capture all ERROR level events across modules
+# Rotating handler prevents excessive disk usage in production environments

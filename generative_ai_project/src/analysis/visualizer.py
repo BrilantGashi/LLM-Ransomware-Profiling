@@ -2,12 +2,13 @@
 Data Visualization Module for Ransomware Negotiation Analysis
 
 Generates publication-ready plots for speech act and argumentative analysis.
-Follows academic standards (Nature/Science style) with 300 DPI output.
+Follows academic standards with 300 DPI output.
 
 Author: Brilant Gashi
 Supervisors: Prof. Federico Cerutti, Prof. Pietro Baroni
-University of Brescia - 2025/2026
+University of Brescia
 """
+
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -15,6 +16,7 @@ import seaborn as sns
 import logging
 from pathlib import Path
 import numpy as np
+
 
 logger = logging.getLogger(__name__)
 
@@ -43,10 +45,9 @@ class DataVisualizer:
         logger.info(f"Visualizer initialized: {len(self.df_speech)} messages, {len(self.df_neg)} chats")
     
     def _configure_style(self):
-        """Configure matplotlib/seaborn for academic publication."""
+        """Configure matplotlib and seaborn for academic publication."""
         sns.set_theme(style="whitegrid", context="paper", font_scale=1.2)
         
-        # Colorblind-friendly palette
         self.palette_main = [
             '#E64B35', '#4DBBD5', '#00A087', '#3C5488', '#F39B7F',
             '#8491B4', '#91D1C2', '#DC0000', '#7E6148', '#B09C85'
@@ -72,7 +73,7 @@ class DataVisualizer:
         if path.exists():
             return pd.read_csv(path, index_col=index_col)
         else:
-            logger.warning(f"⚠️  {filename} not found")
+            logger.warning(f"{filename} not found")
             return pd.DataFrame()
     
     def _add_caption(self, fig, caption: str):
@@ -80,14 +81,10 @@ class DataVisualizer:
         fig.text(0.5, -0.01, caption, ha='center', va='top',
                 fontsize=10, style='italic', color='#555', wrap=True)
     
-    # =========================================================================
-    # 1. TEMPORAL EVOLUTION (Paper Figures 1 & 2)
-    # =========================================================================
-    
     def plot_temporal_speech_acts(self):
         """
-        Temporal evolution of speech acts (replicates paper Figure 1).
-        Shows: Directive/Informative early → Negotiative mid → Informative late.
+        Temporal evolution of speech acts across negotiation phases.
+        Shows directive and informative patterns in opening, negotiative in middle, informative in closing.
         """
         if self.df_temp_speech.empty:
             return
@@ -98,7 +95,6 @@ class DataVisualizer:
         fig, ax = plt.subplots(figsize=(14, 8))
         df_smooth.plot.area(ax=ax, color=self.palette_main, alpha=0.85, linewidth=0)
         
-        # Phase markers
         ax.axvline(x=5, color='gray', linestyle=':', alpha=0.5, linewidth=2)
         ax.axvline(x=15, color='gray', linestyle=':', alpha=0.5, linewidth=2)
         ax.text(2.5, 95, 'Opening', ha='center', fontsize=10, style='italic', color='#555')
@@ -122,12 +118,12 @@ class DataVisualizer:
         
         plt.savefig(self.plots_dir / "01_temporal_speech_acts.png")
         plt.close()
-        logger.info("📊 Saved: 01_temporal_speech_acts.png")
+        logger.info("Saved: 01_temporal_speech_acts.png")
     
     def plot_temporal_argumentative(self):
         """
-        Temporal evolution of argumentative functions (replicates paper Figure 2).
-        Shows: Face/Ethos early → Value/Fairness mid → Grounds/Facts late.
+        Temporal evolution of argumentative functions across negotiation phases.
+        Shows face and ethos early, value and fairness mid-phase, grounds and facts late.
         """
         if self.df_temp_arg.empty:
             return
@@ -158,21 +154,16 @@ class DataVisualizer:
         
         plt.savefig(self.plots_dir / "02_temporal_argumentative.png")
         plt.close()
-        logger.info("📊 Saved: 02_temporal_argumentative.png")
-    
-    # =========================================================================
-    # 2. GROUP ATTRIBUTION (Paper Figures 3 & 4)
-    # =========================================================================
+        logger.info("Saved: 02_temporal_argumentative.png")
     
     def plot_group_speech_acts_heatmap(self):
         """
-        Speech act distribution by group (enhanced paper Figure 3).
+        Speech act distribution by ransomware group.
         Shows group-specific communication styles for attribution.
         """
         if self.df_group_speech.empty:
             return
         
-        # Top 20 groups by activity
         row_sums = self.df_group_speech.sum(axis=1)
         df_plot = self.df_group_speech.loc[row_sums.sort_values(ascending=False).index].head(20)
         
@@ -192,12 +183,12 @@ class DataVisualizer:
         
         plt.savefig(self.plots_dir / "03_group_speech_acts_heatmap.png")
         plt.close()
-        logger.info("📊 Saved: 03_group_speech_acts_heatmap.png")
+        logger.info("Saved: 03_group_speech_acts_heatmap.png")
     
     def plot_group_argumentative_heatmap(self):
         """
-        Argumentative function distribution by group (enhanced paper Figure 4).
-        Shows justificatory/strategic preferences for attribution.
+        Argumentative function distribution by ransomware group.
+        Shows justificatory and strategic preferences for attribution.
         """
         if self.df_group_arg.empty:
             return
@@ -221,16 +212,12 @@ class DataVisualizer:
         
         plt.savefig(self.plots_dir / "04_group_argumentative_heatmap.png")
         plt.close()
-        logger.info("📊 Saved: 04_group_argumentative_heatmap.png")
-    
-    # =========================================================================
-    # 3. FINANCIAL ANALYSIS
-    # =========================================================================
+        logger.info("Saved: 04_group_argumentative_heatmap.png")
     
     def plot_negotiation_gap(self):
         """
-        Dumbbell plot: Initial demand vs. final settlement.
-        Shows the 'negotiation gap' and discount percentages by group.
+        Dumbbell plot comparing initial demand versus final settlement.
+        Shows the negotiation gap and discount percentages by group.
         """
         if self.df_neg.empty:
             return
@@ -244,11 +231,9 @@ class DataVisualizer:
         
         fig, ax = plt.subplots(figsize=(12, 8))
         
-        # Connecting lines
         ax.hlines(y=df_grp.index, xmin=df_grp['final_price'], xmax=df_grp['initial_demand'],
                  color='gray', alpha=0.5, linewidth=2)
         
-        # Points
         ax.scatter(df_grp['initial_demand'], df_grp.index, color='#E64B35',
                   s=120, label='Initial Demand', zorder=3, edgecolors='white', linewidth=1.5)
         ax.scatter(df_grp['final_price'], df_grp.index, color='#00A087',
@@ -261,7 +246,6 @@ class DataVisualizer:
         ax.legend(loc='lower right', frameon=True, fancybox=True)
         ax.grid(axis='x', alpha=0.3)
         
-        # Discount annotations
         for i, (group, row) in enumerate(df_grp.iterrows()):
             discount = (1 - row['final_price'] / row['initial_demand']) * 100
             if discount > 0:
@@ -275,11 +259,11 @@ class DataVisualizer:
         
         plt.savefig(self.plots_dir / "05_negotiation_gap_dumbbell.png")
         plt.close()
-        logger.info("📊 Saved: 05_negotiation_gap_dumbbell.png")
+        logger.info("Saved: 05_negotiation_gap_dumbbell.png")
     
     def plot_discount_distribution(self):
         """
-        Histogram: Distribution of discount percentages achieved.
+        Histogram showing distribution of discount percentages achieved.
         Shows bargaining outcomes across all negotiations.
         """
         if self.df_neg.empty:
@@ -296,7 +280,6 @@ class DataVisualizer:
         ax.hist(df['discount_pct'], bins=30, color='#4DBBD5',
                edgecolor='white', linewidth=1.2, alpha=0.85)
         
-        # Statistics
         mean_discount = df['discount_pct'].mean()
         median_discount = df['discount_pct'].median()
         
@@ -318,15 +301,11 @@ class DataVisualizer:
         
         plt.savefig(self.plots_dir / "06_discount_distribution.png")
         plt.close()
-        logger.info("📊 Saved: 06_discount_distribution.png")
-    
-    # =========================================================================
-    # 4. CROSS-DIMENSIONAL ANALYSIS
-    # =========================================================================
+        logger.info("Saved: 06_discount_distribution.png")
     
     def plot_psychology_discount_matrix(self):
         """
-        Heatmap: Attacker strategy vs. Victim strategy → Mean discount.
+        Heatmap showing attacker strategy versus victim strategy and mean discount.
         Shows which psychological combinations yield better outcomes for victims.
         """
         if self.df_neg.empty:
@@ -361,17 +340,16 @@ class DataVisualizer:
         
         plt.savefig(self.plots_dir / "07_psychology_discount_matrix.png")
         plt.close()
-        logger.info("📊 Saved: 07_psychology_discount_matrix.png")
+        logger.info("Saved: 07_psychology_discount_matrix.png")
     
     def plot_tactic_effectiveness_boxplot(self):
         """
-        Boxplot: Dominant argumentative tactic vs. discount achieved.
+        Boxplot showing dominant argumentative tactic versus discount achieved.
         Links rhetorical approach to financial outcome.
         """
         if self.df_neg.empty or self.df_speech.empty:
             return
         
-        # Calculate dominant tactic per chat
         top_tactics = self.df_speech.groupby('chat_id')['argumentative_func'].agg(
             lambda x: x.mode().iloc[0] if not x.mode().empty else "None"
         ).reset_index(name='dominant_tactic')
@@ -380,7 +358,6 @@ class DataVisualizer:
         df_merged['discount_pct'] = pd.to_numeric(df_merged['discount_pct'], errors='coerce')
         df_merged = df_merged.dropna(subset=['discount_pct', 'dominant_tactic'])
         
-        # Filter tactics with >=3 occurrences
         tactic_counts = df_merged['dominant_tactic'].value_counts()
         main_tactics = tactic_counts[tactic_counts >= 3].index
         df_plot = df_merged[df_merged['dominant_tactic'].isin(main_tactics)]
@@ -410,12 +387,12 @@ class DataVisualizer:
         
         plt.savefig(self.plots_dir / "08_tactic_effectiveness_boxplot.png")
         plt.close()
-        logger.info("📊 Saved: 08_tactic_effectiveness_boxplot.png")
+        logger.info("Saved: 08_tactic_effectiveness_boxplot.png")
     
     def plot_speech_act_by_party(self):
         """
-        Stacked bar: Speech act distribution by party (attacker vs. victim).
-        Shows asymmetric communicative roles.
+        Stacked bar chart showing speech act distribution by party.
+        Shows asymmetric communicative roles between attacker and victim.
         """
         if self.df_speech.empty or 'party' not in self.df_speech.columns:
             return
@@ -443,11 +420,11 @@ class DataVisualizer:
         
         plt.savefig(self.plots_dir / "09_speech_act_by_party.png")
         plt.close()
-        logger.info("📊 Saved: 09_speech_act_by_party.png")
+        logger.info("Saved: 09_speech_act_by_party.png")
     
     def plot_message_length_evolution(self):
         """
-        Line plot: Average message length across negotiation progress.
+        Line plot showing average message length across negotiation progress.
         Shows verbosity patterns over time.
         """
         if self.df_speech.empty or 'text_length' not in self.df_speech.columns:
@@ -478,16 +455,12 @@ class DataVisualizer:
         
         plt.savefig(self.plots_dir / "10_message_length_evolution.png")
         plt.close()
-        logger.info("📊 Saved: 10_message_length_evolution.png")
-    
-    # =========================================================================
-    # 5. STATISTICAL SUMMARIES
-    # =========================================================================
+        logger.info("Saved: 10_message_length_evolution.png")
     
     def plot_negotiation_outcomes_pie(self):
         """
-        Pie chart: Distribution of negotiation outcomes.
-        Shows success/failure/abandoned rates.
+        Pie chart showing distribution of negotiation outcomes.
+        Shows success, failure, and abandoned negotiation rates.
         """
         if self.df_neg.empty or 'outcome' not in self.df_neg.columns:
             return
@@ -524,17 +497,16 @@ class DataVisualizer:
         
         plt.savefig(self.plots_dir / "11_negotiation_outcomes_pie.png")
         plt.close()
-        logger.info("📊 Saved: 11_negotiation_outcomes_pie.png")
+        logger.info("Saved: 11_negotiation_outcomes_pie.png")
     
     def plot_dataset_overview_bars(self):
         """
-        Bar chart: Dataset composition summary (groups, chats, messages).
-        Provides high-level statistics overview.
+        Bar chart showing dataset composition summary.
+        Provides high-level statistics overview for groups, chats, and messages.
         """
         if self.df_speech.empty:
             return
         
-        # Calculate statistics
         total_groups = self.df_speech['group'].nunique()
         total_chats = self.df_speech['chat_id'].nunique()
         total_messages = len(self.df_speech)
@@ -552,7 +524,6 @@ class DataVisualizer:
         bars = ax.bar(stats.keys(), stats.values(), color=self.palette_main[:4],
                      edgecolor='white', linewidth=1.5)
         
-        # Add value labels on bars
         for bar in bars:
             height = bar.get_height()
             ax.text(bar.get_x() + bar.get_width()/2., height,
@@ -570,39 +541,31 @@ class DataVisualizer:
         
         plt.savefig(self.plots_dir / "12_dataset_overview_bars.png")
         plt.close()
-        logger.info("📊 Saved: 12_dataset_overview_bars.png")
-    
-    # =========================================================================
-    # MAIN GENERATOR
-    # =========================================================================
+        logger.info("Saved: 12_dataset_overview_bars.png")
     
     def generate_all_plots(self):
-        """Generate complete visualization suite for thesis."""
+        """Generate complete visualization suite."""
         logger.info("=" * 70)
-        logger.info("🎨 STARTING VISUALIZATION GENERATION")
+        logger.info("STARTING VISUALIZATION GENERATION")
         logger.info("=" * 70)
         
         plot_count = 0
         
-        # Temporal evolution
         self.plot_temporal_speech_acts()
         plot_count += 1
         self.plot_temporal_argumentative()
         plot_count += 1
         
-        # Group attribution
         self.plot_group_speech_acts_heatmap()
         plot_count += 1
         self.plot_group_argumentative_heatmap()
         plot_count += 1
         
-        # Financial analysis
         self.plot_negotiation_gap()
         plot_count += 1
         self.plot_discount_distribution()
         plot_count += 1
         
-        # Cross-dimensional
         self.plot_psychology_discount_matrix()
         plot_count += 1
         self.plot_tactic_effectiveness_boxplot()
@@ -612,15 +575,14 @@ class DataVisualizer:
         self.plot_message_length_evolution()
         plot_count += 1
         
-        # Statistical summaries
         self.plot_negotiation_outcomes_pie()
         plot_count += 1
         self.plot_dataset_overview_bars()
         plot_count += 1
         
         logger.info("=" * 70)
-        logger.info(f"✅ GENERATED {plot_count} PUBLICATION-READY VISUALIZATIONS")
-        logger.info(f"📂 Output directory: {self.plots_dir}")
+        logger.info(f"GENERATED {plot_count} PUBLICATION-READY VISUALIZATIONS")
+        logger.info(f"Output directory: {self.plots_dir}")
         logger.info("=" * 70)
 
 
@@ -633,7 +595,7 @@ if __name__ == "__main__":
     project_root = Path(__file__).parent.parent.parent
     
     print("\n" + "=" * 70)
-    print("📊 DATA VISUALIZATION MODULE")
+    print("DATA VISUALIZATION MODULE")
     print("=" * 70)
     print(f"Project root: {project_root}")
     print("-" * 70)
@@ -642,5 +604,5 @@ if __name__ == "__main__":
     viz.generate_all_plots()
     
     print("\n" + "=" * 70)
-    print("🎉 VISUALIZATION COMPLETE")
+    print("VISUALIZATION COMPLETE")
     print("=" * 70)

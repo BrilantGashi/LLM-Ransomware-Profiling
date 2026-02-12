@@ -2,22 +2,18 @@
 # MODEL CONFIGURATION - LLM Ransomware Profiling Project
 # ==============================================================================
 
+
 # ------------------------------------------------------------------------------
-# CLUSTER CONFIGURATION
+# API CONFIGURATION
 # ------------------------------------------------------------------------------
-unibs_cluster:
+api_service:
   base_url: "https://gpustack.ing.unibs.it/v1"
   # API Key loaded from environment variable GPUSTACK_API_KEY
-  # DO NOT insert the key here! Use .env file
-  
-  # Notes from handbook:
-  # - Experimental service, no availability guarantees
-  # - Accessible only from UniBS network or via VPN
-  # - Do not send sensitive/personal data
+  # API key should be stored in environment variables, not in this file
 
 
 # ------------------------------------------------------------------------------
-# AVAILABLE MODELS (from Handbook Section 5)
+# AVAILABLE MODELS
 # ------------------------------------------------------------------------------
 available_models:
   llm:
@@ -35,34 +31,28 @@ available_models:
 
 
 # ------------------------------------------------------------------------------
-# ACTIVE MODEL (for single execution)
+# ACTIVE MODEL
 # ------------------------------------------------------------------------------
 active_model: "qwen3"
 
 
 # ------------------------------------------------------------------------------
-# ENSEMBLE MODELS (for multi-model consensus)
+# ENSEMBLE MODELS
 # ------------------------------------------------------------------------------
-# List of models to run in parallel for consensus voting
+# Models to run in parallel for consensus-based analysis
 ensemble_models:
   - granite3.3
   - llama3.2
   - phi4-mini
-  
-  
-
-# Note: If ensemble_models is empty or has only 1 element,
-# consensus will not be executed
 
 
 # ------------------------------------------------------------------------------
-# STANDARD LLM PARAMETERS (Handbook Section 6)
+# STANDARD LLM PARAMETERS
 # ------------------------------------------------------------------------------
-# These are default parameters applied to ALL models
-# unless overridden in model_specific_params
+# Default parameters applied to all models unless overridden
 llm_parameters:
   temperature: 0.6              # Determinism (0.0) vs Creativity (1.0)
-  top_p: 0.95                   # Nucleus sampling
+  top_p: 0.95                   # Nucleus sampling threshold
   max_tokens: 4096              # Maximum response length
   frequency_penalty: 0          # Repetition penalty (0.0 - 2.0)
   presence_penalty: 0           # Topic coverage penalty (0.0 - 2.0)
@@ -71,47 +61,40 @@ llm_parameters:
 # ------------------------------------------------------------------------------
 # MODEL-SPECIFIC PARAMETERS
 # ------------------------------------------------------------------------------
-# Override parameters for specific models (based on best practices)
+# Parameter overrides for individual models
 model_specific_params:
   
-  # GPT-OSS: Has larger context, use higher max_tokens
   gpt-oss:
     max_tokens: 4096
     temperature: 0.8
   
-  # Phi4-mini: Good for creativity, higher temperature
   phi4-mini:
     temperature: 0.8
   
-  # Qwen3: Excellent for precision analysis, lower temperature
   qwen3:
     temperature: 0.6
   
-  # Llama3.2: Balanced
   llama3.2:
     temperature: 0.7
   
-  # Phi4: Advanced model, more deterministic for complex tasks
   phi4:
     temperature: 0.7
     max_tokens: 2048
   
-  # Granite3.3: Concise responses, moderate temperature
   granite3.3:
     temperature: 0.7
   
-  # Gemma3: Good for simple explanations
   gemma3:
     temperature: 0.8
 
 
 # ------------------------------------------------------------------------------
-# EMBEDDING CONFIGURATION (Handbook Section 7)
+# EMBEDDING CONFIGURATION
 # ------------------------------------------------------------------------------
 embedding:
   default_model: "nomic-embed-text-v1.5"
   
-  # Parameters for future RAG/semantic search features
+  # Vector dimensions for embedding models
   vector_dimensions:
     qwen3-embedding: 4096
     nomic-embed-text-v1.5: 768
@@ -122,19 +105,19 @@ embedding:
 # ------------------------------------------------------------------------------
 processing:
   max_workers: 2                # Parallel threads for chat processing
-  chunk_max_chars: 10000        # Max prompt length before chunking
+  chunk_max_chars: 10000        # Maximum prompt length before chunking
   
-  # Retry logic
+  # Retry mechanism configuration
   retry:
-    max_attempts: 3             # Max retries for failed calls
-    backoff_factor: 2           # Multiplier for exponential backoff
+    max_attempts: 3             # Maximum retry attempts for failed API calls
+    backoff_factor: 2           # Exponential backoff multiplier
     retry_on_errors:
       - "APITimeoutError"
       - "RateLimitError"
 
 
 # ------------------------------------------------------------------------------
-# PATHS (relative to project root)
+# PATHS
 # ------------------------------------------------------------------------------
 paths:
   raw_data: "data/raw/messages.json"
@@ -142,21 +125,21 @@ paths:
   logs: "logs"
   config: "config"
   prompts: "config/prompt_templates.yaml"
-  few_shot: "config/few_shot_examples"  # NOTE: not "few_shot_examples1"
+  few_shot: "config/few_shot_examples"
 
 
 # ------------------------------------------------------------------------------
 # CONSENSUS CONFIGURATION
 # ------------------------------------------------------------------------------
 consensus:
-  enabled: true                 # Enable consensus only if ensemble_models > 1
-  strategy: "majority_vote"     # Strategy: majority_vote | weighted_average
+  enabled: true                 # Enable consensus mode with multiple models
+  strategy: "majority_vote"     # Options: majority_vote | weighted_average
   min_agreement: 0.6            # Minimum agreement threshold (60%)
   
-  # Weights for weighted_average (optional)
+  # Model weights for weighted_average strategy
   model_weights:
     phi4-mini: 1.0
-    qwen3: 1.2                  # Higher weight for precision
+    qwen3: 1.2
     llama3.2: 1.0
 
 
@@ -165,15 +148,15 @@ consensus:
 # ------------------------------------------------------------------------------
 logging:
   level: "INFO"                 # DEBUG | INFO | WARNING | ERROR
-  console_level: "WARNING"      # Only warning+ on console (clean stdout)
-  file_level: "DEBUG"           # Everything to file for debugging
+  console_level: "WARNING"      # Console output level
+  file_level: "DEBUG"           # File logging level
   
   format:
-    console: "⚠️  %(message)s"
+    console: "%(message)s"
     file: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
   
-  # Save reasoning_content 
-  save_reasoning: true          # Save thinking/reasoning field if available
+  # Reasoning output configuration
+  save_reasoning: true          # Save model reasoning output if available
   reasoning_suffix: "_reasoning.txt"
 
 
@@ -182,18 +165,18 @@ logging:
 # ------------------------------------------------------------------------------
 features:
   use_few_shot: true            # Enable few-shot learning
-  validate_json_output: true    # Strict JSON validation before saving
-  parallel_model_execution: false  # Parallelize models (experimental)
-  save_intermediate_outputs: true  # Save intermediate outputs for debug
+  validate_json_output: true    # Validate JSON output before saving
+  parallel_model_execution: false  # Execute models in parallel
+  save_intermediate_outputs: true  # Save intermediate processing outputs
 
 
 # ------------------------------------------------------------------------------
 # DATASET CONFIGURATION
 # ------------------------------------------------------------------------------
 dataset:
-  source: "local"               # local | github
+  source: "local"               # Source type: local | github
   github_repo: "Casualtek/Ransomchats"
-  max_chats_per_group: null     # null = all, otherwise limit
+  max_chats_per_group: null     # Maximum chats per group (null for unlimited)
   ignored_groups:
     - ".git"
     - ".github"
@@ -202,9 +185,9 @@ dataset:
 
 
 # ------------------------------------------------------------------------------
-# EXPERIMENTAL (Do not use in production)
+# EXPERIMENTAL FEATURES
 # ------------------------------------------------------------------------------
 experimental:
-  enable_streaming: false       # Streaming responses (not supported by cluster)
-  cache_responses: false        # Local cache for LLM responses
-  use_reasoning_in_prompt: false  # Include previous reasoning in prompt
+  enable_streaming: false         # Enable streaming responses
+  cache_responses: false          # Enable local response caching
+  use_reasoning_in_prompt: false  # Include previous reasoning in prompts
