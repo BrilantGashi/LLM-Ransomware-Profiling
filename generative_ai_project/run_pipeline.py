@@ -111,7 +111,7 @@ def suppress_stdout():
 
 # === MODULE IMPORTS ===
 try:
-    from src.llm.unibs_client import UniBSLLMClient
+    from src.llm.unibs_client import LLMClient
     from src.utils.data_loader import download_and_load_messages_db, clean_message_list
     from src.analysis.consensus import ConsensusManager
 except ImportError as e:
@@ -811,7 +811,7 @@ class RansomwarePipeline:
     
     def _process_single_chat(
         self, 
-        client: UniBSLLMClient, 
+        client: LLMClient, 
         model_name: str,
         group_name: str, 
         chat_id: str, 
@@ -929,7 +929,7 @@ class RansomwarePipeline:
         """
         # Initialize client with stdout suppressed
         with suppress_stdout():
-            client = UniBSLLMClient(
+            client = LLMClient(
                 config_path=str(self.model_config_path), 
                 model_override=model_name
             )
@@ -1113,7 +1113,7 @@ if __name__ == "__main__":
     
     try:
         pipeline.load_resources()
-        pipeline.run(max_chats=10)  # Adjust or remove limit as needed
+        pipeline.run(max_chats=5)  # Adjust or remove limit as needed
     
     except KeyboardInterrupt:
         print("\n\nPipeline interrupted by user.")

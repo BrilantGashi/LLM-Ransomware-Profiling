@@ -41,8 +41,8 @@ active_model: "qwen3"
 # ------------------------------------------------------------------------------
 # Models to run in parallel for consensus-based analysis
 ensemble_models:
-  - granite3.3
-  - llama3.2
+  - phi4
+  - gpt-oss
   - phi4-mini
 
 
@@ -51,7 +51,7 @@ ensemble_models:
 # ------------------------------------------------------------------------------
 # Default parameters applied to all models unless overridden
 llm_parameters:
-  temperature: 0.6              # Determinism (0.0) vs Creativity (1.0)
+  temperature: 0.8              # Determinism (0.0) vs Creativity (1.0)
   top_p: 0.95                   # Nucleus sampling threshold
   max_tokens: 4096              # Maximum response length
   frequency_penalty: 0          # Repetition penalty (0.0 - 2.0)
@@ -104,7 +104,7 @@ embedding:
 # PROCESSING & RETRY CONFIGURATION
 # ------------------------------------------------------------------------------
 processing:
-  max_workers: 2                # Parallel threads for chat processing
+  max_workers: 3                # Parallel threads for chat processing
   chunk_max_chars: 10000        # Maximum prompt length before chunking
   
   # Retry mechanism configuration

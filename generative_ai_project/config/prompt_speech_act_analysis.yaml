@@ -5,63 +5,138 @@
 output_format: json
 
 system_prompt: |
-  You are a careful discourse analyst. Classify each chat message from a ransomware 
-  negotiation using a small, theory-grounded set of speech-act categories. 
-  Follow the schema exactly and return strict JSON.
+  You are a discourse analysis classifier for ransomware negotiations.
+  Your ONLY task is to output a valid JSON array. You must NEVER output anything else.
+  
+  ABSOLUTE REQUIREMENTS:
+  1. Output ONLY a JSON array - nothing before, nothing after
+  2. NO markdown formatting (no ```json, no ```, no code blocks)
+  3. NO explanations, notes, warnings, or commentary of any kind
+  4. NO invented categories - use ONLY the exact values from the allowed lists
+  5. Analyze ALL messages in the exact order they appear in the input
+  6. Each message gets exactly ONE object in the output array
 
 user_prompt: |
-  Task
-  You will label every message in the chat below. The chat is provided as a JSON list 
-  of dictionaries, each with fields "party" (either "Victim" or "Attacker") and "content". 
-  Messages are in chronological order.
+  Classify each message in the chat below using Speech Act Theory and Argumentation Theory.
   
-  Return a JSON list of dictionaries, one per chat turn, in the same order, using this schema:
-  
-  {
-    "text": "{{verbatim_message}}",
-    "party": "Victim|Attacker",
-    "primary_act": "INFORMATIVE_DECLARATIVE | DIRECTIVE | COMMISSIVE | NEGOTIATIVE_EVALUATIVE | EXPRESSIVE_METACOMMUNICATIVE",
-    "secondary_acts": ["..."],
-    "argumentative_function": "GROUNDS/FACTS | ACTION_PRESSURE | CONDITIONAL_REASONING | VALUE/FAIRNESS_APPEAL | FACE/ETHOS_WORK | PROCESS_MAINTENANCE",
-    "phase": "OPENING_CONTACT | PROOF_OF_CAPABILITY | DEMAND_FORMULATION | BARGAINING_CONCESSION | RESOLUTION_CLOSURE | OTHER",
-    "rationale": "1-3 sentences citing specific words that cue the label."
-  }
-  
-  Labels (theory-grounded)
-  
-  PRIMARY_SPEECH_ACT (choose exactly one):
-  - INFORMATIVE_DECLARATIVE — stating/confirming status or facts; includes "payment received," "data deleted," etc.
-  - DIRECTIVE — ordering/requesting/instructing; includes demands and procedural instructions.
-  - COMMISSIVE — committing to future action; includes PROMISE, OFFER, and THREAT subtypes.
-  - NEGOTIATIVE_EVALUATIVE — proposing/changing terms, counteroffers, and justifications/moral evaluations (fairness, feasibility, proportionality).
-  - EXPRESSIVE_METACOMMUNICATIVE — emotion/stance ("sorry," "thanks") and channel/coordination moves ("please confirm," "we will wait").
-  
-  SECONDARY_SUBTYPES (zero or more; use only when clearly present):
-  - For COMMISSIVE: PROMISE | OFFER | THREAT
-  - For NEGOTIATIVE_EVALUATIVE: OFFER | COUNTEROFFER | JUSTIFICATION
-  - For DIRECTIVE: INSTRUCTION | REQUEST | DEMAND
-  - For EXPRESSIVE_METACOMMUNICATIVE: EXPRESSIVE | METACOMMUNICATIVE
-  
-  ARGUMENTATIVE_FUNCTION (choose one):
-  - GROUNDS/FACTS (establishing or updating shared reality)
-  - ACTION_PRESSURE (coercing or requesting action)
-  - CONDITIONAL_REASONING (if–then threats/promises)
-  - VALUE/FAIRNESS_APPEAL (justifying terms; proportionality)
-  - FACE/ETHOS_WORK (empathy, politeness, relational maintenance)
-  - PROCESS_MAINTENANCE (clarification, confirmation, scheduling)
-  
-  NEGOTIATION_PHASE (choose one; pick best fit):
-  - OPENING_CONTACT | PROOF_OF_CAPABILITY | DEMAND_FORMULATION
-  - BARGAINING_CONCESSION | RESOLUTION_CLOSURE | OTHER
-  
-  Guidance
-  - Prefer INFORMATIVE_DECLARATIVE for confirmations/status changes.
-  - Label explicit "pay or else" messages as COMMISSIVE with THREAT; argumentative_function = CONDITIONAL_REASONING.
-  - Label "we can do X if you pay" as COMMISSIVE (PROMISE or OFFER depending on framing).
-  - Label instructions like "send 2-3 files" as DIRECTIVE (INSTRUCTION or DEMAND).
-  - Label price moves and moral/feasibility arguments under NEGOTIATIVE_EVALUATIVE with the appropriate subtype.
-  - Use EXPRESSIVE_METACOMMUNICATIVE for apologies/thanks and for channel/coordination.
-  - If a message clearly contains two forces, choose the most consequential as primary and add the other in secondary_acts.
-  
-  Chat JSON:
+  INPUT:
   {{chat_json}}
+  
+  ═══════════════════════════════════════════════════════════════════════════
+  REQUIRED OUTPUT STRUCTURE
+  ═══════════════════════════════════════════════════════════════════════════
+  
+  You MUST return a JSON array with this EXACT structure for each message:
+  
+  [
+    {
+      "message_id": <number starting from 1>,
+      "party": "<exact value from input: 'Attacker' or 'Victim'>",
+      "primary_act": "<exactly ONE value from PRIMARY_ACT list below>",
+      "secondary_acts": [<empty array [] OR array with ONE string from SECONDARY_ACTS list>],
+      "argumentative_function": "<exactly ONE value from ARGUMENTATIVE_FUNCTION list below>",
+      "phase": "<exactly ONE value from PHASE list below>"
+    }
+  ]
+  
+  ═══════════════════════════════════════════════════════════════════════════
+  ALLOWED VALUES - USE THESE EXACT STRINGS (case-sensitive, with underscores)
+  ═══════════════════════════════════════════════════════════════════════════
+  
+  PRIMARY_ACT (choose exactly ONE - required):
+  • INFORMATIVE_DECLARATIVE
+  • DIRECTIVE  
+  • COMMISSIVE
+  • NEGOTIATIVE_EVALUATIVE
+  • EXPRESSIVE_METACOMMUNICATIVE
+  
+  Definitions:
+  - INFORMATIVE_DECLARATIVE: Stating facts, status updates, declarations
+    Examples: "We encrypted your servers", "Payment confirmed", "We have 800GB"
+  
+  - DIRECTIVE: Commands, requests, instructions, demands
+    Examples: "Send payment now", "Choose 3 files", "Provide the proof"
+  
+  - COMMISSIVE: Promises, threats, commitments to future action
+    Examples: "We will decrypt after payment", "Pay or data gets published"
+  
+  - NEGOTIATIVE_EVALUATIVE: Proposals, counteroffers, price evaluation
+    Examples: "We offer $1M", "Too expensive", "This is fair price"
+  
+  - EXPRESSIVE_METACOMMUNICATIVE: Emotions, gratitude, channel logistics
+    Examples: "Thank you", "We are waiting", "Confirm receipt"
+  
+  ───────────────────────────────────────────────────────────────────────────
+  
+  SECONDARY_ACTS (must be an array):
+  • Use empty array [] if the message has a single clear function
+  • Use array with ONE string if dual function clearly exists
+  
+  Allowed strings (use ONLY if applicable):
+  - "DIRECTIVE"
+  - "COMMISSIVE"
+  - "THREAT"
+  - "PROMISE"
+  - "COUNTEROFFER"
+  
+  Examples:
+  - Single function → secondary_acts: []
+  - "Pay $500k or leak" → primary_act: "COMMISSIVE", secondary_acts: ["DIRECTIVE"]
+  
+  ───────────────────────────────────────────────────────────────────────────
+  
+  ARGUMENTATIVE_FUNCTION (choose exactly ONE - required):
+  • GROUNDS_FACTS
+  • ACTION_PRESSURE
+  • CONDITIONAL_REASONING
+  • VALUE_FAIRNESS_APPEAL
+  • FACE_ETHOS_WORK
+  • PROCESS_MAINTENANCE
+  
+  Definitions:
+  - GROUNDS_FACTS: Establishing shared reality, factual updates
+  - ACTION_PRESSURE: Coercion, urgency, time pressure
+  - CONDITIONAL_REASONING: If-then logic, conditional statements
+  - VALUE_FAIRNESS_APPEAL: Justifying fairness, proportionality
+  - FACE_ETHOS_WORK: Trust building, credibility, reputation
+  - PROCESS_MAINTENANCE: Clarification, logistics, coordination
+  
+  ───────────────────────────────────────────────────────────────────────────
+  
+  PHASE (choose exactly ONE - required):
+  • OPENING_CONTACT
+  • PROOF_OF_CAPABILITY
+  • DEMAND_FORMULATION
+  • BARGAINING_CONCESSION
+  • RESOLUTION_CLOSURE
+  • OTHER
+  
+  Definitions:
+  - OPENING_CONTACT: Initial greetings, first contact
+  - PROOF_OF_CAPABILITY: Demonstrating control, showing samples
+  - DEMAND_FORMULATION: Initial ransom demand statement
+  - BARGAINING_CONCESSION: Price negotiation, counteroffers
+  - RESOLUTION_CLOSURE: Final agreement, payment, decryption
+  - OTHER: Messages not fitting above categories
+  
+  ═══════════════════════════════════════════════════════════════════════════
+  VALIDATION CHECKLIST - Your output MUST satisfy ALL of these:
+  ═══════════════════════════════════════════════════════════════════════════
+  
+  ✓ Output starts with [ and ends with ]
+  ✓ NO text before [ or after ]
+  ✓ NO markdown code blocks or formatting
+  ✓ message_id starts at 1 and increments by 1 for each message
+  ✓ party is exactly "Attacker" or "Victim" (matches input exactly)
+  ✓ primary_act is ONE of the 5 allowed PRIMARY_ACT values
+  ✓ secondary_acts is [] OR an array with ONE allowed secondary act string
+  ✓ argumentative_function is ONE of the 6 allowed values
+  ✓ phase is ONE of the 6 allowed PHASE values
+  ✓ All field names use underscores (e.g., primary_act NOT primary-act)
+  ✓ All category values use underscores (e.g., GROUNDS_FACTS NOT GROUNDS-FACTS)
+  ✓ Number of output objects = number of input messages
+  ✓ Valid JSON syntax (proper commas, brackets, quotes)
+  
+  ═══════════════════════════════════════════════════════════════════════════
+  
+  BEGIN CLASSIFICATION - Return ONLY the JSON array:
