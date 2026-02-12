@@ -1,0 +1,8 @@
+2026-02-12 20:38:01 - RansomPipeline - INFO - test_logging:142 - Test info message
+2026-02-12 20:38:01 - RansomPipeline - WARNING - test_logging:151 - Test warning message
+2026-02-12 20:38:01 - RansomPipeline - ERROR - test_logging:160 - Test error message
+2026-02-12 20:38:01 - RansomPipeline - CRITICAL - test_logging:169 - Test critical message
+2026-02-12 20:38:01 - RansomPipeline - INFO - test_logging:208 - Pipeline message
+2026-02-12 20:38:01 - LLMClient - WARNING - test_logging:209 - Client warning
+2026-02-12 20:38:01 - ErrorHandler - ERROR - test_logging:210 - Error handler message
+2026-02-12 20:38:01 - RansomPipeline.SubModule - INFO - test_logging:222 - Child logger message

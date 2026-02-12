@@ -1,0 +1,9 @@
+[2026-02-12 20:38:01] ERROR in RansomPipeline (test_logging:160)
+Test error message
+
+[2026-02-12 20:38:01] CRITICAL in RansomPipeline (test_logging:169)
+Test critical message
+
+[2026-02-12 20:38:01] ERROR in ErrorHandler (test_logging:210)
+Error handler message
+
