@@ -1,7 +1,7 @@
 """
-Ransomware Negotiation Analysis Pipeline - v2.2.0 WITH PROFESSOR'S CHUNKING
-Each model processes ONE chat at a time with recursive 3-way chunking
-Max 3 concurrent requests (one per model) - CLEAN OUTPUT + FEW-SHOT + SMART CHUNKING
+Ransomware Negotiation Analysis Pipeline - v2.3.0 TASK-FIRST STRATEGY
+All models process all chats with ONE prompt, then move to next prompt
+Reads from 3 separate YAML files - CLEAN OUTPUT + FEW-SHOT + SMART CHUNKING
 """
 
 import sys
@@ -110,6 +110,7 @@ class PipelineStats:
         self.model_stats = defaultdict(lambda: {'valid': 0, 'invalid': 0, 'tasks': 0})
         self.few_shot_stats = defaultdict(int)
         self.chunk_stats = defaultdict(int)
+        self.task_completion = defaultdict(int)
         self._lock = Lock()
         
     def add_warning(self, chat_id: str, message: str, model: str = None):
@@ -128,9 +129,11 @@ class PipelineStats:
         with self._lock:
             self.model_stats[model]['valid'] += 1
     
-    def increment_task(self, model: str):
+    def increment_task(self, model: str, task_name: str = None):
         with self._lock:
             self.model_stats[model]['tasks'] += 1
+            if task_name:
+                self.task_completion[task_name] += 1
     
     def add_few_shot_loaded(self, task_name: str, count: int):
         with self._lock:
@@ -161,6 +164,12 @@ class PipelineStats:
         print(f"  ├─ 🔪 Chunked:       {self.chunked_chats} chats → {self.total_chunks_processed} chunks")
         print(f"  ├─ ⚠️  With Warnings:  {len(self.chat_warnings)}")
         print(f"  └─ ❌ Errors:        {len(self.chat_errors)}")
+        
+        if self.task_completion:
+            print()
+            print("📋 TASK COMPLETION")
+            for task_name, count in sorted(self.task_completion.items()):
+                print(f"  ├─ {task_name:30s}: {count:4d} completions")
         
         if self.few_shot_stats:
             print()
@@ -296,18 +305,19 @@ class ProfessorChunker:
 # BANNER
 # ═══════════════════════════════════════════════════════════════════
 
-def print_banner(config, models, max_chats):
+def print_banner(config, models, max_chats, num_tasks, max_workers):
     print()
     print("━" * 70)
-    print("🔬  RANSOMWARE NEGOTIATION PIPELINE  │  v2.2.0 PROFESSOR'S CHUNKING")
+    print("🔬  RANSOMWARE NEGOTIATION PIPELINE  │  v2.3.0 TASK-FIRST STRATEGY")
     print("━" * 70)
     print(f"📅  Date:       {datetime.now().strftime('%Y-%m-%d %H:%M')}")
     print(f"📊  Target:     {max_chats if max_chats else 'All'} chats")
     print(f"🤖  Models:     {', '.join(models)}")
-    print(f"🧪  Tasks:      {len(config.get('tasks', {}))} per chat")
+    print(f"⚡  Parallelism: {max_workers}/{len(models)} concurrent models")
+    print(f"🧪  Tasks:      {num_tasks} (processed sequentially)")
     print(f"📚  Few-Shot:   ✅ ADAPTIVE (reduced for long chats)")
     print(f"🔪  Chunking:   ✅ RECURSIVE 3-WAY (max {ChunkConfig.MAX_PROMPT_CHARS:,} chars)")
-    print(f"⚡  Strategy:   MODEL-FIRST (max 3 concurrent requests)")
+    print(f"⚡  Strategy:   TASK-FIRST (all models on one prompt, then next)")
     print(f"📝  Log:        {LOG_FILE.name}")
     print("━" * 70)
     print()
@@ -317,7 +327,7 @@ def print_banner(config, models, max_chats):
 # ═══════════════════════════════════════════════════════════════════
 
 class RansomwarePipeline:
-    """v2.2.0 MODEL-FIRST WITH PROFESSOR'S RECURSIVE CHUNKING"""
+    """v2.3.0 TASK-FIRST WITH PROFESSOR'S RECURSIVE CHUNKING"""
     
     def __init__(self):
         self.base_dir = BASE_DIR
@@ -330,6 +340,10 @@ class RansomwarePipeline:
             self.model_config = yaml.safe_load(f)
 
         self.models_list = self.model_config.get('ensemble_models', [self.model_config.get('active_model')])
+        
+        # Legge max_workers dal config, fallback a numero di modelli
+        self.max_workers = self.model_config.get('processing', {}).get('max_workers', len(self.models_list))
+        
         self.consensus_manager = ConsensusManager(self.base_dir)
         self.prompts_config = {}
         self.full_dataset = {}
@@ -340,16 +354,43 @@ class RansomwarePipeline:
         self.chunker = ProfessorChunker()
 
     def load_resources(self):
-        """Load prompts and dataset."""
-        prompts_path = self.config_dir / "prompt_templates.yaml"
-        try:
-            with open(prompts_path, 'r', encoding='utf-8') as f:
-                self.prompts_config = yaml.safe_load(f)
-            logger.info(f"Loaded templates: {list(self.prompts_config.get('tasks', {}).keys())}")
-        except Exception as e:
-            logger.error(f"Failed to load prompts: {e}")
-            raise
+        """Load prompts from separate YAML files and dataset."""
+        
+        # Carica i 3 file di prompt separati
+        task_files = {
+            'speech_act_analysis': 'prompt_speech_act_analysis.yaml',
+            'psychological_profiling': 'prompt_psychological_profiling.yaml',
+            'tactical_extraction': 'prompt_tactical_extraction.yaml'
+        }
+        
+        self.prompts_config = {'tasks': {}}
+        
+        for task_name, filename in task_files.items():
+            prompt_file_path = self.config_dir / filename
+            
+            try:
+                with open(prompt_file_path, 'r', encoding='utf-8') as f:
+                    task_data = yaml.safe_load(f)
+                
+                # Estrai le informazioni dal file YAML
+                self.prompts_config['tasks'][task_name] = {
+                    'output_format': task_data.get('output_format', 'json'),
+                    'system_prompt': task_data.get('system_prompt', ''),
+                    'user_template': task_data.get('user_prompt', '')
+                }
+                
+                logger.info(f"✅ Loaded prompt template: {task_name}")
+            
+            except FileNotFoundError:
+                logger.error(f"❌ Prompt file not found: {filename}")
+                raise
+            except Exception as e:
+                logger.error(f"❌ Failed to load {filename}: {e}")
+                raise
+        
+        logger.info(f"Loaded {len(self.prompts_config['tasks'])} task templates: {list(self.prompts_config['tasks'].keys())}")
 
+        # Carica il dataset
         try:
             raw_rel_path = self.model_config['paths']['raw_data']
             data_path = self.base_dir / raw_rel_path
@@ -584,9 +625,11 @@ class RansomwarePipeline:
         else:
             return True, chunk_results[0] if chunk_results else ""
 
-    def _process_model_pipeline(self, model_name: str, chat_queue: list, tasks: dict, pbar):
-        """ONE MODEL processes ALL chats sequentially with professor's chunking."""
-        
+    def _process_model_for_task(self, model_name: str, task_name: str, task_cfg: dict, chat_queue: list, pbar):
+        """
+        ONE MODEL processes ALL chats for ONE TASK.
+        This is called within a task loop.
+        """
         # ✅ Suppress stdout during client creation
         with suppress_stdout():
             client = UniBSLLMClient(
@@ -594,7 +637,7 @@ class RansomwarePipeline:
                 model_override=model_name
             )
         
-        logger.info(f"[{model_name}] Started processing {len(chat_queue)} chats")
+        logger.info(f"[{model_name}] Started task '{task_name}' for {len(chat_queue)} chats")
         
         for group_name, chat_id, chat_content in chat_queue:
             dialogue = chat_content.get('dialogue', [])
@@ -602,61 +645,69 @@ class RansomwarePipeline:
                 pbar.update(1)
                 continue
             
-            # Process ALL tasks sequentially
-            for task_name, task_cfg in tasks.items():
-                self.stats.increment_task(model_name)
-                
-                task_out_dir = self.output_dir / task_name / model_name / group_name
-                task_out_dir.mkdir(parents=True, exist_ok=True)
-                
-                out_file = task_out_dir / f"{chat_id}.{task_cfg.get('output_format', 'txt')}"
+            self.stats.increment_task(model_name, task_name)
+            
+            task_out_dir = self.output_dir / task_name / model_name / group_name
+            task_out_dir.mkdir(parents=True, exist_ok=True)
+            
+            out_file = task_out_dir / f"{chat_id}.{task_cfg.get('output_format', 'txt')}"
 
-                if out_file.exists():
-                    logger.debug(f"[{model_name}] Skip {chat_id}/{task_name}")
+            if out_file.exists():
+                logger.debug(f"[{model_name}] Skip {chat_id}/{task_name}")
+                pbar.update(1)
+                continue
+
+            try:
+                # Process chat (with automatic chunking if needed)
+                success, content = self._process_single_chat(
+                    client, model_name, group_name, chat_id, 
+                    dialogue, task_name, task_cfg
+                )
+                
+                if not success:
+                    pbar.update(1)
                     continue
-
-                try:
-                    # Process chat (with automatic chunking if needed)
-                    success, content = self._process_single_chat(
-                        client, model_name, group_name, chat_id, 
-                        dialogue, task_name, task_cfg
-                    )
+                
+                # Validate JSON if required
+                if task_cfg.get('output_format') == 'json':
+                    cleaned_json = self._clean_json_output(content)
                     
-                    if not success:
-                        continue
-                    
-                    # Validate JSON if required
-                    if task_cfg.get('output_format') == 'json':
-                        cleaned_json = self._clean_json_output(content)
-                        
-                        if cleaned_json is None:
-                            warning = f"Invalid JSON in {task_name}"
-                            self.stats.add_warning(chat_id, warning, model_name)
-                            content = content  # Keep original
-                        else:
-                            content = cleaned_json
-                            self.stats.add_success(model_name)
+                    if cleaned_json is None:
+                        warning = f"Invalid JSON in {task_name}"
+                        self.stats.add_warning(chat_id, warning, model_name)
+                        content = content  # Keep original
+                    else:
+                        content = cleaned_json
+                        self.stats.add_success(model_name)
 
-                    # Write output
-                    with open(out_file, 'w', encoding='utf-8') as f:
-                        f.write(content)
-                    
-                    time.sleep(0.5)
+                # Write output
+                with open(out_file, 'w', encoding='utf-8') as f:
+                    f.write(content)
+                
+                time.sleep(0.5)
 
-                except Exception as e:
-                    error_msg = f"[{model_name}] {task_name}: {str(e)[:60]}"
-                    self.stats.add_error(chat_id, error_msg)
-                    logger.error(f"{chat_id}: {e}", exc_info=True)
+            except Exception as e:
+                error_msg = f"[{model_name}] {task_name}: {str(e)[:60]}"
+                self.stats.add_error(chat_id, error_msg)
+                logger.error(f"{chat_id}: {e}", exc_info=True)
             
             pbar.update(1)
         
-        logger.info(f"[{model_name}] Completed all chats")
+        logger.info(f"[{model_name}] Completed task '{task_name}'")
 
     def run(self, max_chats=None):
-        """Run pipeline with MODEL-FIRST strategy and professor's chunking."""
-        tasks = self.prompts_config.get('tasks', {})
-        all_jobs = []
+        """
+        Run pipeline with TASK-FIRST strategy.
         
+        Flow:
+        FOR each task:
+            FOR each model (in parallel):
+                Process all chats
+        """
+        tasks = self.prompts_config.get('tasks', {})
+        
+        # Build chat queue
+        all_jobs = []
         for group_name, chats in self.full_dataset.items():
             for chat_id, chat_content in chats.items():
                 all_jobs.append((group_name, chat_id, chat_content))
@@ -666,29 +717,38 @@ class RansomwarePipeline:
 
         self.stats.total_chats = len(all_jobs)
         
-        print_banner(self.prompts_config, self.models_list, max_chats)
+        print_banner(self.prompts_config, self.models_list, max_chats, len(tasks), self.max_workers)
 
-        total_tasks = len(all_jobs) * len(self.models_list)
+        total_operations = len(all_jobs) * len(self.models_list) * len(tasks)
         
-        with tqdm(total=total_tasks, desc="⚡ Processing", unit="chat·model", 
+        # TASK-FIRST LOOP
+        with tqdm(total=total_operations, desc="⚡ Processing", unit="operation", 
                   bar_format="{desc}: {percentage:3.0f}%|{bar:30}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]",
                   colour="cyan", ncols=80) as pbar:
             
-            with ThreadPoolExecutor(max_workers=len(self.models_list)) as executor:
-                futures = []
+            for task_idx, (task_name, task_cfg) in enumerate(tasks.items(), 1):
+                print(f"\n🧪 Task {task_idx}/{len(tasks)}: {task_name}")
+                print(f"   Processing with {len(self.models_list)} models ({self.max_workers} parallel)...")
                 
-                for model_name in self.models_list:
-                    future = executor.submit(
-                        self._process_model_pipeline,
-                        model_name, all_jobs, tasks, pbar
-                    )
-                    futures.append((future, model_name))
+                # Run all models in parallel for THIS task
+                with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
+                    futures = []
+                    
+                    for model_name in self.models_list:
+                        future = executor.submit(
+                            self._process_model_for_task,
+                            model_name, task_name, task_cfg, all_jobs, pbar
+                        )
+                        futures.append((future, model_name))
+                    
+                    # Wait for all models to complete this task
+                    for future, model_name in futures:
+                        try:
+                            future.result()
+                        except Exception as e:
+                            logger.error(f"❌ {model_name} failed on {task_name}: {e}", exc_info=True)
                 
-                for future, model_name in futures:
-                    try:
-                        future.result()
-                    except Exception as e:
-                        logger.error(f"❌ {model_name} failed: {e}", exc_info=True)
+                print(f"   ✅ Task '{task_name}' completed by all models")
         
         # Consensus
         if len(self.models_list) > 1:
@@ -710,7 +770,7 @@ if __name__ == "__main__":
     pipeline = RansomwarePipeline()
     try:
         pipeline.load_resources()
-        pipeline.run(max_chats=None)  # Process all chats
+        pipeline.run(max_chats=10)  # Test with 5 chats first
     except KeyboardInterrupt:
         print("\n\n⚠️  Pipeline interrupted by user.")
         sys.exit(0)

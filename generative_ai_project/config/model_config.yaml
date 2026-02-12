@@ -121,7 +121,7 @@ embedding:
 # PROCESSING & RETRY CONFIGURATION
 # ------------------------------------------------------------------------------
 processing:
-  max_workers: 4                # Parallel threads for chat processing
+  max_workers: 2                # Parallel threads for chat processing
   chunk_max_chars: 10000        # Max prompt length before chunking
   
   # Retry logic

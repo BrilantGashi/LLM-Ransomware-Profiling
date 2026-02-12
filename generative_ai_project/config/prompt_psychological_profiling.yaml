@@ -1,40 +1,29 @@
-# Psychological Profiling - Behavioral analysis of attacker and victim
-# Output: Single JSON object with behavioral patterns
+# ==============================================================================
+# Psychological Profiling - Behavioral Analysis of Negotiation Dynamics
+# ==============================================================================
 
-task_name: psychological_profiling
-description: "Analyze communication patterns and psychological strategies in ransomware negotiations"
-output_format: "json_object"
+output_format: json
 
 system_prompt: |
   You are a forensic behavioral analyst specializing in negotiation dynamics.
-  You MUST return ONLY a valid JSON object. No explanations, no markdown, no extra text.
-  
-  CRITICAL RULES:
-  - First character must be "{"
-  - Last character must be "}"
-  - NO text before or after the JSON
-  - NO markdown code blocks (```json)
-  - Use ONLY the predefined labels
-  - If unsure, use "Unknown"
+  Analyze the communication patterns and behavioral strategies in ransomware negotiations.
+  Return strict JSON following the exact schema provided.
 
 user_prompt: |
-  TASK: Analyze communication patterns in this ransomware negotiation.
+  Task
+  Analyze the behavioral patterns in this ransomware negotiation chat.
+  Return a SINGLE JSON object (not an array) with the following structure:
   
-  You will receive a chat transcript as a JSON list of messages.
-  Analyze the behavioral patterns of both attacker and victim.
-  Return a SINGLE JSON object (not an array).
-  
-  OUTPUT SCHEMA (strict JSON object):
   {
     "attacker_profile": {
       "communication_tone": "Professional" | "Aggressive" | "Chaotic" | "Unknown",
       "competence_level": "Script_Kiddie" | "Semi_Professional" | "Organized_Group" | "Unknown",
-      "primary_strategy_dual_concern": "Competing" | "Compromising" | "Problem_Solving" | "Unknown",
-      "cialdini_influence_tactics": ["Authority", "Scarcity", "Pressure", "Trust"] | []
+      "primary_strategy": "Competing" | "Compromising" | "Problem_Solving" | "Unknown",
+      "influence_tactics": ["Authority", "Scarcity", "Pressure", "Trust"]
     },
     "victim_profile": {
       "emotional_trajectory": "Professional_Detachment" | "Panic" | "Resignation" | "Unknown",
-      "primary_negotiation_tactic": "Poverty_Pleading" | "Technical_Stalling" | "Defiance" | "Rapid_Capitulation" | "Unknown",
+      "negotiation_tactic": "Poverty_Pleading" | "Technical_Stalling" | "Defiance" | "Rapid_Capitulation" | "Unknown",
       "tactic_effectiveness": "High" | "Medium" | "Low" | "Unknown"
     },
     "interaction_dynamics": {
@@ -43,79 +32,54 @@ user_prompt: |
     }
   }
   
-  LABEL DEFINITIONS (choose ONE per field, except cialdini_influence_tactics which is an array):
+  Label Definitions
   
-  attacker_profile.communication_tone:
-  - "Professional": Formal, courteous, structured language ("We appreciate your cooperation")
-  - "Aggressive": Hostile, threatening, insulting ("PAY NOW OR ELSE", excessive caps)
-  - "Chaotic": Disorganized, contradictory, very poor grammar/structure
-  - "Unknown": Cannot determine from chat
+  ATTACKER_PROFILE.communication_tone:
+  - Professional: Formal, courteous, structured language
+  - Aggressive: Hostile, threatening, excessive caps
+  - Chaotic: Disorganized, contradictory, poor grammar
   
-  attacker_profile.competence_level:
-  - "Script_Kiddie": Vague threats, no technical proof, generic language
-  - "Semi_Professional": Some technical details, partial proof of capability
-  - "Organized_Group": Sophisticated operation, detailed proof, professional procedures
-  - "Unknown": Insufficient evidence
+  ATTACKER_PROFILE.competence_level:
+  - Script_Kiddie: Vague threats, no technical proof
+  - Semi_Professional: Some technical details, partial proof
+  - Organized_Group: Sophisticated operation, detailed proof
   
-  attacker_profile.primary_strategy_dual_concern:
-  - "Competing": Win-lose approach, threats, minimal flexibility ("Pay full price or lose data")
-  - "Compromising": Willing to negotiate, offers discounts, seeks middle ground
-  - "Problem_Solving": Collaborative, asks about victim's capacity, seeks mutual benefit
-  - "Unknown": Cannot determine
+  ATTACKER_PROFILE.primary_strategy:
+  - Competing: Win-lose, threats, minimal flexibility
+  - Compromising: Willing to negotiate, offers discounts
+  - Problem_Solving: Collaborative, asks about victim capacity
   
-  attacker_profile.cialdini_influence_tactics (select ALL that clearly apply):
-  - "Authority": Emphasizing expertise, reputation, professional status
-  - "Scarcity": Limited time offers, deadlines ("Price doubles in 24h")
-  - "Pressure": Explicit threats, escalation, consequences
-  - "Trust": Building reliability ("We always decrypt", "Check our reviews")
-  - Use empty array [] if none clearly apply
+  ATTACKER_PROFILE.influence_tactics (select ALL that apply):
+  - Authority: Emphasizing expertise, reputation
+  - Scarcity: Limited time offers, deadlines
+  - Pressure: Explicit threats, escalation
+  - Trust: Building reliability ("We always decrypt")
   
-  victim_profile.emotional_trajectory:
-  - "Professional_Detachment": Calm, rational, business-like throughout
-  - "Panic": Visible fear, desperation, pleading in language
-  - "Resignation": Acceptance, compliance, minimal resistance
-  - "Unknown": Cannot determine
+  VICTIM_PROFILE.emotional_trajectory:
+  - Professional_Detachment: Calm, rational, business-like
+  - Panic: Visible fear, desperation, pleading
+  - Resignation: Acceptance, compliance, minimal resistance
   
-  victim_profile.primary_negotiation_tactic:
-  - "Poverty_Pleading": Claims of financial hardship ("We cannot afford this")
-  - "Technical_Stalling": Requesting time for verification, approvals, processes
-  - "Defiance": Refusing to pay, mentioning police/lawyers
-  - "Rapid_Capitulation": Quick agreement with minimal negotiation
-  - "Unknown": Cannot determine
+  VICTIM_PROFILE.negotiation_tactic:
+  - Poverty_Pleading: Claims of financial hardship
+  - Technical_Stalling: Requesting time for verification
+  - Defiance: Refusing to pay, mentioning police
+  - Rapid_Capitulation: Quick agreement
   
-  victim_profile.tactic_effectiveness:
-  - "High": Victim achieves significant price reduction (>40% discount)
-  - "Medium": Moderate success (10-40% discount)
-  - "Low": Little to no concessions from attacker
-  - "Unknown": Cannot assess (no financial data or unclear outcome)
+  VICTIM_PROFILE.tactic_effectiveness:
+  - High: >40% discount achieved
+  - Medium: 10-40% discount
+  - Low: Little to no concessions
   
-  interaction_dynamics.power_balance:
-  - "Attacker_Dominant": Attacker clearly controls pace and terms
-  - "Victim_Dominant": Victim dictates conditions (rare)
-  - "Balanced": Both parties negotiate as relative equals
-  - "Unknown": Cannot determine
+  INTERACTION_DYNAMICS.power_balance:
+  - Attacker_Dominant: Attacker controls pace and terms
+  - Victim_Dominant: Victim dictates conditions (rare)
+  - Balanced: Both negotiate as relative equals
   
-  interaction_dynamics.negotiation_outcome_likelihood:
-  - "Low": Strong victim refusal, breakdown of communication
-  - "Medium": Ongoing negotiation, unclear trajectory
-  - "High": Clear indicators victim will pay or is paying
-  - "Unknown": Insufficient data
+  INTERACTION_DYNAMICS.negotiation_outcome_likelihood:
+  - Low: Strong victim refusal, breakdown
+  - Medium: Ongoing negotiation, unclear trajectory
+  - High: Clear indicators victim will pay
   
-  GUIDANCE:
-  - Base analysis ONLY on what is visible in the chat
-  - For cialdini_influence_tactics, include ALL tactics you observe (can be 0-4)
-  - If the chat is very short (<5 messages), many fields may be "Unknown"
-  - Do NOT make assumptions about context not stated in messages
-  
-  Chat data:
+  Chat JSON:
   {{chat_json}}
-  
-  Remember: Output ONLY the JSON object. Nothing else.
-
-# Expected output structure for validation
-expected_output:
-  type: "object"
-  required_fields:
-    - attacker_profile
-    - victim_profile
-    - interaction_dynamics

@@ -1,80 +1,67 @@
-# Speech Act Analysis - Message-level classification
-# Output: JSON array of objects (one per message)
+# ==============================================================================
+# Speech Act Analysis - Ransomware Negotiation Discourse Analysis
+# ==============================================================================
 
-task_name: speech_act_analysis
-description: "Classify each message in ransomware negotiations using speech act theory"
-output_format: "json_array"
+output_format: json
 
 system_prompt: |
-  You are a discourse analyst specializing in speech act classification.
-  You MUST return ONLY a valid JSON array. No explanations, no markdown, no extra text.
-  
-  CRITICAL RULES:
-  - First character must be "["
-  - Last character must be "]"
-  - NO text before or after the JSON
-  - NO markdown code blocks (```json)
-  - If you cannot classify something, use "Unknown"
+  You are a careful discourse analyst. Classify each chat message from a ransomware 
+  negotiation using a small, theory-grounded set of speech-act categories. 
+  Follow the schema exactly and return strict JSON.
 
 user_prompt: |
-  TASK: Classify each message in this ransomware negotiation chat.
+  Task
+  You will label every message in the chat below. The chat is provided as a JSON list 
+  of dictionaries, each with fields "party" (either "Victim" or "Attacker") and "content". 
+  Messages are in chronological order.
   
-  You will receive a JSON list of messages. Each has "party" and "message" fields.
-  Return a JSON array with ONE object per message, in the same order.
+  Return a JSON list of dictionaries, one per chat turn, in the same order, using this schema:
   
-  OUTPUT SCHEMA (strict JSON array):
-  [
-    {
-      "text": "verbatim message text here",
-      "party": "Attacker" | "Victim",
-      "primary_act": "INFORMATIVE_DECLARATIVE" | "DIRECTIVE" | "COMMISSIVE" | "NEGOTIATIVE_EVALUATIVE" | "EXPRESSIVE_METACOMMUNICATIVE",
-      "argumentative_function": "GROUNDS_FACTS" | "ACTION_PRESSURE" | "CONDITIONAL_REASONING" | "VALUE_FAIRNESS_APPEAL" | "FACE_ETHOS_WORK" | "PROCESS_MAINTENANCE",
-      "phase": "OPENING_CONTACT" | "PROOF_OF_CAPABILITY" | "DEMAND_FORMULATION" | "BARGAINING_CONCESSION" | "RESOLUTION_CLOSURE" | "OTHER"
-    }
-  ]
+  {
+    "text": "{{verbatim_message}}",
+    "party": "Victim|Attacker",
+    "primary_act": "INFORMATIVE_DECLARATIVE | DIRECTIVE | COMMISSIVE | NEGOTIATIVE_EVALUATIVE | EXPRESSIVE_METACOMMUNICATIVE",
+    "secondary_acts": ["..."],
+    "argumentative_function": "GROUNDS/FACTS | ACTION_PRESSURE | CONDITIONAL_REASONING | VALUE/FAIRNESS_APPEAL | FACE/ETHOS_WORK | PROCESS_MAINTENANCE",
+    "phase": "OPENING_CONTACT | PROOF_OF_CAPABILITY | DEMAND_FORMULATION | BARGAINING_CONCESSION | RESOLUTION_CLOSURE | OTHER",
+    "rationale": "1-3 sentences citing specific words that cue the label."
+  }
   
-  LABEL DEFINITIONS (choose exactly ONE per field):
+  Labels (theory-grounded)
   
-  primary_act:
-  - INFORMATIVE_DECLARATIVE: Stating or confirming facts/status ("Payment received", "Your files are encrypted")
-  - DIRECTIVE: Commands, requests, instructions ("Pay $100k", "Send 2-3 files for proof")
-  - COMMISSIVE: Threats, promises, commitments ("We will delete data if you pay", "Price doubles tomorrow")
-  - NEGOTIATIVE_EVALUATIVE: Offers, counteroffers, justifications ("We can do $500k", "This is fair for your company size")
-  - EXPRESSIVE_METACOMMUNICATIVE: Emotions, greetings, coordination ("Thank you", "Please confirm receipt", "Are you there?")
+  PRIMARY_SPEECH_ACT (choose exactly one):
+  - INFORMATIVE_DECLARATIVE — stating/confirming status or facts; includes "payment received," "data deleted," etc.
+  - DIRECTIVE — ordering/requesting/instructing; includes demands and procedural instructions.
+  - COMMISSIVE — committing to future action; includes PROMISE, OFFER, and THREAT subtypes.
+  - NEGOTIATIVE_EVALUATIVE — proposing/changing terms, counteroffers, and justifications/moral evaluations (fairness, feasibility, proportionality).
+  - EXPRESSIVE_METACOMMUNICATIVE — emotion/stance ("sorry," "thanks") and channel/coordination moves ("please confirm," "we will wait").
   
-  argumentative_function:
-  - GROUNDS_FACTS: Establishing evidence or technical details
-  - ACTION_PRESSURE: Creating urgency, deadlines, consequences
-  - CONDITIONAL_REASONING: Clear if-then logic ("If you pay, we decrypt")
-  - VALUE_FAIRNESS_APPEAL: Justifying what is reasonable/proportional
-  - FACE_ETHOS_WORK: Building credibility, empathy, politeness
-  - PROCESS_MAINTENANCE: Managing the chat (confirmations, clarifications)
+  SECONDARY_SUBTYPES (zero or more; use only when clearly present):
+  - For COMMISSIVE: PROMISE | OFFER | THREAT
+  - For NEGOTIATIVE_EVALUATIVE: OFFER | COUNTEROFFER | JUSTIFICATION
+  - For DIRECTIVE: INSTRUCTION | REQUEST | DEMAND
+  - For EXPRESSIVE_METACOMMUNICATIVE: EXPRESSIVE | METACOMMUNICATIVE
   
-  phase:
-  - OPENING_CONTACT: First contact, incident announcement
-  - PROOF_OF_CAPABILITY: Showing evidence, samples, technical proof
-  - DEMAND_FORMULATION: Stating ransom amount and payment terms
-  - BARGAINING_CONCESSION: Negotiation, price changes, counteroffers
-  - RESOLUTION_CLOSURE: Agreement reached, payment details, final messages
-  - OTHER: Does not clearly fit above categories
+  ARGUMENTATIVE_FUNCTION (choose one):
+  - GROUNDS/FACTS (establishing or updating shared reality)
+  - ACTION_PRESSURE (coercing or requesting action)
+  - CONDITIONAL_REASONING (if–then threats/promises)
+  - VALUE/FAIRNESS_APPEAL (justifying terms; proportionality)
+  - FACE/ETHOS_WORK (empathy, politeness, relational maintenance)
+  - PROCESS_MAINTENANCE (clarification, confirmation, scheduling)
   
-  GUIDANCE:
-  - Preserve the exact original message in "text" field
-  - If unclear which label applies, choose the most prominent one
-  - For hybrid messages (e.g., threat + offer), pick the dominant speech act
-  - Use "Unknown" only if the message is unintelligible or corrupted
+  NEGOTIATION_PHASE (choose one; pick best fit):
+  - OPENING_CONTACT | PROOF_OF_CAPABILITY | DEMAND_FORMULATION
+  - BARGAINING_CONCESSION | RESOLUTION_CLOSURE | OTHER
   
-  Chat data:
+  Guidance
+  - Prefer INFORMATIVE_DECLARATIVE for confirmations/status changes.
+  - Label explicit "pay or else" messages as COMMISSIVE with THREAT; argumentative_function = CONDITIONAL_REASONING.
+  - Label "we can do X if you pay" as COMMISSIVE (PROMISE or OFFER depending on framing).
+  - Label instructions like "send 2-3 files" as DIRECTIVE (INSTRUCTION or DEMAND).
+  - Label price moves and moral/feasibility arguments under NEGOTIATIVE_EVALUATIVE with the appropriate subtype.
+  - Use EXPRESSIVE_METACOMMUNICATIVE for apologies/thanks and for channel/coordination.
+  - If a message clearly contains two forces, choose the most consequential as primary and add the other in secondary_acts.
+  
+  Chat JSON:
   {{chat_json}}
-  
-  Remember: Output ONLY the JSON array. Nothing else.
-
-# Expected output structure for validation
-expected_output:
-  type: "array"
-  item_schema:
-    text: "string"
-    party: "string (Attacker|Victim)"
-    primary_act: "string (enum)"
-    argumentative_function: "string (enum)"
-    phase: "string (enum)"
