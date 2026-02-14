@@ -14,29 +14,22 @@
       ],
       "output": {
         "metadata": {
-          "ransomware_group": "Unknown",
           "victim_size": "Enterprise",
-          "attack_type": "Double Extortion"
+          "attack_type": "Double_Extortion"
         },
         "financial_negotiation": {
           "initial_demand": 2000000,
           "final_agreed_price": 1200000,
-          "currency": "BTC",
-          "discount_percentage": 40,
-          "payment_deadline": null,
-          "urgency_tactics": []
+          "discount_percentage": 40.0,
+          "currency": "BTC"
         },
         "technical_indicators": {
           "data_volume_gb": 800,
-          "data_types_stolen": [],
-          "encryption_confirmed": true,
-          "exfiltration_confirmed": true,
-          "proof_of_life_provided": true
+          "exfiltration_confirmed": true
         },
         "negotiation_dynamics": {
           "outcome_status": "Paid",
-          "attacker_flexibility": "High",
-          "trust_issues": []
+          "attacker_flexibility": "High"
         }
       }
     }

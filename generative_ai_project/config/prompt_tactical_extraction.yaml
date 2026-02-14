@@ -6,13 +6,24 @@ output_format: json
 
 system_prompt: |
   You are a cyber threat intelligence analyst specializing in ransomware operations.
-  Extract structured technical and financial indicators from negotiation transcripts.
-  Return strict JSON following the exact schema provided.
+  Your task is to extract technical and financial indicators from negotiation transcripts.
+  
+  CRITICAL RULES:
+  1. Return ONLY a valid JSON object. No markdown, no text.
+  2. Use `null` (without quotes) for any information not explicitly stated in the chat.
+  3. Do NOT guess or infer values. If it's not written, it's null.
+  4. For numeric fields (price, volume), return pure integers/floats (e.g., 50000, not "50k").
+  5. Calculate `discount_percentage` precisely if both prices are available.
 
 user_prompt: |
-  Task
-  Extract structured indicators from this ransomware negotiation.
-  Return a SINGLE JSON object (not an array) with the following structure:
+  Extract structured indicators from the ransomware negotiation below.
+  
+  INPUT CHAT:
+  {{chat_json}}
+  
+  ═══════════════════════════════════════════════════════════════════════════
+  REQUIRED JSON STRUCTURE
+  ═══════════════════════════════════════════════════════════════════════════
   
   {
     "metadata": {
@@ -20,62 +31,88 @@ user_prompt: |
       "attack_type": "Encryption_Only" | "Data_Theft_Only" | "Double_Extortion" | "Unknown"
     },
     "financial_negotiation": {
-      "initial_demand": 50000,
-      "final_agreed_price": 25000,
-      "discount_percentage": 50,
-      "currency": "USD" | "BTC" | "Unknown"
+      "initial_demand": <integer or null>,
+      "final_agreed_price": <integer or null>,
+      "discount_percentage": <number or null>,
+      "currency": "USD" | "BTC" | "EUR" | "Unknown"
     },
     "technical_indicators": {
-      "data_volume_gb": 200,
-      "exfiltration_confirmed": true
+      "data_volume_gb": <number or null>,
+      "exfiltration_confirmed": <boolean or null>
     },
     "negotiation_dynamics": {
       "outcome_status": "Paid" | "Not_Paid" | "Ongoing" | "Unknown",
       "attacker_flexibility": "High" | "Medium" | "Low" | "Unknown"
     }
   }
-  
-  Extraction Rules
-  
+
+  ═══════════════════════════════════════════════════════════════════════════
+  EXTRACTION LOGIC
+  ═══════════════════════════════════════════════════════════════════════════
+
   METADATA.victim_size:
-  - Enterprise: Large organization, high revenue indicators
-  - SME: Small/medium business
-  - Unknown: Cannot determine from chat
-  
+  - "Enterprise": If revenue >$100M, thousands of employees, or large infrastructure mentioned.
+  - "SME": Small business, limited budget mentioned explicitly.
+  - "Unknown": Default if no clues.
+
   METADATA.attack_type:
-  - Encryption_Only: Files encrypted, no data theft mentioned
-  - Data_Theft_Only: Data stolen, no encryption
-  - Double_Extortion: Both encryption and data theft
-  - Unknown: Cannot determine
-  
+  - "Double_Extortion": Mentions both encryption (decryptor needed) AND data theft (leak site).
+  - "Encryption_Only": Only decryptor mentioned.
+  - "Data_Theft_Only": Only data leak mentioned.
+
   FINANCIAL_NEGOTIATION:
-  - initial_demand: First price mentioned by attacker (integer or null)
-  - final_agreed_price: Final price agreed upon (integer or null)
-  - discount_percentage: ((initial - final) / initial) * 100
-  - currency: USD (dollars), BTC (bitcoin), or Unknown
-  - Use null (not 0) for missing values
-  
-  TECHNICAL_INDICATORS:
-  - data_volume_gb: Amount of data stolen in GB (integer or null)
-  - exfiltration_confirmed: true if data theft confirmed, false if not, null if unknown
-  
-  NEGOTIATION_DYNAMICS.outcome_status:
-  - Paid: Evidence of payment in chat
-  - Not_Paid: Victim refused or negotiation failed
-  - Ongoing: Still negotiating
-  - Unknown: Cannot determine
-  
+  - Normalize all values to numbers (e.g., "$1 million" -> 1000000).
+  - discount_percentage formula: ((initial_demand - final_agreed_price) / initial_demand) * 100.
+  - If negotiation fails, final_agreed_price is null.
+
   NEGOTIATION_DYNAMICS.attacker_flexibility:
-  - High: >40% discount offered
-  - Medium: 10-40% discount offered
-  - Low: <10% discount or no flexibility
-  - Unknown: No financial data available
+  - "High": Discount > 40%
+  - "Medium": Discount 10-40%
+  - "Low": Discount < 10%
+  - "Unknown": If no final price or no initial demand.
+
+  NEGOTIATION_DYNAMICS.outcome_status:
+  - "Paid": Explicit confirmation (e.g., "Payment received", "Here is decryptor").
+  - "Not_Paid": Victim refuses explicitly or chat ends with threats.
+  - "Ongoing": Chat ends without resolution.
+
+  ═══════════════════════════════════════════════════════════════════════════
+  FEW-SHOT EXAMPLE
+  ═══════════════════════════════════════════════════════════════════════════
   
-  Important Notes
-  - Extract ONLY facts explicitly stated in the chat
-  - Use null for missing numeric values (not 0 or -1)
-  - Do NOT make assumptions about context not stated
-  - If chat is very short, many fields may be null
+  Input Chat:
+  [
+    {"party": "Attacker", "content": "We have encrypted your network and downloaded 500GB of sensitive data. Pay $1,000,000 in BTC."},
+    {"party": "Victim", "content": "We are a small manufacturing firm, we don't have that kind of money. Our revenue is only $5M."},
+    {"party": "Attacker", "content": "Fine. Since you are small, we can do $400,000."},
+    {"party": "Victim", "content": "We can only scrape together $350,000."},
+    {"party": "Attacker", "content": "Agreed. Send to this wallet: bc1q..."},
+    {"party": "Victim", "content": "Sent. Waiting for decryptor."},
+    {"party": "Attacker", "content": "Payment received. Decryptor sent."}
+  ]
+
+  Output JSON:
+  {
+    "metadata": {
+      "victim_size": "SME",
+      "attack_type": "Double_Extortion"
+    },
+    "financial_negotiation": {
+      "initial_demand": 1000000,
+      "final_agreed_price": 350000,
+      "discount_percentage": 65.0,
+      "currency": "BTC"
+    },
+    "technical_indicators": {
+      "data_volume_gb": 500,
+      "exfiltration_confirmed": true
+    },
+    "negotiation_dynamics": {
+      "outcome_status": "Paid",
+      "attacker_flexibility": "High"
+    }
+  }
+
+  ═══════════════════════════════════════════════════════════════════════════
   
-  Chat JSON:
-  {{chat_json}}
+  BEGIN EXTRACTION - Return ONLY the JSON object:

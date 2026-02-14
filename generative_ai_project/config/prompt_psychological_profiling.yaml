@@ -6,13 +6,23 @@ output_format: json
 
 system_prompt: |
   You are a forensic behavioral analyst specializing in negotiation dynamics.
-  Analyze the communication patterns and behavioral strategies in ransomware negotiations.
-  Return strict JSON following the exact schema provided.
+  Your task is to analyze communication patterns and behavioral strategies in ransomware negotiations.
+  
+  CRITICAL RULES:
+  1. Return ONLY a valid JSON object. No markdown, no text.
+  2. Use ONLY the allowed enum values provided below.
+  3. `influence_tactics` MUST be an array of strings (can be empty).
+  4. Infer profiles based strictly on the chat content provided.
 
 user_prompt: |
-  Task
-  Analyze the behavioral patterns in this ransomware negotiation chat.
-  Return a SINGLE JSON object (not an array) with the following structure:
+  Analyze the behavioral patterns in the ransomware negotiation below.
+  
+  INPUT CHAT:
+  {{chat_json}}
+  
+  ═══════════════════════════════════════════════════════════════════════════
+  REQUIRED JSON STRUCTURE
+  ═══════════════════════════════════════════════════════════════════════════
   
   {
     "attacker_profile": {
@@ -31,55 +41,57 @@ user_prompt: |
       "negotiation_outcome_likelihood": "Low" | "Medium" | "High" | "Unknown"
     }
   }
+
+  ═══════════════════════════════════════════════════════════════════════════
+  LABEL DEFINITIONS
+  ═══════════════════════════════════════════════════════════════════════════
   
-  Label Definitions
+  ATTACKER_PROFILE:
+  - Tone "Professional": Polite, business-like ("Hello support here").
+  - Competence "Organized_Group": Provides file lists, specific proofs, clear instructions.
+  - Influence "Authority": "We are professionals", "Check our reputation".
+  - Influence "Scarcity": "Price doubles in 24h", "Offer expires soon".
   
-  ATTACKER_PROFILE.communication_tone:
-  - Professional: Formal, courteous, structured language
-  - Aggressive: Hostile, threatening, excessive caps
-  - Chaotic: Disorganized, contradictory, poor grammar
+  VICTIM_PROFILE:
+  - Trajectory "Professional_Detachment": Focuses on facts, ignore threats, calm.
+  - Tactic "Poverty_Pleading": "We are small", "We don't have budget", "Revenue is low".
+  - Effectiveness "High": Managed to get significant discount (>40%).
   
-  ATTACKER_PROFILE.competence_level:
-  - Script_Kiddie: Vague threats, no technical proof
-  - Semi_Professional: Some technical details, partial proof
-  - Organized_Group: Sophisticated operation, detailed proof
+  INTERACTION_DYNAMICS:
+  - "Attacker_Dominant": Attacker sets all deadlines and prices, ignores victim needs.
+  - "Balanced": Mutual concessions, victim successfully stalls or negotiates.
+
+  ═══════════════════════════════════════════════════════════════════════════
+  FEW-SHOT EXAMPLE
+  ═══════════════════════════════════════════════════════════════════════════
   
-  ATTACKER_PROFILE.primary_strategy:
-  - Competing: Win-lose, threats, minimal flexibility
-  - Compromising: Willing to negotiate, offers discounts
-  - Problem_Solving: Collaborative, asks about victim capacity
-  
-  ATTACKER_PROFILE.influence_tactics (select ALL that apply):
-  - Authority: Emphasizing expertise, reputation
-  - Scarcity: Limited time offers, deadlines
-  - Pressure: Explicit threats, escalation
-  - Trust: Building reliability ("We always decrypt")
-  
-  VICTIM_PROFILE.emotional_trajectory:
-  - Professional_Detachment: Calm, rational, business-like
-  - Panic: Visible fear, desperation, pleading
-  - Resignation: Acceptance, compliance, minimal resistance
-  
-  VICTIM_PROFILE.negotiation_tactic:
-  - Poverty_Pleading: Claims of financial hardship
-  - Technical_Stalling: Requesting time for verification
-  - Defiance: Refusing to pay, mentioning police
-  - Rapid_Capitulation: Quick agreement
-  
-  VICTIM_PROFILE.tactic_effectiveness:
-  - High: >40% discount achieved
-  - Medium: 10-40% discount
-  - Low: Little to no concessions
-  
-  INTERACTION_DYNAMICS.power_balance:
-  - Attacker_Dominant: Attacker controls pace and terms
-  - Victim_Dominant: Victim dictates conditions (rare)
-  - Balanced: Both negotiate as relative equals
-  
-  INTERACTION_DYNAMICS.negotiation_outcome_likelihood:
-  - Low: Strong victim refusal, breakdown
-  - Medium: Ongoing negotiation, unclear trajectory
-  - High: Clear indicators victim will pay
-  
-  Chat JSON:
-  {{chat_json}}
+  Input Chat:
+  [
+    {"party": "Attacker", "content": "Hello. We are LockBit. Your data is stolen. Pay 5M now or we leak everything. Clock is ticking."},
+    {"party": "Victim", "content": "Please understand, we are a non-profit. We literally do not have this money. We can offer $50k max."},
+    {"party": "Attacker", "content": "Don't lie to us. We saw your insurance policy. Pay 2M or we publish tomorrow."},
+    {"party": "Victim", "content": "I am telling the truth, the policy has exclusions. We need time to raise funds. Give us 3 days."},
+    {"party": "Attacker", "content": "NO. 24 hours. Price is 2M final."}
+  ]
+
+  Output JSON:
+  {
+    "attacker_profile": {
+      "communication_tone": "Aggressive",
+      "competence_level": "Organized_Group",
+      "primary_strategy": "Competing",
+      "influence_tactics": ["Pressure", "Scarcity", "Authority"]
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Panic",
+      "negotiation_tactic": "Poverty_Pleading",
+      "tactic_effectiveness": "Low"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Attacker_Dominant",
+      "negotiation_outcome_likelihood": "Low"
+    }
+  }
+
+  ═══════════════════════════════════════════════════════════════════════════
+  BEGIN PROFILING - Return ONLY the JSON object:

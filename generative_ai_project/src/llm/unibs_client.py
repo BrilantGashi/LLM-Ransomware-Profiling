@@ -46,7 +46,7 @@ class LLMClient:
         self.client = OpenAI(
             base_url="https://gpustack.ing.unibs.it/v1",
             api_key=api_key,
-            timeout=480.0
+            timeout=10000.0
         )
         
         self.llm_params = self.config.get('llm_parameters', {})
