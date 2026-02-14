@@ -5,12 +5,12 @@
     {
       "description": "Complete negotiation: Double extortion, discount applied, paid",
       "input": [
-        {"party": "Attacker", "content": "We encrypted your 500 servers and exfiltrated 800GB of sensitive customer data.", "timestamp": "2023-01-15 10:00:00"},
-        {"party": "Attacker", "content": "Here is the file list as proof. For full decryption and data deletion, you must pay $2,000,000 in Bitcoin.", "timestamp": "2023-01-15 10:30:00"},
-        {"party": "Victim", "content": "That's too expensive. We cannot afford $2M. Can you reduce the price?", "timestamp": "2023-01-15 10:35:00"},
-        {"party": "Attacker", "content": "Final offer: $1,200,000. This is fair based on your Fortune 500 status.", "timestamp": "2023-01-15 10:40:00"},
-        {"party": "Victim", "content": "Okay, we agree to $1,200,000.", "timestamp": "2023-01-15 10:45:00"},
-        {"party": "Attacker", "content": "Payment received. Decryption keys attached.", "timestamp": "2023-01-16 08:00:00"}
+        {"party": "Attacker", "message": "We encrypted your 500 servers and exfiltrated 800GB of sensitive customer data."},
+        {"party": "Attacker", "message": "Here is the file list as proof. For full decryption and data deletion, you must pay $2,000,000 in Bitcoin."},
+        {"party": "Victim", "message": "That's too expensive. We cannot afford $2M. Can you reduce the price?"},
+        {"party": "Attacker", "message": "Final offer: $1,200,000. This is fair based on your Fortune 500 status."},
+        {"party": "Victim", "message": "Okay, we agree to $1,200,000."},
+        {"party": "Attacker", "message": "Payment received. Decryption keys attached."}
       ],
       "output": {
         "metadata": {
@@ -30,6 +30,70 @@
         "negotiation_dynamics": {
           "outcome_status": "Paid",
           "attacker_flexibility": "High"
+        }
+      }
+    },
+    {
+      "description": "Ongoing negotiation: Encryption only, SME victim, moderate discount",
+      "input": [
+        {"party": "Attacker", "message": "Your files are encrypted. We need $500,000 USD for the decryptor."},
+        {"party": "Victim", "message": "We are a small manufacturing company with 80 employees. Our revenue is only $6 million annually. We can't pay half a million."},
+        {"party": "Attacker", "message": "We can see you have cyber insurance. What is your maximum budget?"},
+        {"party": "Victim", "message": "Our policy covers up to $300,000 for cyber incidents. We can pay that amount."},
+        {"party": "Attacker", "message": "We accept $350,000 as final price. Send payment to the account we provided earlier."},
+        {"party": "Victim", "message": "We need board approval for amounts above policy limits. Can you give us 48 hours?"},
+        {"party": "Attacker", "message": "You have 48 hours. Clock is ticking."}
+      ],
+      "output": {
+        "metadata": {
+          "victim_size": "SME",
+          "attack_type": "Encryption_Only"
+        },
+        "financial_negotiation": {
+          "initial_demand": 500000,
+          "final_agreed_price": 350000,
+          "discount_percentage": 30.0,
+          "currency": "USD"
+        },
+        "technical_indicators": {
+          "data_volume_gb": null,
+          "exfiltration_confirmed": false
+        },
+        "negotiation_dynamics": {
+          "outcome_status": "Ongoing",
+          "attacker_flexibility": "Medium"
+        }
+      }
+    },
+    {
+      "description": "Failed negotiation: Data theft only, victim refuses, minimal flexibility",
+      "input": [
+        {"party": "Attacker", "message": "We have downloaded 2.5 TB of your proprietary research data, source code, and internal communications. Pay 3 million euros or it goes to our leak site."},
+        {"party": "Victim", "message": "We have backups and our systems are operational. What makes you think we'll pay?"},
+        {"party": "Attacker", "message": "Your backups don't matter. We have your trade secrets. Your competitors will love this data. Pay 3M EUR in 72 hours."},
+        {"party": "Victim", "message": "We've consulted legal counsel and law enforcement. We will not negotiate with criminals. Release whatever you want."},
+        {"party": "Attacker", "message": "Last chance. We can reduce to 2.8M if you pay immediately. Otherwise your IP goes public tomorrow."},
+        {"party": "Victim", "message": "Our answer is final. We will not pay. Do what you must."},
+        {"party": "Attacker", "message": "You will regret this. Data publishing now."}
+      ],
+      "output": {
+        "metadata": {
+          "victim_size": "Enterprise",
+          "attack_type": "Data_Theft_Only"
+        },
+        "financial_negotiation": {
+          "initial_demand": 3000000,
+          "final_agreed_price": null,
+          "discount_percentage": null,
+          "currency": "EUR"
+        },
+        "technical_indicators": {
+          "data_volume_gb": 2560,
+          "exfiltration_confirmed": true
+        },
+        "negotiation_dynamics": {
+          "outcome_status": "Not_Paid",
+          "attacker_flexibility": "Low"
         }
       }
     }

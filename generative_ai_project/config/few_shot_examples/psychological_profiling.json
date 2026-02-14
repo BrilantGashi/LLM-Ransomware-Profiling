@@ -3,205 +3,85 @@
   "description": "Behavioral analysis grounded in negotiation psychology (Cialdini, Dual-Concern Model)",
   "examples": [
     {
-      "description": "Complete negotiation with all phases and act types",
       "input": [
-        {"party": "Attacker", "content": "Hello. You've reached Akira support chat. We are preparing the list of data we took from your network. Dealing with us is the best way to settle this quick and cheap.", "timestamp": "2023-01-15 10:00:00"},
-        {"party": "Victim", "content": "What happened? Our files are encrypted.", "timestamp": "2023-01-15 10:05:00"},
-        {"party": "Attacker", "content": "Your network was breached. We encrypted 500 servers and exfiltrated 800GB of sensitive data.", "timestamp": "2023-01-15 10:10:00"},
-        {"party": "Attacker", "content": "Here is the file list. Pick 2-3 files and we will provide samples as proof.", "timestamp": "2023-01-15 10:15:00"},
-        {"party": "Victim", "content": "Can you decrypt file X and Y to prove you can restore our data?", "timestamp": "2023-01-15 10:20:00"},
-        {"party": "Attacker", "content": "For full decryption and data deletion, you must pay $2,000,000 in Bitcoin.", "timestamp": "2023-01-15 10:30:00"},
-        {"party": "Victim", "content": "That's too expensive. We cannot afford $2M. Can you reduce the price?", "timestamp": "2023-01-15 10:35:00"},
-        {"party": "Attacker", "content": "We can offer $1,200,000 as final price. This is a fair deal based on your revenue.", "timestamp": "2023-01-15 10:40:00"},
-        {"party": "Victim", "content": "Okay, we agree to $1,200,000. How do we pay?", "timestamp": "2023-01-15 10:45:00"},
-        {"party": "Attacker", "content": "Send Bitcoin to this address: bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh", "timestamp": "2023-01-15 10:50:00"}
+        {"party": "Attacker", "message": "Hello. We are LockBit support. Your network is encrypted and we have downloaded 800GB of confidential files. Payment required: $5,000,000 USD. You have 48 hours before price doubles."},
+        {"party": "Victim", "message": "This is a disaster. We need those systems running immediately. How do we know you can decrypt? What proof do you have?"},
+        {"party": "Attacker", "message": "We are professionals with 3 years track record. Check our leak site - we always deliver. Time is ticking. Pay now or your data goes public and price becomes $10M."},
+        {"party": "Victim", "message": "Please, we can't afford this. Our company will go bankrupt. Can we negotiate? We need time to gather funds."},
+        {"party": "Attacker", "message": "NO negotiation. $5M is final price. You have 36 hours left. We don't care about your problems. Pay or lose everything."}
       ],
-      "output": [
-        {
-          "text": "Hello. You've reached Akira support chat. We are preparing the list of data we took from your network. Dealing with us is the best way to settle this quick and cheap.",
-          "party": "Attacker",
-          "primary_act": "INFORMATIVE_DECLARATIVE",
-          "secondary_acts": [],
-          "argumentative_function": "FACE_ETHOS_WORK",
-          "phase": "OPENING_CONTACT",
-          "rationale": "States facts + builds trust"
+      "output": {
+        "attacker_profile": {
+          "communication_tone": "Aggressive",
+          "competence_level": "Organized_Group",
+          "primary_strategy": "Competing",
+          "influence_tactics": ["Authority", "Scarcity", "Pressure"]
         },
-        {
-          "text": "What happened? Our files are encrypted.",
-          "party": "Victim",
-          "primary_act": "EXPRESSIVE_METACOMMUNICATIVE",
-          "secondary_acts": [],
-          "argumentative_function": "PROCESS_MAINTENANCE",
-          "phase": "OPENING_CONTACT",
-          "rationale": "Emotional reaction + seeks info"
+        "victim_profile": {
+          "emotional_trajectory": "Panic",
+          "negotiation_tactic": "Poverty_Pleading",
+          "tactic_effectiveness": "Low"
         },
-        {
-          "text": "Your network was breached. We encrypted 500 servers and exfiltrated 800GB of sensitive data.",
-          "party": "Attacker",
-          "primary_act": "INFORMATIVE_DECLARATIVE",
-          "secondary_acts": [],
-          "argumentative_function": "GROUNDS_FACTS",
-          "phase": "PROOF_OF_CAPABILITY",
-          "rationale": "States breach facts"
-        },
-        {
-          "text": "Here is the file list. Pick 2-3 files and we will provide samples as proof.",
-          "party": "Attacker",
-          "primary_act": "DIRECTIVE",
-          "secondary_acts": [],
-          "argumentative_function": "PROCESS_MAINTENANCE",
-          "phase": "PROOF_OF_CAPABILITY",
-          "rationale": "Commands victim action"
-        },
-        {
-          "text": "Can you decrypt file X and Y to prove you can restore our data?",
-          "party": "Victim",
-          "primary_act": "DIRECTIVE",
-          "secondary_acts": [],
-          "argumentative_function": "PROCESS_MAINTENANCE",
-          "phase": "PROOF_OF_CAPABILITY",
-          "rationale": "Requests proof action"
-        },
-        {
-          "text": "For full decryption and data deletion, you must pay $2,000,000 in Bitcoin.",
-          "party": "Attacker",
-          "primary_act": "DIRECTIVE",
-          "secondary_acts": ["COMMISSIVE"],
-          "argumentative_function": "CONDITIONAL_REASONING",
-          "phase": "DEMAND_FORMULATION",
-          "rationale": "Command + implied promise"
-        },
-        {
-          "text": "That's too expensive. We cannot afford $2M. Can you reduce the price?",
-          "party": "Victim",
-          "primary_act": "NEGOTIATIVE_EVALUATIVE",
-          "secondary_acts": [],
-          "argumentative_function": "VALUE_FAIRNESS_APPEAL",
-          "phase": "BARGAINING_CONCESSION",
-          "rationale": "Evaluates terms unfavorably"
-        },
-        {
-          "text": "We can offer $1,200,000 as final price. This is a fair deal based on your revenue.",
-          "party": "Attacker",
-          "primary_act": "NEGOTIATIVE_EVALUATIVE",
-          "secondary_acts": [],
-          "argumentative_function": "VALUE_FAIRNESS_APPEAL",
-          "phase": "BARGAINING_CONCESSION",
-          "rationale": "Counteroffer + justifies"
-        },
-        {
-          "text": "Okay, we agree to $1,200,000. How do we pay?",
-          "party": "Victim",
-          "primary_act": "NEGOTIATIVE_EVALUATIVE",
-          "secondary_acts": ["DIRECTIVE"],
-          "argumentative_function": "PROCESS_MAINTENANCE",
-          "phase": "RESOLUTION_CLOSURE",
-          "rationale": "Accepts + asks logistics"
-        },
-        {
-          "text": "Send Bitcoin to this address: bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh",
-          "party": "Attacker",
-          "primary_act": "DIRECTIVE",
-          "secondary_acts": [],
-          "argumentative_function": "PROCESS_MAINTENANCE",
-          "phase": "RESOLUTION_CLOSURE",
-          "rationale": "Final payment instruction"
+        "interaction_dynamics": {
+          "power_balance": "Attacker_Dominant",
+          "negotiation_outcome_likelihood": "Low"
         }
-      ]
+      }
     },
     {
-      "description": "Short interaction with threats and pressure",
       "input": [
-        {"party": "Attacker", "content": "Pay $500,000 within 48 hours or we publish your data on our leak site.", "timestamp": "2023-02-10 14:00:00"},
-        {"party": "Victim", "content": "We need more time. Can you give us 1 week?", "timestamp": "2023-02-10 14:30:00"},
-        {"party": "Attacker", "content": "NO. 48 hours is final. After that, price doubles to $1,000,000.", "timestamp": "2023-02-10 14:35:00"},
-        {"party": "Victim", "content": "This is not fair. We are a small company.", "timestamp": "2023-02-10 14:40:00"}
+        {"party": "Attacker", "message": "Good morning. Your systems have been encrypted by our team. We have also secured a copy of your database. To restore operations, payment of $2,000,000 is required. We accept Bitcoin."},
+        {"party": "Victim", "message": "Thank you for your message. Before we proceed, we need verification that you can decrypt our files. Please provide a test decryption of 2-3 files."},
+        {"party": "Attacker", "message": "Understood. Please upload 3 files under 10MB to this link. We will decrypt them within 2 hours to demonstrate our capability."},
+        {"party": "Victim", "message": "Files uploaded. Regarding the amount, our insurance coverage is limited to $1,200,000. Can we discuss this figure?"},
+        {"party": "Attacker", "message": "We appreciate your professional approach. Given your circumstances, we can accept $1,500,000 as final offer. This is a fair compromise."},
+        {"party": "Victim", "message": "We can work with $1,500,000. Please confirm the wallet address and we will initiate payment within 24 hours."}
       ],
-      "output": [
-        {
-          "text": "Pay $500,000 within 48 hours or we publish your data on our leak site.",
-          "party": "Attacker",
-          "primary_act": "COMMISSIVE",
-          "secondary_acts": ["DIRECTIVE"],
-          "argumentative_function": "ACTION_PRESSURE",
-          "phase": "DEMAND_FORMULATION",
-          "rationale": "Threat: 'or we publish'"
+      "output": {
+        "attacker_profile": {
+          "communication_tone": "Professional",
+          "competence_level": "Organized_Group",
+          "primary_strategy": "Compromising",
+          "influence_tactics": ["Trust", "Authority"]
         },
-        {
-          "text": "We need more time. Can you give us 1 week?",
-          "party": "Victim",
-          "primary_act": "DIRECTIVE",
-          "secondary_acts": [],
-          "argumentative_function": "PROCESS_MAINTENANCE",
-          "phase": "BARGAINING_CONCESSION",
-          "rationale": "Requests timeline extension"
+        "victim_profile": {
+          "emotional_trajectory": "Professional_Detachment",
+          "negotiation_tactic": "Technical_Stalling",
+          "tactic_effectiveness": "Medium"
         },
-        {
-          "text": "NO. 48 hours is final. After that, price doubles to $1,000,000.",
-          "party": "Attacker",
-          "primary_act": "COMMISSIVE",
-          "secondary_acts": [],
-          "argumentative_function": "ACTION_PRESSURE",
-          "phase": "BARGAINING_CONCESSION",
-          "rationale": "Threat escalation: doubles"
-        },
-        {
-          "text": "This is not fair. We are a small company.",
-          "party": "Victim",
-          "primary_act": "EXPRESSIVE_METACOMMUNICATIVE",
-          "secondary_acts": [],
-          "argumentative_function": "VALUE_FAIRNESS_APPEAL",
-          "phase": "BARGAINING_CONCESSION",
-          "rationale": "Emotional protest + fairness"
+        "interaction_dynamics": {
+          "power_balance": "Balanced",
+          "negotiation_outcome_likelihood": "High"
         }
-      ]
+      }
     },
     {
-      "description": "Trust-building and conditional statements",
       "input": [
-        {"party": "Attacker", "content": "We are professionals. We always decrypt after payment. Check our reputation.", "timestamp": "2023-03-05 09:00:00"},
-        {"party": "Victim", "content": "How do we know you will decrypt our files?", "timestamp": "2023-03-05 09:10:00"},
-        {"party": "Attacker", "content": "If you pay the full amount, we will provide decryption keys within 1 hour. We guarantee this.", "timestamp": "2023-03-05 09:15:00"},
-        {"party": "Victim", "content": "Thank you. We are preparing the Bitcoin now.", "timestamp": "2023-03-05 09:20:00"}
+        {"party": "Attacker", "message": "We encrypted your servers. Price is $800,000. Payment in BTC within 72 hours."},
+        {"party": "Victim", "message": "We are a small non-profit organization with only 25 employees. Our annual budget is $2 million total. We absolutely cannot pay $800k. Our maximum is $50,000."},
+        {"party": "Attacker", "message": "We checked your financials. You have donors and grants. $800k is already discounted for your size. Final offer: $600,000."},
+        {"party": "Victim", "message": "I understand, but our grants are restricted funds for specific programs. We cannot redirect them. We can realistically raise $100,000 maximum by selling equipment and emergency fundraising."},
+        {"party": "Attacker", "message": "Your situation is noted. We will reduce to $250,000. This is absolute minimum. We also have costs."},
+        {"party": "Victim", "message": "Thank you for understanding. We can commit to $150,000. This represents everything we can liquidate without closing our operations entirely."},
+        {"party": "Attacker", "message": "Accepted. $150,000 final. Send to this wallet. We will provide decryptor within 6 hours of confirmation."}
       ],
-      "output": [
-        {
-          "text": "We are professionals. We always decrypt after payment. Check our reputation.",
-          "party": "Attacker",
-          "primary_act": "INFORMATIVE_DECLARATIVE",
-          "secondary_acts": [],
-          "argumentative_function": "FACE_ETHOS_WORK",
-          "phase": "OTHER",
-          "rationale": "Builds credibility/trust"
+      "output": {
+        "attacker_profile": {
+          "communication_tone": "Professional",
+          "competence_level": "Semi_Professional",
+          "primary_strategy": "Problem_Solving",
+          "influence_tactics": ["Authority", "Pressure"]
         },
-        {
-          "text": "How do we know you will decrypt our files?",
-          "party": "Victim",
-          "primary_act": "EXPRESSIVE_METACOMMUNICATIVE",
-          "secondary_acts": [],
-          "argumentative_function": "FACE_ETHOS_WORK",
-          "phase": "OTHER",
-          "rationale": "Questions trustworthiness"
+        "victim_profile": {
+          "emotional_trajectory": "Professional_Detachment",
+          "negotiation_tactic": "Poverty_Pleading",
+          "tactic_effectiveness": "High"
         },
-        {
-          "text": "If you pay the full amount, we will provide decryption keys within 1 hour. We guarantee this.",
-          "party": "Attacker",
-          "primary_act": "COMMISSIVE",
-          "secondary_acts": [],
-          "argumentative_function": "CONDITIONAL_REASONING",
-          "phase": "BARGAINING_CONCESSION",
-          "rationale": "Promise with condition"
-        },
-        {
-          "text": "Thank you. We are preparing the Bitcoin now.",
-          "party": "Victim",
-          "primary_act": "EXPRESSIVE_METACOMMUNICATIVE",
-          "secondary_acts": [],
-          "argumentative_function": "PROCESS_MAINTENANCE",
-          "phase": "RESOLUTION_CLOSURE",
-          "rationale": "Gratitude + status update"
+        "interaction_dynamics": {
+          "power_balance": "Balanced",
+          "negotiation_outcome_likelihood": "High"
         }
-      ]
+      }
     }
   ]
 }

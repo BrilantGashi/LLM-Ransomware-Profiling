@@ -1,0 +1,462 @@
+{
+  "total_sampled": 91,
+  "sampling_date": "2026-02-14 16:49:02",
+  "random_seed": 42,
+  "chats": [
+    {
+      "group": "Avaddon",
+      "chat_id": "20210112",
+      "message_count": 25
+    },
+    {
+      "group": "Akira",
+      "chat_id": "20250108",
+      "message_count": 10
+    },
+    {
+      "group": "Dragonforce",
+      "chat_id": "D6DDD9B26D7D41DB",
+      "message_count": 14
+    },
+    {
+      "group": "Dragonforce",
+      "chat_id": "AB0404E049514B50",
+      "message_count": 28
+    },
+    {
+      "group": "Dragonforce",
+      "chat_id": "05f724f8-906e-4739-8177-815852cc2c3f",
+      "message_count": 29
+    },
+    {
+      "group": "Conti",
+      "chat_id": "20210219",
+      "message_count": 12
+    },
+    {
+      "group": "lockbit3.0",
+      "chat_id": "guardiananalytics_com",
+      "message_count": 27
+    },
+    {
+      "group": "Akira",
+      "chat_id": "20250217",
+      "message_count": 13
+    },
+    {
+      "group": "lockbit3.0",
+      "chat_id": "bakkerheftrucks_com",
+      "message_count": 27
+    },
+    {
+      "group": "REvil",
+      "chat_id": "20210604",
+      "message_count": 10
+    },
+    {
+      "group": "Mallox",
+      "chat_id": "20230530",
+      "message_count": 17
+    },
+    {
+      "group": "Dragonforce",
+      "chat_id": "C42CDF65B97D0E92",
+      "message_count": 30
+    },
+    {
+      "group": "Akira",
+      "chat_id": "20250216",
+      "message_count": 14
+    },
+    {
+      "group": "fog",
+      "chat_id": "20240517",
+      "message_count": 27
+    },
+    {
+      "group": "Dragonforce",
+      "chat_id": "058f4b92-ae99-45c7-bf35-5d2d6754b3de",
+      "message_count": 19
+    },
+    {
+      "group": "Akira",
+      "chat_id": "20250104",
+      "message_count": 13
+    },
+    {
+      "group": "Akira",
+      "chat_id": "20240410",
+      "message_count": 16
+    },
+    {
+      "group": "Mallox",
+      "chat_id": "20230529",
+      "message_count": 29
+    },
+    {
+      "group": "Akira",
+      "chat_id": "20250425b",
+      "message_count": 15
+    },
+    {
+      "group": "trinity",
+      "chat_id": "0012",
+      "message_count": 15
+    },
+    {
+      "group": "Dragonforce",
+      "chat_id": "b8e14e1a-548f-4eec-bd6e-a590126e57c9",
+      "message_count": 14
+    },
+    {
+      "group": "fog",
+      "chat_id": "20240910",
+      "message_count": 26
+    },
+    {
+      "group": "lockbit3.0",
+      "chat_id": "scohil_com",
+      "message_count": 29
+    },
+    {
+      "group": "trinity",
+      "chat_id": "0006",
+      "message_count": 11
+    },
+    {
+      "group": "Akira",
+      "chat_id": "20250424",
+      "message_count": 12
+    },
+    {
+      "group": "Hive",
+      "chat_id": "20211220",
+      "message_count": 24
+    },
+    {
+      "group": "Ranzy",
+      "chat_id": "20210223",
+      "message_count": 20
+    },
+    {
+      "group": "Darkside",
+      "chat_id": "20210418",
+      "message_count": 10
+    },
+    {
+      "group": "lockbit3.0",
+      "chat_id": "preflooring_com",
+      "message_count": 17
+    },
+    {
+      "group": "RunSomeWares",
+      "chat_id": "20250411",
+      "message_count": 27
+    },
+    {
+      "group": "lockbit3.0",
+      "chat_id": "__________________________149576",
+      "message_count": 17
+    },
+    {
+      "group": "REvil",
+      "chat_id": "20210708",
+      "message_count": 28
+    },
+    {
+      "group": "Akira",
+      "chat_id": "20230606",
+      "message_count": 13
+    },
+    {
+      "group": "Akira",
+      "chat_id": "20250330",
+      "message_count": 15
+    },
+    {
+      "group": "lockbit3.0",
+      "chat_id": "vsainc_com",
+      "message_count": 21
+    },
+    {
+      "group": "Conti",
+      "chat_id": "20210715",
+      "message_count": 10
+    },
+    {
+      "group": "REvil",
+      "chat_id": "20210320",
+      "message_count": 13
+    },
+    {
+      "group": "Akira",
+      "chat_id": "20250321",
+      "message_count": 25
+    },
+    {
+      "group": "REvil",
+      "chat_id": "20210407",
+      "message_count": 15
+    },
+    {
+      "group": "Conti",
+      "chat_id": "20211217",
+      "message_count": 27
+    },
+    {
+      "group": "lockbit3.0",
+      "chat_id": "colonialgeneral_com",
+      "message_count": 25
+    },
+    {
+      "group": "trinity",
+      "chat_id": "0008",
+      "message_count": 13
+    },
+    {
+      "group": "lockbit3.0",
+      "chat_id": "software-line_it",
+      "message_count": 30
+    },
+    {
+      "group": "lockbit3.0",
+      "chat_id": "bankbsi_co_id",
+      "message_count": 27
+    },
+    {
+      "group": "Hunters International",
+      "chat_id": "20240510",
+      "message_count": 29
+    },
+    {
+      "group": "Akira",
+      "chat_id": "20250408",
+      "message_count": 12
+    },
+    {
+      "group": "Conti",
+      "chat_id": "20210923",
+      "message_count": 14
+    },
+    {
+      "group": "Conti",
+      "chat_id": "20210428",
+      "message_count": 13
+    },
+    {
+      "group": "Akira",
+      "chat_id": "20250312",
+      "message_count": 20
+    },
+    {
+      "group": "lockbit3.0",
+      "chat_id": "entrust_com",
+      "message_count": 29
+    },
+    {
+      "group": "REvil",
+      "chat_id": "20210622",
+      "message_count": 52
+    },
+    {
+      "group": "Akira",
+      "chat_id": "20250417",
+      "message_count": 59
+    },
+    {
+      "group": "trinity",
+      "chat_id": "0007",
+      "message_count": 36
+    },
+    {
+      "group": "REvil",
+      "chat_id": "20210628",
+      "message_count": 39
+    },
+    {
+      "group": "Cloak",
+      "chat_id": "20230802",
+      "message_count": 54
+    },
+    {
+      "group": "Akira",
+      "chat_id": "20240301",
+      "message_count": 43
+    },
+    {
+      "group": "Conti",
+      "chat_id": "20211112",
+      "message_count": 32
+    },
+    {
+      "group": "BlackBasta",
+      "chat_id": "20221011",
+      "message_count": 50
+    },
+    {
+      "group": "Qilin",
+      "chat_id": "20250203 - from @RakeshKrish12",
+      "message_count": 36
+    },
+    {
+      "group": "lockbit3.0",
+      "chat_id": "chsf_fr",
+      "message_count": 42
+    },
+    {
+      "group": "Hive",
+      "chat_id": "20211102",
+      "message_count": 58
+    },
+    {
+      "group": "BlackMatter",
+      "chat_id": "20210829",
+      "message_count": 44
+    },
+    {
+      "group": "Dragonforce",
+      "chat_id": "7A313D13EB6B4E58",
+      "message_count": 32
+    },
+    {
+      "group": "Akira",
+      "chat_id": "20250227",
+      "message_count": 56
+    },
+    {
+      "group": "lockbit3.0",
+      "chat_id": "Leaked2025-ClientID-36",
+      "message_count": 55
+    },
+    {
+      "group": "Akira",
+      "chat_id": "20240201",
+      "message_count": 40
+    },
+    {
+      "group": "Akira",
+      "chat_id": "20231112",
+      "message_count": 58
+    },
+    {
+      "group": "lockbit3.0",
+      "chat_id": "genusplc_com",
+      "message_count": 34
+    },
+    {
+      "group": "Akira",
+      "chat_id": "20250328",
+      "message_count": 39
+    },
+    {
+      "group": "REvil",
+      "chat_id": "20210616",
+      "message_count": 31
+    },
+    {
+      "group": "trinity",
+      "chat_id": "0002",
+      "message_count": 52
+    },
+    {
+      "group": "lockbit3.0",
+      "chat_id": "millennia_pro",
+      "message_count": 43
+    },
+    {
+      "group": "Akira",
+      "chat_id": "20240531",
+      "message_count": 55
+    },
+    {
+      "group": "REvil",
+      "chat_id": "20210630",
+      "message_count": 42
+    },
+    {
+      "group": "Babuk",
+      "chat_id": "20210428",
+      "message_count": 44
+    },
+    {
+      "group": "lockbit3.0",
+      "chat_id": "kaycan_com",
+      "message_count": 94
+    },
+    {
+      "group": "REvil",
+      "chat_id": "20210401",
+      "message_count": 78
+    },
+    {
+      "group": "Darkside",
+      "chat_id": "20200811",
+      "message_count": 85
+    },
+    {
+      "group": "Akira",
+      "chat_id": "20250117",
+      "message_count": 70
+    },
+    {
+      "group": "REvil",
+      "chat_id": "20210603",
+      "message_count": 63
+    },
+    {
+      "group": "Conti",
+      "chat_id": "20211205",
+      "message_count": 63
+    },
+    {
+      "group": "Avaddon",
+      "chat_id": "20210324",
+      "message_count": 73
+    },
+    {
+      "group": "Conti",
+      "chat_id": "20201017",
+      "message_count": 78
+    },
+    {
+      "group": "Akira",
+      "chat_id": "20231217",
+      "message_count": 67
+    },
+    {
+      "group": "REvil",
+      "chat_id": "20201126",
+      "message_count": 79
+    },
+    {
+      "group": "fog",
+      "chat_id": "20240729",
+      "message_count": 144
+    },
+    {
+      "group": "lockbit3.0",
+      "chat_id": "Leaked2025-ClientID-154",
+      "message_count": 137
+    },
+    {
+      "group": "Avaddon",
+      "chat_id": "20210518_3",
+      "message_count": 103
+    },
+    {
+      "group": "trinity",
+      "chat_id": "0003",
+      "message_count": 298
+    },
+    {
+      "group": "Conti",
+      "chat_id": "20201109",
+      "message_count": 255
+    },
+    {
+      "group": "lockbit3.0",
+      "chat_id": "samyang_com",
+      "message_count": 237
+    }
+  ]
+}

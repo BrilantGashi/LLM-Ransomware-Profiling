@@ -41,8 +41,8 @@ active_model: "qwen3"
 # ------------------------------------------------------------------------------
 # Models to run in parallel for consensus-based analysis
 ensemble_models:
-  - phi4
-  - gpt-oss
+  - granite3.3
+  - llama3.2
   - phi4-mini
 
 
@@ -103,7 +103,7 @@ embedding:
 # PROCESSING & RETRY CONFIGURATION
 # ------------------------------------------------------------------------------
 processing:
-  max_workers: 3                # Parallel threads for chat processing
+  max_workers: 6               # Parallel threads for chat processing
   chunk_max_chars: 10000        # Maximum prompt length before chunking
   
   # Retry mechanism configuration

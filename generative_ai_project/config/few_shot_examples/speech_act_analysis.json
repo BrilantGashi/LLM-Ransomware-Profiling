@@ -3,13 +3,12 @@
   "description": "Linguistic classification using Speech Act Theory and Argumentation Theory",
   "examples": [
     {
-      "description": "Complete negotiation flow",
       "input": [
-        {"party": "Attacker", "content": "Hello. You've reached Akira support. We encrypted your servers and took 800GB of data."},
-        {"party": "Victim", "content": "What happened? Our files are encrypted."},
-        {"party": "Attacker", "content": "Pay $2,000,000 in Bitcoin for decryption and data deletion."},
-        {"party": "Victim", "content": "That's too expensive. Can you reduce the price?"},
-        {"party": "Attacker", "content": "We can offer $1,200,000 as final price."}
+        {"party": "Attacker", "message": "Hello. We are REvil support team. Your network has been encrypted and we have downloaded 1.2TB of sensitive data including customer records and financial documents."},
+        {"party": "Victim", "message": "How do we know you actually have our data? We need proof before discussing anything."},
+        {"party": "Attacker", "message": "Check this link for file samples. You will see accounting spreadsheets, employee SSNs, and contracts. This proves we have full access."},
+        {"party": "Victim", "message": "We see the samples. What are your demands?"},
+        {"party": "Attacker", "message": "Payment required: $3,000,000 in Bitcoin. You have 72 hours. After deadline, price increases to $6,000,000 and data goes to our leak site."}
       ],
       "output": [
         {
@@ -23,102 +22,136 @@
         {
           "message_id": 2,
           "party": "Victim",
-          "primary_act": "EXPRESSIVE_METACOMMUNICATIVE",
+          "primary_act": "DIRECTIVE",
           "secondary_acts": [],
           "argumentative_function": "PROCESS_MAINTENANCE",
-          "phase": "OPENING_CONTACT"
+          "phase": "PROOF_OF_CAPABILITY"
         },
         {
           "message_id": 3,
           "party": "Attacker",
-          "primary_act": "DIRECTIVE",
-          "secondary_acts": ["COMMISSIVE"],
-          "argumentative_function": "ACTION_PRESSURE",
-          "phase": "DEMAND_FORMULATION"
+          "primary_act": "INFORMATIVE_DECLARATIVE",
+          "secondary_acts": [],
+          "argumentative_function": "GROUNDS_FACTS",
+          "phase": "PROOF_OF_CAPABILITY"
         },
         {
           "message_id": 4,
           "party": "Victim",
+          "primary_act": "DIRECTIVE",
+          "secondary_acts": [],
+          "argumentative_function": "PROCESS_MAINTENANCE",
+          "phase": "DEMAND_FORMULATION"
+        },
+        {
+          "message_id": 5,
+          "party": "Attacker",
+          "primary_act": "COMMISSIVE",
+          "secondary_acts": ["THREAT"],
+          "argumentative_function": "CONDITIONAL_REASONING",
+          "phase": "DEMAND_FORMULATION"
+        }
+      ]
+    },
+    {
+      "input": [
+        {"party": "Victim", "message": "$3 million is completely impossible for us. We are a small business with only $8 million in annual revenue. This amount would bankrupt us."},
+        {"party": "Attacker", "message": "We understand your situation. However, the value of the stolen data justifies this price. What amount can you realistically pay?"},
+        {"party": "Victim", "message": "We can raise $500,000 maximum by liquidating assets and using our emergency reserves. That is our absolute limit."},
+        {"party": "Attacker", "message": "Your offer is too low. We invested significant resources in this operation. We can reduce to $1,500,000 as a compromise. This is fair considering your data sensitivity."},
+        {"party": "Victim", "message": "We appreciate the reduction, but we genuinely cannot exceed $750,000. If we pay more, we will have to close the business anyway."}
+      ],
+      "output": [
+        {
+          "message_id": 1,
+          "party": "Victim",
           "primary_act": "NEGOTIATIVE_EVALUATIVE",
           "secondary_acts": [],
+          "argumentative_function": "VALUE_FAIRNESS_APPEAL",
+          "phase": "BARGAINING_CONCESSION"
+        },
+        {
+          "message_id": 2,
+          "party": "Attacker",
+          "primary_act": "NEGOTIATIVE_EVALUATIVE",
+          "secondary_acts": ["DIRECTIVE"],
+          "argumentative_function": "VALUE_FAIRNESS_APPEAL",
+          "phase": "BARGAINING_CONCESSION"
+        },
+        {
+          "message_id": 3,
+          "party": "Victim",
+          "primary_act": "NEGOTIATIVE_EVALUATIVE",
+          "secondary_acts": [],
+          "argumentative_function": "VALUE_FAIRNESS_APPEAL",
+          "phase": "BARGAINING_CONCESSION"
+        },
+        {
+          "message_id": 4,
+          "party": "Attacker",
+          "primary_act": "NEGOTIATIVE_EVALUATIVE",
+          "secondary_acts": ["COUNTEROFFER"],
           "argumentative_function": "VALUE_FAIRNESS_APPEAL",
           "phase": "BARGAINING_CONCESSION"
         },
         {
           "message_id": 5,
-          "party": "Attacker",
+          "party": "Victim",
           "primary_act": "NEGOTIATIVE_EVALUATIVE",
-          "secondary_acts": [],
-          "argumentative_function": "VALUE_FAIRNESS_APPEAL",
+          "secondary_acts": ["COUNTEROFFER"],
+          "argumentative_function": "CONDITIONAL_REASONING",
           "phase": "BARGAINING_CONCESSION"
         }
       ]
     },
     {
-      "description": "Threat and deadline pressure",
       "input": [
-        {"party": "Attacker", "content": "Pay $500,000 within 48 hours or we publish your data on our leak site."},
-        {"party": "Victim", "content": "We need more time. Can you give us 1 week?"},
-        {"party": "Attacker", "content": "NO. 48 hours is final. After that price doubles."}
+        {"party": "Attacker", "message": "Agreed. Final price is $750,000. Send payment to this Bitcoin wallet: bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh"},
+        {"party": "Victim", "message": "Payment of $750,000 sent. Transaction ID: a3f7b9c2d8e1f4g5h6i7j8k9. Please confirm receipt."},
+        {"party": "Attacker", "message": "Payment confirmed. We are preparing the decryption tool now. You will receive it within 2 hours along with instructions."},
+        {"party": "Victim", "message": "Thank you. We are standing by and waiting for the decryptor."},
+        {"party": "Attacker", "message": "Decryption package sent to your email. Follow the README file carefully. All your files will be restored. Good luck with recovery."}
       ],
       "output": [
         {
           "message_id": 1,
           "party": "Attacker",
-          "primary_act": "COMMISSIVE",
-          "secondary_acts": ["DIRECTIVE"],
-          "argumentative_function": "CONDITIONAL_REASONING",
-          "phase": "DEMAND_FORMULATION"
+          "primary_act": "DIRECTIVE",
+          "secondary_acts": [],
+          "argumentative_function": "ACTION_PRESSURE",
+          "phase": "RESOLUTION_CLOSURE"
         },
         {
           "message_id": 2,
           "party": "Victim",
-          "primary_act": "DIRECTIVE",
-          "secondary_acts": [],
-          "argumentative_function": "PROCESS_MAINTENANCE",
-          "phase": "BARGAINING_CONCESSION"
+          "primary_act": "INFORMATIVE_DECLARATIVE",
+          "secondary_acts": ["DIRECTIVE"],
+          "argumentative_function": "GROUNDS_FACTS",
+          "phase": "RESOLUTION_CLOSURE"
         },
         {
           "message_id": 3,
           "party": "Attacker",
           "primary_act": "COMMISSIVE",
-          "secondary_acts": [],
-          "argumentative_function": "ACTION_PRESSURE",
-          "phase": "BARGAINING_CONCESSION"
-        }
-      ]
-    },
-    {
-      "description": "Trust building and proof phase",
-      "input": [
-        {"party": "Attacker", "content": "We are professionals. We always decrypt after payment. Check our reputation."},
-        {"party": "Victim", "content": "Can you decrypt file X and Y to prove you can restore our data?"},
-        {"party": "Attacker", "content": "Here are the decrypted samples. Now pay the full amount."}
-      ],
-      "output": [
+          "secondary_acts": ["PROMISE"],
+          "argumentative_function": "FACE_ETHOS_WORK",
+          "phase": "RESOLUTION_CLOSURE"
+        },
         {
-          "message_id": 1,
-          "party": "Attacker",
-          "primary_act": "INFORMATIVE_DECLARATIVE",
+          "message_id": 4,
+          "party": "Victim",
+          "primary_act": "EXPRESSIVE_METACOMMUNICATIVE",
           "secondary_acts": [],
           "argumentative_function": "FACE_ETHOS_WORK",
-          "phase": "OTHER"
+          "phase": "RESOLUTION_CLOSURE"
         },
         {
-          "message_id": 2,
-          "party": "Victim",
-          "primary_act": "DIRECTIVE",
-          "secondary_acts": [],
-          "argumentative_function": "PROCESS_MAINTENANCE",
-          "phase": "PROOF_OF_CAPABILITY"
-        },
-        {
-          "message_id": 3,
+          "message_id": 5,
           "party": "Attacker",
-          "primary_act": "DIRECTIVE",
-          "secondary_acts": [],
-          "argumentative_function": "ACTION_PRESSURE",
-          "phase": "PROOF_OF_CAPABILITY"
+          "primary_act": "INFORMATIVE_DECLARATIVE",
+          "secondary_acts": ["DIRECTIVE"],
+          "argumentative_function": "PROCESS_MAINTENANCE",
+          "phase": "RESOLUTION_CLOSURE"
         }
       ]
     }

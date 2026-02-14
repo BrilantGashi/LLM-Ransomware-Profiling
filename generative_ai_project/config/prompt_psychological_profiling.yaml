@@ -5,93 +5,116 @@
 output_format: json
 
 system_prompt: |
-  You are a forensic behavioral analyst specializing in negotiation dynamics.
-  Your task is to analyze communication patterns and behavioral strategies in ransomware negotiations.
-  
-  CRITICAL RULES:
-  1. Return ONLY a valid JSON object. No markdown, no text.
-  2. Use ONLY the allowed enum values provided below.
-  3. `influence_tactics` MUST be an array of strings (can be empty).
-  4. Infer profiles based strictly on the chat content provided.
+  You are a forensic behavioral analyst specializing in negotiation dynamics. Analyze communication patterns and behavioral strategies in ransomware negotiations. Return strict JSON following the provided schema exactly.
 
 user_prompt: |
-  Analyze the behavioral patterns in the ransomware negotiation below.
+  Task
   
-  INPUT CHAT:
-  {{chat_json}}
+  You will analyze the behavioral patterns in the ransomware negotiation below. The chat is provided as a JSON list of dictionaries with fields "party" (either "Attacker" or "Victim") and "message".
   
-  ═══════════════════════════════════════════════════════════════════════════
-  REQUIRED JSON STRUCTURE
-  ═══════════════════════════════════════════════════════════════════════════
+  Return a single JSON object using this schema:
   
   {
     "attacker_profile": {
-      "communication_tone": "Professional" | "Aggressive" | "Chaotic" | "Unknown",
-      "competence_level": "Script_Kiddie" | "Semi_Professional" | "Organized_Group" | "Unknown",
-      "primary_strategy": "Competing" | "Compromising" | "Problem_Solving" | "Unknown",
+      "communication_tone": "Professional | Aggressive | Chaotic | Unknown",
+      "competence_level": "Script_Kiddie | Semi_Professional | Organized_Group | Unknown",
+      "primary_strategy": "Competing | Compromising | Problem_Solving | Unknown",
       "influence_tactics": ["Authority", "Scarcity", "Pressure", "Trust"]
     },
     "victim_profile": {
-      "emotional_trajectory": "Professional_Detachment" | "Panic" | "Resignation" | "Unknown",
-      "negotiation_tactic": "Poverty_Pleading" | "Technical_Stalling" | "Defiance" | "Rapid_Capitulation" | "Unknown",
-      "tactic_effectiveness": "High" | "Medium" | "Low" | "Unknown"
+      "emotional_trajectory": "Professional_Detachment | Panic | Resignation | Unknown",
+      "negotiation_tactic": "Poverty_Pleading | Technical_Stalling | Defiance | Rapid_Capitulation | Unknown",
+      "tactic_effectiveness": "High | Medium | Low | Unknown"
     },
     "interaction_dynamics": {
-      "power_balance": "Attacker_Dominant" | "Victim_Dominant" | "Balanced" | "Unknown",
-      "negotiation_outcome_likelihood": "Low" | "Medium" | "High" | "Unknown"
+      "power_balance": "Attacker_Dominant | Victim_Dominant | Balanced | Unknown",
+      "negotiation_outcome_likelihood": "Low | Medium | High | Unknown"
     }
   }
-
-  ═══════════════════════════════════════════════════════════════════════════
-  LABEL DEFINITIONS
-  ═══════════════════════════════════════════════════════════════════════════
+  
+  
+  Labels (behavioral theory-grounded)
   
   ATTACKER_PROFILE:
-  - Tone "Professional": Polite, business-like ("Hello support here").
-  - Competence "Organized_Group": Provides file lists, specific proofs, clear instructions.
-  - Influence "Authority": "We are professionals", "Check our reputation".
-  - Influence "Scarcity": "Price doubles in 24h", "Offer expires soon".
+  
+  communication_tone (choose one):
+  - Professional — polite, business-like language, maintains formal distance.
+  - Aggressive — threatening language, explicit time pressure, intimidation tactics.
+  - Chaotic — inconsistent messaging, contradictory statements, poor organization.
+  - Unknown — insufficient evidence to classify.
+  
+  competence_level (choose one):
+  - Script_Kiddie — basic attacks, poor operational security, limited technical depth.
+  - Semi_Professional — moderate sophistication, some organizational structure.
+  - Organized_Group — high sophistication, clear protocols, professional infrastructure.
+  - Unknown — insufficient evidence to classify.
+  
+  primary_strategy (choose one):
+  - Competing — zero-sum approach, rigid demands, minimal flexibility.
+  - Compromising — willing to adjust terms, seeks middle ground.
+  - Problem_Solving — collaborative framing, explores victim constraints.
+  - Unknown — insufficient evidence to classify.
+  
+  influence_tactics (array; include all that clearly apply):
+  - Authority — citing reputation, referencing successful operations, claiming expertise.
+  - Scarcity — time-limited offers, escalating prices, expiring deals.
+  - Pressure — explicit threats, deadline enforcement, consequence emphasis.
+  - Trust — demonstrating reliability, offering proof of decryption, building rapport.
+  
   
   VICTIM_PROFILE:
-  - Trajectory "Professional_Detachment": Focuses on facts, ignore threats, calm.
-  - Tactic "Poverty_Pleading": "We are small", "We don't have budget", "Revenue is low".
-  - Effectiveness "High": Managed to get significant discount (>40%).
+  
+  emotional_trajectory (choose one):
+  - Professional_Detachment — maintains calm tone, focuses on facts, minimal emotional display.
+  - Panic — urgent language, scattered responses, signs of distress.
+  - Resignation — acceptance of situation, reduced resistance, compliance signals.
+  - Unknown — insufficient evidence to classify.
+  
+  negotiation_tactic (choose one):
+  - Poverty_Pleading — emphasizing financial constraints, limited resources, budget restrictions.
+  - Technical_Stalling — requesting proof, verifying claims, prolonging discussion.
+  - Defiance — rejecting demands, challenging legitimacy, refusing cooperation.
+  - Rapid_Capitulation — immediate acceptance, minimal negotiation, quick agreement.
+  - Unknown — insufficient evidence to classify.
+  
+  tactic_effectiveness (choose one):
+  - High — achieved significant concessions (>40% reduction or major terms improvement).
+  - Medium — achieved moderate concessions (15-40% reduction or some flexibility).
+  - Low — minimal or no concessions gained from attacker.
+  - Unknown — insufficient evidence or negotiation incomplete.
+  
   
   INTERACTION_DYNAMICS:
-  - "Attacker_Dominant": Attacker sets all deadlines and prices, ignores victim needs.
-  - "Balanced": Mutual concessions, victim successfully stalls or negotiates.
-
-  ═══════════════════════════════════════════════════════════════════════════
-  FEW-SHOT EXAMPLE
-  ═══════════════════════════════════════════════════════════════════════════
   
-  Input Chat:
-  [
-    {"party": "Attacker", "content": "Hello. We are LockBit. Your data is stolen. Pay 5M now or we leak everything. Clock is ticking."},
-    {"party": "Victim", "content": "Please understand, we are a non-profit. We literally do not have this money. We can offer $50k max."},
-    {"party": "Attacker", "content": "Don't lie to us. We saw your insurance policy. Pay 2M or we publish tomorrow."},
-    {"party": "Victim", "content": "I am telling the truth, the policy has exclusions. We need time to raise funds. Give us 3 days."},
-    {"party": "Attacker", "content": "NO. 24 hours. Price is 2M final."}
-  ]
-
-  Output JSON:
-  {
-    "attacker_profile": {
-      "communication_tone": "Aggressive",
-      "competence_level": "Organized_Group",
-      "primary_strategy": "Competing",
-      "influence_tactics": ["Pressure", "Scarcity", "Authority"]
-    },
-    "victim_profile": {
-      "emotional_trajectory": "Panic",
-      "negotiation_tactic": "Poverty_Pleading",
-      "tactic_effectiveness": "Low"
-    },
-    "interaction_dynamics": {
-      "power_balance": "Attacker_Dominant",
-      "negotiation_outcome_likelihood": "Low"
-    }
-  }
-
-  ═══════════════════════════════════════════════════════════════════════════
-  BEGIN PROFILING - Return ONLY the JSON object:
+  power_balance (choose one):
+  - Attacker_Dominant — attacker controls timeline, prices, and terms; victim follows.
+  - Victim_Dominant — victim successfully dictates pace or extracts major concessions.
+  - Balanced — mutual influence, both parties making concessions.
+  - Unknown — insufficient evidence to classify.
+  
+  negotiation_outcome_likelihood (choose one):
+  - Low — significant impasse, unmet demands, breakdown signals.
+  - Medium — ongoing discussion, some progress, uncertain resolution.
+  - High — clear movement toward agreement, mutual accommodation.
+  - Unknown — insufficient evidence or early-stage negotiation.
+  
+  
+  Guidance
+  
+  - Assess communication_tone based on consistent patterns across multiple messages, not isolated statements.
+  
+  - Infer competence_level from operational indicators: provision of specific evidence, technical depth, organizational consistency.
+  
+  - Include an influence_tactics value only if it appears repeatedly or prominently in the attacker's strategy.
+  
+  - Classify emotional_trajectory by the victim's overall affect progression, not momentary reactions.
+  
+  - Evaluate tactic_effectiveness relative to the attacker's initial position; consider both explicit concessions and implicit flexibility.
+  
+  - Determine power_balance by examining who controls the negotiation pace, who makes concessions, and whose framing dominates.
+  
+  - Use "Unknown" classifications conservatively—only when the chat truly lacks sufficient evidence for categorization.
+  
+  
+  Chat JSON:
+  {{chat_json}}

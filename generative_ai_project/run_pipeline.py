@@ -13,8 +13,9 @@ Key Features:
 - Comprehensive logging and statistics tracking
 - Consensus analysis across multiple models
 
-Author: [Your Name]
-License: [Your License]
+Author: Brilant Gashi
+Institution: University of Brescia
+Academic Year: 2024-2025
 """
 
 import sys
@@ -23,6 +24,7 @@ import yaml
 import logging
 import time
 import re
+import threading
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
@@ -31,7 +33,13 @@ from threading import Lock
 from io import StringIO
 from contextlib import contextmanager
 from typing import List, Dict, Any, Tuple, Optional
-
+import argparse
+from src.utils.sampling import (
+    stratified_sample_chats,
+    save_sample_manifest,
+    load_sample_manifest,
+    filter_db_by_sample
+)
 
 # Progress bar imports with graceful fallback
 try:
@@ -120,6 +128,57 @@ except ImportError as e:
 
 
 # ============================================================================
+# COMMAND LINE ARGUMENT PARSING
+# ============================================================================
+
+
+def parse_arguments():
+    """
+    Parse command line arguments for pipeline execution options.
+    
+    Returns:
+        argparse.Namespace: Parsed arguments
+    """
+    parser = argparse.ArgumentParser(
+        description='Execute ransomware negotiation analysis pipeline'
+    )
+    
+    parser.add_argument(
+        '--use-sampling',
+        action='store_true',
+        help='Apply stratified sampling based on message count distribution'
+    )
+    
+    parser.add_argument(
+        '--use-existing-sample',
+        action='store_true',
+        help='Reuse existing sample_manifest.json if available'
+    )
+    
+    parser.add_argument(
+        '--new-sample',
+        action='store_true',
+        help='Force generation of new sample'
+    )
+    
+    parser.add_argument(
+        '--max-chats',
+        type=int,
+        default=None,
+        help='Maximum number of chats to process'
+    )
+    
+    parser.add_argument(
+        '--sample-seed',
+        type=int,
+        default=42,
+        help='Random seed for sampling reproducibility (default: 42)'
+    )
+    
+    return parser.parse_args()
+
+
+# ============================================================================
 # CHUNKING CONFIGURATION
 # ============================================================================
 
@@ -136,11 +195,112 @@ class ChunkConfig:
         LONG_CHAT_THRESHOLD_MESSAGES: Threshold to reduce few-shot examples
     """
     
-    MAX_PROMPT_CHARS = 10_000
+    MAX_PROMPT_CHARS = 5000
     """Maximum characters in prompt before triggering chunking."""
     
-    LONG_CHAT_THRESHOLD_MESSAGES = 50
+    LONG_CHAT_THRESHOLD_MESSAGES = 30
     """Number of messages above which few-shot examples are reduced."""
+
+
+# ============================================================================
+# PERFORMANCE TRACKING
+# ============================================================================
+
+
+class PerformanceTracker:
+    """
+    Tracks computational costs and execution metrics.
+    
+    Records execution time per chat stratified by message count,
+    enabling cost analysis and performance optimization.
+    """
+    
+    def __init__(self):
+        """Initialize performance tracker with empty metrics."""
+        self.metrics = []
+        self._lock = Lock()
+    
+    def record_execution(
+        self, 
+        chat_id: str, 
+        group: str, 
+        message_count: int, 
+        model: str,
+        task: str,
+        execution_time: float
+    ):
+        """
+        Record execution metrics for a single chat processing operation.
+        
+        Args:
+            chat_id: Unique identifier for the chat
+            group: Ransomware group name
+            message_count: Number of messages in conversation
+            model: Model name used for processing
+            task: Task name
+            execution_time: Elapsed time in seconds
+        """
+        with self._lock:
+            self.metrics.append({
+                'chat_id': chat_id,
+                'group': group,
+                'message_count': message_count,
+                'model': model,
+                'task': task,
+                'execution_time_seconds': execution_time,
+                'timestamp': datetime.now().isoformat()
+            })
+    
+    def save_report(self, output_path: Path):
+        """
+        Save performance report to JSON file.
+        
+        Args:
+            output_path: Path where report will be saved
+        """
+        if not self.metrics:
+            return
+        
+        # Stratify by message count bins
+        bins = {'10-30': [], '30-60': [], '60-100': [], '100-150': [], '>150': []}
+        
+        for m in self.metrics:
+            msg_count = m['message_count']
+            exec_time = m['execution_time_seconds']
+            
+            if 10 <= msg_count <= 30:
+                bins['10-30'].append(exec_time)
+            elif 30 < msg_count <= 60:
+                bins['30-60'].append(exec_time)
+            elif 60 < msg_count <= 100:
+                bins['60-100'].append(exec_time)
+            elif 100 < msg_count <= 150:
+                bins['100-150'].append(exec_time)
+            else:
+                bins['>150'].append(exec_time)
+        
+        # Generate report
+        report = {
+            'total_operations': len(self.metrics),
+            'total_time_seconds': sum(m['execution_time_seconds'] for m in self.metrics),
+            'by_length_bin': {}
+        }
+        
+        for bin_name, times in bins.items():
+            if times:
+                report['by_length_bin'][bin_name] = {
+                    'count': len(times),
+                    'mean_seconds': sum(times) / len(times),
+                    'min_seconds': min(times),
+                    'max_seconds': max(times),
+                    'total_seconds': sum(times)
+                }
+        
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(output_path, 'w', encoding='utf-8') as f:
+            json.dump(report, f, indent=2, ensure_ascii=False)
+        
+        logger.info(f"Performance report saved: {output_path}")
 
 
 # ============================================================================
@@ -281,7 +441,7 @@ class PipelineStats:
         print("PIPELINE EXECUTION COMPLETE")
         print("=" * 70)
         print(f"Duration: {duration}")
-        print()
+        tqdm.write()
         
         # Overall summary
         print("SUMMARY")
@@ -295,21 +455,21 @@ class PipelineStats:
         
         # Task completion
         if self.task_completion:
-            print()
+            tqdm.write()
             print("TASK COMPLETION")
             for task_name, count in sorted(self.task_completion.items()):
                 print(f"  {task_name:30s}: {count:4d} completions")
         
         # Few-shot statistics
         if self.few_shot_stats:
-            print()
+            tqdm.write()
             print("FEW-SHOT EXAMPLES LOADED")
             for task_name, count in sorted(self.few_shot_stats.items()):
                 print(f"  {task_name:25s}: {count} examples")
         
         # Top chunked chats
         if self.chunk_stats:
-            print()
+            tqdm.write()
             print("TOP CHUNKED CHATS")
             sorted_chunks = sorted(
                 self.chunk_stats.items(), 
@@ -321,7 +481,7 @@ class PipelineStats:
         
         # Model performance
         if self.model_stats:
-            print()
+            tqdm.write()
             print("MODEL PERFORMANCE")
             for model, stats in sorted(self.model_stats.items()):
                 total = stats['valid'] + stats['invalid']
@@ -334,7 +494,7 @@ class PipelineStats:
         
         # Warnings summary
         if self.chat_warnings:
-            print()
+            tqdm.write()
             print(f"WARNINGS ({len(self.chat_warnings)} chats)")
             for chat_id, warnings in sorted(self.chat_warnings.items())[:5]:
                 print(f"  {chat_id}: {len(warnings)} issue(s)")
@@ -343,14 +503,14 @@ class PipelineStats:
         
         # Errors summary
         if self.chat_errors:
-            print()
+            tqdm.write()
             print(f"ERRORS ({len(self.chat_errors)} chats)")
             for chat_id, errors in sorted(self.chat_errors.items())[:3]:
                 print(f"  {chat_id}: {errors[0][:60]}")
             if len(self.chat_errors) > 3:
                 print(f"  ... +{len(self.chat_errors)-3} more (see logs)")
         
-        print()
+        tqdm.write()
         print("=" * 70)
         print(f"Outputs: data/outputs/")
         print(f"Logs:    {LOG_FILE.name}")
@@ -395,7 +555,7 @@ class RecursiveChunker:
             List of dialogue chunks, each guaranteed to fit in prompt
         """
         # Calculate actual rendered prompt size
-        chat_json = json.dumps(dialogue, ensure_ascii=False)
+        chat_json = json.dumps(dialogue, indent=2, ensure_ascii=False)
         user_msg = user_template.replace("{{chat_json}}", chat_json)
         combined_length = len(system_prompt) + len(user_msg)
         
@@ -511,18 +671,21 @@ class RansomwarePipeline:
     
     Coordinates multi-model analysis across multiple tasks with:
     - Task-first parallel processing strategy
+    - Dynamic worker allocation based on available resources
     - Adaptive few-shot learning
     - Automatic text chunking for large conversations
     - Robust error handling and logging
     - Consensus analysis across models
     
     The pipeline processes conversations through configurable tasks,
-    with each task executed by multiple models in parallel before
-    moving to the next task.
+    with each task executed by multiple models in parallel. Worker threads
+    are dynamically distributed among models to maximize throughput within
+    API rate limits.
     """
     
-    def __init__(self):
+    def __init__(self, args=None):
         """Initialize pipeline with directory structure and configuration."""
+        self.args = args
         self.base_dir = BASE_DIR
         self.config_dir = self.base_dir / "config"
         self.output_dir = self.base_dir / "data" / "outputs"
@@ -533,25 +696,63 @@ class RansomwarePipeline:
         with open(self.model_config_path, 'r', encoding='utf-8') as f:
             self.model_config = yaml.safe_load(f)
         
-        # Extract model list and parallelism settings
+        # Extract model list
         self.models_list = self.model_config.get(
             'ensemble_models', 
             [self.model_config.get('active_model')]
         )
         
+        # Get max workers from config (default to number of models)
         self.max_workers = self.model_config.get('processing', {}).get(
             'max_workers', 
             len(self.models_list)
         )
+        
+        # Calculate dynamic worker allocation per model
+        self._calculate_worker_allocation()
         
         # Initialize components
         self.consensus_manager = ConsensusManager(self.base_dir)
         self.prompts_config = {}
         self.full_dataset = {}
         self.stats = PipelineStats()
+        self.performance_tracker = PerformanceTracker()
         self.few_shot_cache = {}
         self.chunker = RecursiveChunker()
+        
+        # Global API rate limiter (safety semaphore)
+        self.api_semaphore = threading.Semaphore(self.max_workers)
     
+    def _calculate_worker_allocation(self):
+        """
+        Dynamically calculate worker allocation per model.
+        
+        Distributes max_workers among models as evenly as possible.
+        Extra workers are assigned to the first models in the list.
+        """
+        num_models = len(self.models_list)
+        if num_models == 0:
+            self.workers_per_model = {}
+            return
+
+        # Base allocation
+        base_workers = self.max_workers // num_models
+        extra_workers = self.max_workers % num_models
+        
+        # Build allocation map
+        self.workers_per_model = {}
+        for idx, model_name in enumerate(self.models_list):
+            # First 'extra_workers' models get +1 worker
+            workers = base_workers + (1 if idx < extra_workers else 0)
+            self.workers_per_model[model_name] = max(1, workers)  # At least 1 worker
+        
+        logger.info(
+            f"Dynamic worker allocation: {self.max_workers} total workers "
+            f"distributed among {num_models} models"
+        )
+        for model, workers in self.workers_per_model.items():
+            logger.info(f"  - {model}: {workers} worker(s)")
+
     def load_resources(self):
         """
         Load all required resources for pipeline execution.
@@ -567,9 +768,9 @@ class RansomwarePipeline:
         """
         # Load task prompt templates
         task_files = {
-            'speech_act_analysis': 'prompt_speech_act_analysis.yaml',
-            'psychological_profiling': 'prompt_psychological_profiling.yaml',
-            'tactical_extraction': 'prompt_tactical_extraction.yaml'
+            'Speech Act Analysis': 'prompt_speech_act_analysis.yaml',
+            'Psychological Profiling': 'prompt_psychological_profiling.yaml',
+            'Tactical Extraction': 'prompt_tactical_extraction.yaml'
         }
         
         self.prompts_config = {'tasks': {}}
@@ -617,6 +818,38 @@ class RansomwarePipeline:
         except Exception as e:
             logger.critical(f"Failed to load dataset: {e}")
             raise
+        
+        # Apply sampling if requested
+        self._apply_sampling()
+    
+    def _apply_sampling(self):
+        """Apply stratified sampling to reduce dataset size."""
+        if not self.args or not self.args.use_sampling:
+            return
+        
+        manifest_path = self.base_dir / "data" / "sample_manifest.json"
+        
+        # Load or generate sample
+        if (self.args.use_existing_sample and 
+            manifest_path.exists() and 
+            not self.args.new_sample):
+            
+            print("\nLoading existing sample manifest...")
+            sampled_chats = load_sample_manifest(manifest_path)
+        else:
+            print("\nGenerating stratified sample...")
+            sampled_chats = stratified_sample_chats(
+                self.full_dataset,
+                random_seed=self.args.sample_seed,
+                verbose=True
+            )
+            save_sample_manifest(sampled_chats, manifest_path)
+        
+        # Filter dataset
+        self.full_dataset = filter_db_by_sample(self.full_dataset, sampled_chats)
+        
+        sampled_count = sum(len(chats) for chats in self.full_dataset.values())
+        logger.info(f"Dataset filtered to {sampled_count} sampled chats")
     
     def _load_few_shot_examples(
         self, 
@@ -698,7 +931,7 @@ class RansomwarePipeline:
         """
         # Handle already-parsed JSON
         if isinstance(text, (list, dict)):
-            return json.dumps(text, ensure_ascii=False)
+            return json.dumps(text, indent=2, ensure_ascii=False)
         
         if not isinstance(text, str):
             return str(text) if text is not None else ""
@@ -708,7 +941,7 @@ class RansomwarePipeline:
         # Try direct parsing
         try:
             parsed = json.loads(text)
-            return json.dumps(parsed, ensure_ascii=False)
+            return json.dumps(parsed, indent=2, ensure_ascii=False)
         except json.JSONDecodeError:
             pass
         
@@ -717,7 +950,7 @@ class RansomwarePipeline:
         if match:
             try:
                 parsed = json.loads(match.group(0))
-                return json.dumps(parsed, ensure_ascii=False)
+                return json.dumps(parsed, indent=2, ensure_ascii=False)
             except json.JSONDecodeError:
                 pass
         
@@ -725,7 +958,7 @@ class RansomwarePipeline:
         text = re.sub(r'```json\s*|\s*```', '', text)
         try:
             parsed = json.loads(text)
-            return json.dumps(parsed, ensure_ascii=False)
+            return json.dumps(parsed, indent=2, ensure_ascii=False)
         except json.JSONDecodeError:
             pass
         
@@ -841,6 +1074,8 @@ class RansomwarePipeline:
         Returns:
             Tuple of (success: bool, content: str)
         """
+        start_time = time.time()
+        
         # Clean dialogue
         dialogue = clean_message_list(dialogue)
         original_length = len(dialogue)
@@ -864,7 +1099,7 @@ class RansomwarePipeline:
         
         for idx, chunk in enumerate(chunks):
             try:
-                chunk_json_str = json.dumps(chunk, ensure_ascii=False)
+                chunk_json_str = json.dumps(chunk, indent=2, ensure_ascii=False)
                 
                 # Build messages with adaptive few-shot
                 messages = self._build_messages_with_few_shot(
@@ -898,47 +1133,167 @@ class RansomwarePipeline:
                 )
                 chunk_results.append("")  # Maintain order
         
+        # Record performance metrics
+        execution_time = time.time() - start_time
+        self.performance_tracker.record_execution(
+            chat_id, group_name, original_length, 
+            model_name, task_name, execution_time
+        )
+        
         # Merge chunk results
         if len(chunks) > 1:
             merged_content = self.chunker.merge_chunk_results(chunk_results)
             return True, merged_content
         else:
             return True, chunk_results[0] if chunk_results else ""
-    
-    def _process_model_for_task(
-        self, 
-        model_name: str, 
-        task_name: str, 
-        task_cfg: Dict, 
-        chat_queue: List, 
+
+    def _process_single_chat_wrapper(
+        self,
+        client: LLMClient,
+        model_name: str,
+        group_name: str,
+        chat_id: str,
+        dialogue: List[Dict],
+        task_name: str,
+        task_cfg: Dict,
+        out_file: Path,
         pbar
     ):
         """
-        Process all chats for one task using one model.
-        
-        This is the core worker function called within the task loop.
-        Processes each chat in the queue, handling errors gracefully
-        and updating progress tracking.
+        Wrapper for processing a single chat with global rate limiting.
+        Used by the internal thread pool executor.
         
         Args:
-            model_name: Name of the model to use
-            task_name: Name of the task to perform
+            client: LLM client instance
+            model_name: Name of the model being used
+            group_name: Group/category of the chat
+            chat_id: Unique identifier for the chat
+            dialogue: List of message dictionaries
+            task_name: Name of the task being performed
+            task_cfg: Task configuration dictionary
+            out_file: Path where to save the output
+            pbar: Progress bar instance
+        """
+        try:
+            # Global rate limiting (prevents API overload across all models)
+            with self.api_semaphore:
+                # Process chat with automatic chunking
+                success, content = self._process_single_chat(
+                    client, model_name, group_name, chat_id, 
+                    dialogue, task_name, task_cfg
+                )
+            
+            if not success:
+                pbar.update(1)
+                return
+            
+            # Validate JSON if required
+            if task_cfg.get('output_format') == 'json':
+                cleaned_json = self._clean_json_output(content)
+                
+                if cleaned_json is None or cleaned_json == "[]":
+                    warning = f"Invalid JSON in {task_name}"
+                    self.stats.add_warning(chat_id, warning, model_name)
+                    pbar.update(1)
+                    return
+                else:
+                    content = cleaned_json
+                    self.stats.add_success(model_name)
+            
+            # Write output
+            with open(out_file, 'w', encoding='utf-8') as f:
+                f.write(content)
+            
+            time.sleep(0.5)  # Rate limiting between calls
+        
+        except Exception as e:
+            raise  # Re-raise to be caught by future.result()
+        
+        finally:
+            pbar.update(1)
+
+    def _process_chats_parallel(
+        self,
+        client: LLMClient,
+        model_name: str,
+        task_name: str,
+        task_cfg: Dict,
+        chat_queue: List,
+        pbar,
+        num_workers: int
+    ):
+        """
+        Process multiple chats in parallel for a single model.
+        
+        Uses an internal ThreadPoolExecutor with dynamically allocated workers.
+        
+        Args:
+            client: LLM client instance
+            model_name: Name of the model being used
+            task_name: Name of the task being performed
             task_cfg: Task configuration dictionary
             chat_queue: List of (group_name, chat_id, chat_content) tuples
             pbar: Progress bar instance
+            num_workers: Number of workers allocated to this model
         """
-        # Initialize client with stdout suppressed
-        with suppress_stdout():
-            client = LLMClient(
-                config_path=str(self.model_config_path), 
-                model_override=model_name
-            )
+        with ThreadPoolExecutor(max_workers=num_workers) as chat_executor:
+            futures = []
+            
+            for group_name, chat_id, chat_content in chat_queue:
+                dialogue = chat_content.get('dialogue', [])
+                if not dialogue:
+                    pbar.update(1)
+                    continue
+                
+                self.stats.increment_task(model_name, task_name)
+                
+                # Prepare output directory
+                task_out_dir = (
+                    self.output_dir / task_name / model_name / group_name
+                )
+                task_out_dir.mkdir(parents=True, exist_ok=True)
+                
+                out_file = task_out_dir / (
+                    f"{chat_id}.{task_cfg.get('output_format', 'txt')}"
+                )
+                
+                # Skip if already processed
+                if out_file.exists():
+                    logger.debug(f"[{model_name}] Skip {chat_id}/{task_name}")
+                    pbar.update(1)
+                    continue
+                
+                # Submit chat processing to internal pool
+                future = chat_executor.submit(
+                    self._process_single_chat_wrapper,
+                    client, model_name, group_name, chat_id,
+                    dialogue, task_name, task_cfg, out_file, pbar
+                )
+                futures.append((future, chat_id))
+            
+            # Wait for all chats to complete
+            for future, chat_id in futures:
+                try:
+                    future.result()
+                except Exception as e:
+                    error_msg = f"[{model_name}] {task_name}: {str(e)[:60]}"
+                    self.stats.add_error(chat_id, error_msg)
+                    logger.error(f"{chat_id}: {e}", exc_info=True)
+
+    def _process_chats_sequential(
+        self,
+        client: LLMClient,
+        model_name: str,
+        task_name: str,
+        task_cfg: Dict,
+        chat_queue: List,
+        pbar
+    ):
+        """
+        Process chats sequentially (fallback when allocated only 1 worker).
         
-        logger.info(
-            f"[{model_name}] Started task '{task_name}' "
-            f"for {len(chat_queue)} chats"
-        )
-        
+        Kept for efficiency when parallelism is not beneficial.
+        """
         for group_name, chat_id, chat_content in chat_queue:
             dialogue = chat_content.get('dialogue', [])
             if not dialogue:
@@ -964,11 +1319,13 @@ class RansomwarePipeline:
                 continue
             
             try:
-                # Process chat with automatic chunking
-                success, content = self._process_single_chat(
-                    client, model_name, group_name, chat_id, 
-                    dialogue, task_name, task_cfg
-                )
+                # Global rate limiting
+                with self.api_semaphore:
+                    # Process chat with automatic chunking
+                    success, content = self._process_single_chat(
+                        client, model_name, group_name, chat_id, 
+                        dialogue, task_name, task_cfg
+                    )
                 
                 if not success:
                     pbar.update(1)
@@ -978,10 +1335,11 @@ class RansomwarePipeline:
                 if task_cfg.get('output_format') == 'json':
                     cleaned_json = self._clean_json_output(content)
                     
-                    if cleaned_json is None:
+                    if cleaned_json is None or cleaned_json == "[]":
                         warning = f"Invalid JSON in {task_name}"
                         self.stats.add_warning(chat_id, warning, model_name)
-                        content = content  # Keep original
+                        pbar.update(1)
+                        continue
                     else:
                         content = cleaned_json
                         self.stats.add_success(model_name)
@@ -998,6 +1356,56 @@ class RansomwarePipeline:
                 logger.error(f"{chat_id}: {e}", exc_info=True)
             
             pbar.update(1)
+
+    def _process_model_for_task(
+        self, 
+        model_name: str, 
+        task_name: str, 
+        task_cfg: Dict, 
+        chat_queue: List, 
+        pbar
+    ):
+        """
+        Process all chats for one task using one model.
+        
+        This is the core worker function called within the task loop.
+        It manages the lifecycle of the LLM client and delegates
+        chat processing to either parallel or sequential handlers.
+        
+        Args:
+            model_name: Name of the model to use
+            task_name: Name of the task to perform
+            task_cfg: Task configuration dictionary
+            chat_queue: List of (group_name, chat_id, chat_content) tuples
+            pbar: Progress bar instance
+        """
+        # Initialize client with stdout suppressed
+        with suppress_stdout():
+            client = LLMClient(
+                config_path=str(self.model_config_path), 
+                model_override=model_name
+            )
+        
+        # Get dynamic worker allocation for this model
+        workers_for_model = self.workers_per_model.get(model_name, 1)
+        
+        logger.info(
+            f"[{model_name}] Started task '{task_name}' "
+            f"for {len(chat_queue)} chats with {workers_for_model} worker(s)"
+        )
+        
+        # Process chats with dynamic parallelism
+        if workers_for_model > 1:
+            self._process_chats_parallel(
+                client, model_name, task_name, task_cfg, 
+                chat_queue, pbar, workers_for_model
+            )
+        else:
+            # Fall back to sequential processing
+            self._process_chats_sequential(
+                client, model_name, task_name, task_cfg, 
+                chat_queue, pbar
+            )
         
         logger.info(f"[{model_name}] Completed task '{task_name}'")
     
@@ -1008,7 +1416,7 @@ class RansomwarePipeline:
         Processing flow:
         FOR each task:
             FOR each model (in parallel):
-                Process all chats
+                Process all chats (using internal parallel pool)
         
         This ensures all models complete one task before moving to the next,
         facilitating immediate consensus analysis per task.
@@ -1030,7 +1438,7 @@ class RansomwarePipeline:
         
         self.stats.total_chats = len(all_jobs)
         
-        # Display configuration
+        # Display configuration banner
         print_banner(
             self.prompts_config, 
             self.models_list, 
@@ -1046,20 +1454,25 @@ class RansomwarePipeline:
         with tqdm(
             total=total_operations, 
             desc="Processing", 
-            unit="operation", 
-            bar_format="{desc}: {percentage:3.0f}%|{bar:30}| "
+            unit="op", 
+            bar_format="{desc}: {percentage:3.0f}%|{bar:25}| "
                       "{n_fmt}/{total_fmt} [{elapsed}<{remaining}]",
             colour="cyan", 
-            ncols=80
+            ncols=120
         ) as pbar:
             
             for task_idx, (task_name, task_cfg) in enumerate(tasks.items(), 1):
-                print(f"\nTask {task_idx}/{len(tasks)}: {task_name}")
-                print(f"Processing with {len(self.models_list)} models "
-                      f"({self.max_workers} parallel)...")
+                # Update progress bar description
+                task_display = task_name[:30] 
+                pbar.set_description(f"Task {task_idx}/{len(tasks)}: {task_display}")
                 
                 # Run all models in parallel for this task
-                with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
+                # Note: We use max_workers for the outer pool to ensure we have
+                # enough threads to spawn the model handlers. The actual work
+                # limiting is done by the internal pools and the global semaphore.
+                outer_workers = len(self.models_list)
+                
+                with ThreadPoolExecutor(max_workers=outer_workers) as executor:
                     futures = []
                     
                     for model_name in self.models_list:
@@ -1079,7 +1492,7 @@ class RansomwarePipeline:
                                 exc_info=True
                             )
                 
-                print(f"Task '{task_name}' completed by all models")
+                tqdm.write(f"Task '{task_name}' completed by all models")
         
         # Run consensus analysis if using multiple models
         if len(self.models_list) > 1:
@@ -1095,6 +1508,12 @@ class RansomwarePipeline:
         # Finalize statistics
         self.stats.completed_chats = len(all_jobs)
         self.stats.print_summary()
+        
+        # Save performance report
+        perf_report_path = self.base_dir / "data" / "performance_report.json"
+        self.performance_tracker.save_report(perf_report_path)
+        print(f"\nPerformance report saved: {perf_report_path.name}")
+
 
 
 # ============================================================================
@@ -1109,11 +1528,12 @@ if __name__ == "__main__":
     Handles initialization, execution, and graceful shutdown with
     proper error handling and user interrupt support.
     """
-    pipeline = RansomwarePipeline()
+    args = parse_arguments()
+    pipeline = RansomwarePipeline(args)
     
     try:
         pipeline.load_resources()
-        pipeline.run(max_chats=5)  # Adjust or remove limit as needed
+        pipeline.run(max_chats=args.max_chats)
     
     except KeyboardInterrupt:
         print("\n\nPipeline interrupted by user.")

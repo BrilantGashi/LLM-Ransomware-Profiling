@@ -1,0 +1,20 @@
+{
+  "total_operations": 6,
+  "total_time_seconds": 10.475919723510742,
+  "by_length_bin": {
+    "10-30": {
+      "count": 3,
+      "mean_seconds": 1.3309484322865803,
+      "min_seconds": 1.2065775394439697,
+      "max_seconds": 1.4280741214752197,
+      "total_seconds": 3.992845296859741
+    },
+    ">150": {
+      "count": 3,
+      "mean_seconds": 2.161024808883667,
+      "min_seconds": 2.115765333175659,
+      "max_seconds": 2.206205368041992,
+      "total_seconds": 6.483074426651001
+    }
+  }
+}
