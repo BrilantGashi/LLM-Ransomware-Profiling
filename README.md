@@ -24,7 +24,7 @@ The project is structured as a modular Python application (`generative_ai_projec
 
 ### Directory Structure
 
-
+```
 generative_ai_project/
 ├── config/                     # Configuration Management
 │   ├── model_config.yaml       # Global system settings (models, parameters, paths)
@@ -57,7 +57,7 @@ generative_ai_project/
 ├── run_agentic_consensus.py    # Entry point for the consensus adjudication phase
 ├── update_database.py          # Utility to sync with external data sources
 └── requirements.txt            # Project dependencies manifest
-
+```
 Key Components
 --------------
 
