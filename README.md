@@ -24,7 +24,7 @@ The project is structured as a modular Python application (`generative_ai_projec
 
 ### Directory Structure
 
-```
+```text
 generative_ai_project/
 ├── config/                     # Configuration Management
 │   ├── model_config.yaml       # Global system settings (models, parameters, paths)
