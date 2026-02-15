@@ -154,7 +154,7 @@ def load_sample_manifest(manifest_path: Path) -> List[Tuple[str, str, int]]:
         for chat in manifest['chats']
     ]
     
-    print(f"✓ Loaded existing sample: {len(sampled)} chats")
+    print(f" Loaded existing sample: {len(sampled)} chats")
     print(f"  Date: {manifest['sampling_date']}\n")
     
     return sampled
