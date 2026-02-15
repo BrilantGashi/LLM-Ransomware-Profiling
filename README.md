@@ -130,7 +130,7 @@ Technical Dependencies
 
 Author
 ------
-Brilant Gashi
-Department of Information Engineering
-University of Brescia
+Brilant Gashi - 
+Department of Information Engineering - 
+University of Brescia - 
 2024-2025
