@@ -15,19 +15,19 @@ def stratified_sample_chats(
     verbose: bool = True
 ) -> List[Tuple[str, str, int]]:
     """
-    Campionamento stratificato basato sulla lunghezza delle chat.
+    Stratified sampling based on chat length (message count).
     
     Args:
-        messages_db: Dictionary dal messages.json {group: {chat_id: {dialogue: [...]}}}
-        random_seed: Seed per riproducibilità
-        verbose: Stampa statistiche
+        messages_db: Dictionary from messages.json {group: {chat_id: {dialogue: [...]}}}
+        random_seed: Seed for reproducibility
+        verbose: Print distribution statistics
     
     Returns:
-        List di tuple (group, chat_id, message_count)
+        List of tuples (group, chat_id, message_count)
     """
     random.seed(random_seed)
     
-    # Categorizza chat per lunghezza
+    # Categorize chats by length
     bins = {
         '<10': [],
         '10-30': [],
@@ -56,50 +56,50 @@ def stratified_sample_chats(
     
     if verbose:
         print("\n" + "="*50)
-        print("DISTRIBUZIONE DATASET")
+        print("DATASET DISTRIBUTION")
         print("="*50)
         for bin_name, chats in bins.items():
-            print(f"{bin_name:>10}: {len(chats):>3} chat")
+            print(f"{bin_name:>10}: {len(chats):>3} chats")
         total = sum(len(c) for c in bins.values())
-        print(f"{'TOTALE':>10}: {total:>3} chat")
+        print(f"{'TOTAL':>10}: {total:>3} chats")
         print("="*50 + "\n")
     
-    # Campionamento stratificato
+    # Stratified Sampling Strategy
     sampled = []
     
     if verbose:
-        print("CAMPIONAMENTO STRATIFICATO")
+        print("STRATIFIED SAMPLING EXECUTION")
         print("-"*50)
     
-    # SKIP chat <10 messaggi
+    # SKIP chats <10 messages
     if verbose:
-        print(f"❌ Escluse chat <10 messaggi: {len(bins['<10'])}")
+        print(f"Excluded chats <10 messages: {len(bins['<10'])}")
     
-    # Campiona 10-30: ~55%
+    # Sample 10-30: ~55%
     sample_10_30 = random.sample(bins['10-30'], k=min(50, len(bins['10-30'])))
     sampled.extend(sample_10_30)
     if verbose:
-        print(f"✓ Campionate 10-30: {len(sample_10_30)}/{len(bins['10-30'])}")
+        print(f"Sampled 10-30: {len(sample_10_30)}/{len(bins['10-30'])}")
     
-    # Campiona 30-60: ~42%
+    # Sample 30-60: ~42%
     sample_30_60 = random.sample(bins['30-60'], k=min(25, len(bins['30-60'])))
     sampled.extend(sample_30_60)
     if verbose:
-        print(f"✓ Campionate 30-60: {len(sample_30_60)}/{len(bins['30-60'])}")
+        print(f"Sampled 30-60: {len(sample_30_60)}/{len(bins['30-60'])}")
     
-    # Campiona 60-100: ~33%
+    # Sample 60-100: ~33%
     sample_60_100 = random.sample(bins['60-100'], k=min(10, len(bins['60-100'])))
     sampled.extend(sample_60_100)
     if verbose:
-        print(f"✓ Campionate 60-100: {len(sample_60_100)}/{len(bins['60-100'])}")
+        print(f"Sampled 60-100: {len(sample_60_100)}/{len(bins['60-100'])}")
     
-    # Campiona 100-150: ~30%
+    # Sample 100-150: ~30%
     sample_100_150 = random.sample(bins['100-150'], k=min(3, len(bins['100-150'])))
     sampled.extend(sample_100_150)
     if verbose:
-        print(f"✓ Campionate 100-150: {len(sample_100_150)}/{len(bins['100-150'])}")
+        print(f"Sampled 100-150: {len(sample_100_150)}/{len(bins['100-150'])}")
     
-    # Campiona >150: le 2 più lunghe + 1 casuale
+    # Sample >150: Top 2 longest + 1 random
     if len(bins['>150']) > 0:
         sorted_long = sorted(bins['>150'], key=lambda x: x[2], reverse=True)
         sample_150_plus = sorted_long[:2]
@@ -108,21 +108,21 @@ def stratified_sample_chats(
         sampled.extend(sample_150_plus)
         max_msg = max(x[2] for x in bins['>150'])
         if verbose:
-            print(f"✓ Campionate >150: {len(sample_150_plus)}/{len(bins['>150'])} (max: {max_msg} msg)")
+            print(f"Sampled >150: {len(sample_150_plus)}/{len(bins['>150'])} (max len: {max_msg})")
     
     total_available = sum(len(c) for c in bins.values() if c != bins['<10'])
     
     if verbose:
         print("-"*50)
-        print(f"TOTALE CAMPIONATO: {len(sampled)} chat")
-        print(f"PERCENTUALE: {len(sampled)/total_available*100:.1f}%")
+        print(f"TOTAL SAMPLED: {len(sampled)} chats")
+        print(f"PERCENTAGE: {len(sampled)/total_available*100:.1f}% of eligible data")
         print("="*50 + "\n")
     
     return sampled
 
 
 def save_sample_manifest(sampled: List[Tuple[str, str, int]], output_path: Path):
-    """Salva la lista delle chat campionate per tracking e riproducibilità."""
+    """Save the sampled chat list for reproducibility."""
     manifest = {
         "total_sampled": len(sampled),
         "sampling_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -141,11 +141,11 @@ def save_sample_manifest(sampled: List[Tuple[str, str, int]], output_path: Path)
     with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(manifest, f, indent=2, ensure_ascii=False)
     
-    print(f"✓ Sample manifest salvato: {output_path}\n")
+    print(f"Sample manifest saved: {output_path.name}\n")
 
 
 def load_sample_manifest(manifest_path: Path) -> List[Tuple[str, str, int]]:
-    """Carica un manifest di campionamento esistente."""
+    """Load an existing sampling manifest."""
     with open(manifest_path, 'r', encoding='utf-8') as f:
         manifest = json.load(f)
     
@@ -154,8 +154,8 @@ def load_sample_manifest(manifest_path: Path) -> List[Tuple[str, str, int]]:
         for chat in manifest['chats']
     ]
     
-    print(f"✓ Caricato sample esistente: {len(sampled)} chat")
-    print(f"  Data campionamento: {manifest['sampling_date']}\n")
+    print(f"✓ Loaded existing sample: {len(sampled)} chats")
+    print(f"  Date: {manifest['sampling_date']}\n")
     
     return sampled
 
@@ -165,14 +165,14 @@ def filter_db_by_sample(
     sampled: List[Tuple[str, str, int]]
 ) -> Dict:
     """
-    Filtra messages_db per includere solo le chat campionate.
+    Filter messages_db to include only sampled chats.
     
     Returns:
-        Nuovo dictionary con solo le chat campionate
+        New dictionary containing only the sampled conversations.
     """
     filtered_db = {}
     
-    # Crea set per lookup veloce
+    # Create set for O(1) lookup
     sampled_set = {(group, chat_id) for group, chat_id, _ in sampled}
     
     for group, chats in messages_db.items():
@@ -181,7 +181,7 @@ def filter_db_by_sample(
             if (group, chat_id) in sampled_set:
                 filtered_db[group][chat_id] = chat_data
     
-    # Rimuovi gruppi vuoti
+    # Remove empty groups
     filtered_db = {g: c for g, c in filtered_db.items() if c}
     
     return filtered_db

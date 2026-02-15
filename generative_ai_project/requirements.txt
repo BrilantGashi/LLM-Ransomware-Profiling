@@ -3,22 +3,22 @@
 # Python 3.9+ required
 # ==============================================================================
 
-# Core dependencies
-openai>=1.0.0,<2.0.0
-pyyaml>=6.0.0
-python-dotenv>=1.0.0
-requests>=2.31.0
+# Core & API
+openai>=1.0.0,<2.0.0      # Client for UniBS Cluster / LLM integration
+python-dotenv>=1.0.0      # Environment variable management (.env)
+requests>=2.31.0          # HTTP requests and API handling
+pyyaml>=6.0.0             # YAML configuration parsing
 
-# Progress & UI
-tqdm>=4.66.0
-
-# Data processing
-pandas>=2.0.0
-numpy>=1.24.0
-
-# Development & Testing
-pytest>=7.4.0
+# Data Processing & Analysis
+pandas>=2.0.0             # DataFrame manipulation and analysis
+numpy>=1.24.0             # Numerical computation support
 
 # Visualization
-matplotlib>=3.7.0
-seaborn>=0.12.0
+matplotlib>=3.7.0         # Basic plotting library
+seaborn>=0.12.0           # Advanced statistical data visualization
+
+# Utility & UI
+tqdm>=4.66.0              # Progress bars for long-running processes
+
+# Testing & Quality Assurance
+pytest>=7.4.0             # Unit testing framework

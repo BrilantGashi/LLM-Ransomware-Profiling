@@ -131,6 +131,7 @@ paths:
 # CONSENSUS CONFIGURATION
 # ------------------------------------------------------------------------------
 consensus:
+  # Legacy Mathematical Consensus (ConsensusManager)
   enabled: true                 # Enable consensus mode with multiple models
   strategy: "majority_vote"     # Options: majority_vote | weighted_average
   min_agreement: 0.6            # Minimum agreement threshold (60%)
@@ -140,6 +141,13 @@ consensus:
     phi4-mini: 1.0
     qwen3: 1.2
     llama3.2: 1.0
+
+  # Agentic Consensus Configuration 
+  agentic:
+    active_model: "gpt-oss"     # The model used as the adjudicator agent
+    fallback_model: "phi4"      # Optional: model to use if active_model fails
+    temperature: 0.1            # Lower temperature for deterministic consensus
+    max_tokens: 2048            # Increase token limit for large merged outputs
 
 
 # ------------------------------------------------------------------------------

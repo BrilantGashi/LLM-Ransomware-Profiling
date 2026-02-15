@@ -1,261 +1,136 @@
-# LLM Ransomware Negotiation Profiling
+# LLM-Based Ransomware Negotiation Profiling
 
-Advanced psychological profiling and tactical extraction from ransomware negotiations using Large Language Models and Speech Act Theory.
+## Abstract
+This project implements a computational framework for the automated analysis of ransomware negotiations using Large Language Models (LLMs). The system processes negotiation transcripts through a multi-agent pipeline to apply Speech Act Theory for linguistic classification, derive psychological profiles of threat actors, and extract tactical intelligence. The architecture employs an "Agentic Consensus" mechanism to synthesize and validate outputs from multiple models, producing structured data for forensic analysis.
 
-**Bachelor's Thesis Project** - University of Brescia (2024-2025)
-
----
-
-## 🎓 Academic Information
-
-**Student**: Brilant Gashi  
-**Institution**: University of Brescia (Università degli Studi di Brescia)  
-**Degree Program**: Computer Science (Informatica)  
-**Academic Year**: 2024-2025
-
-### Supervisors
-
-- **Prof. Federico Cerutti** -  Supervisor
-- **Prof. Pietro Baroni** - Supervisor
-
-**Department**: Department of Information Engineering (Dipartimento di Ingegneria dell'Informazione)
-
----
-
-## 🎯 Thesis Overview
-
-This bachelor's thesis investigates the application of Large Language Models (LLMs) for automated analysis of ransomware negotiation chats. The research leverages the **UniBS experimental LLM cluster** to process real-world negotiation data from the Ransomchats dataset, applying Speech Act Theory and multi-model ensemble techniques.
+## Project Overview
 
 ### Research Objectives
+1.  **Automated Behavioral Analysis**: To develop a scalable pipeline for processing unstructured negotiation logs into structured behavioral datasets.
+2.  **Linguistic Classification**: To categorize communicative intents within cyber-extortion contexts based on Speech Act Theory.
+3.  **Multi-Model Validation**: To mitigate LLM inconsistencies by utilizing an ensemble approach with an adjudicator agent to synthesize results.
+4.  **Forensic Profiling**: To extract correlations between linguistic patterns, psychological traits, and negotiation tactics.
 
-1. **Automated Negotiation Analysis**: Develop a scalable pipeline for processing ransomware negotiations
-2. **Speech Act Classification**: Apply linguistic theory to categorize negotiation messages
-3. **Psychological Profiling**: Extract behavioral patterns and negotiation tactics
-4. **Multi-Model Validation**: Compare and consensus across 7 different LLMs
-5. **Academic Contribution**: Advance cybersecurity research and negotiation analysis
+### Methodology
+The system processes data through the following stages:
+1.  **Ingestion**: Raw negotiation transcripts are normalized and anonymized.
+2.  **Parallel Inference**: Multiple LLMs (e.g., Qwen, Phi-4, Llama-3) independently analyze the data across three dimensions: Speech Acts, Psychological Profiling, and Tactical Extraction.
+3.  **Agentic Adjudication**: A dedicated consensus agent evaluates the independent model outputs, resolving discrepancies based on linguistic consistency to produce a validated JSON record.
+4.  **Aggregation**: Validated records are consolidated into structured datasets (CSV) for statistical analysis and temporal modeling.
 
-### Key Research Questions
+## System Architecture
 
-- Can LLMs accurately classify speech acts in ransomware negotiations?
-- How do different models compare in understanding malicious communication?
-- What consensus mechanisms provide the most reliable results?
-- What psychological patterns emerge from automated analysis?
+The project is structured as a modular Python application (`generative_ai_project`), designed for deployment on high-performance computing clusters (UniBS GPUStack).
 
+### Directory Structure
 
-## 🌟 Features
-
-### Core Capabilities
-
-- ✅ **7 LLM Models**: qwen3, phi4-mini, phi4, llama3.2, gpt-oss, granite3.3, gemma3
-- ✅ **UniBS Cluster Integration**: Production-ready API client (Handbook-compliant)
-- ✅ **Multi-Task Pipeline**: Speech acts, psychological profiling, tactical extraction
-- ✅ **Consensus Mechanisms**: Majority vote and weighted averaging
-- ✅ **Robust Error Handling**: Exponential backoff with comprehensive logging
-- ✅ **Few-Shot Learning**: Template-based prompt engineering
-- ✅ **Dataset Management**: Automated updates from Ransomchats repository
-- ✅ **Reasoning Capture**: Model thinking process extraction
-
----
-
-## 📁 Project Structure
 
 generative_ai_project/
-├── config/ # Configuration files
-│ ├── model_config.yaml # LLM parameters & cluster settings
-│ ├── prompt_templates.yaml # Task prompts & instructions
-│ ├── logging_config.yaml # Multi-level logging setup
-│ └── few_shot_examples/ # Few-shot learning templates
+├── config/                     # Configuration Management
+│   ├── model_config.yaml       # Global system settings (models, parameters, paths)
+│   ├── prompt_templates.yaml   # Base prompt engineering templates
+│   └── agentic_consensus_prompts.yaml # Specialized prompts for the Consensus Agent
 │
-├── src/ # Source code
-│ ├── llm/
-│ │ └── unibs_client.py # UniBS cluster API client
-│ ├── handlers/
-│ │ └── error_handler.py # Retry logic & error reporting
-│ ├── utils/
-│ │ ├── data_loader.py # Dataset loading utilities
-│ │ └── debug_helper.py # Debugging tools
-│ └── analysis/
-│ ├── consensus.py # Multi-model consensus
-│ ├── aggregator.py # Result aggregation
-│ └── visualizer.py # Data visualization
+├── src/                        # Source Code
+│   ├── llm/
+│   │   └── unibs_client.py     # OpenAI-compatible API client for the UniBS cluster
+│   │
+│   ├── analysis/
+│   │   ├── agentic_consensus.py # Logic for LLM-based adjudication and synthesis
+│   │   ├── aggregator.py       # Data transformation pipeline (JSON -> CSV)
+│   │   ├── consensus.py        # Legacy mathematical consensus implementation
+│   │   └── visualizer.py       # Plotting utilities for data analysis
+│   │
+│   ├── handlers/               # Utility Handlers
+│   │   └── error_handler.py    # Error management and retry logic
+│   │
+│   └── utils/                  # Helper Utilities
+│       └── data_loader.py      # Dataset ingestion and normalization
 │
-├── data/ # Data storage
-│ ├── raw/
-│ │ ├── messages.json # Unified dataset
-│ │ ├── DATA_MANIFEST.json # Dataset metadata
-│ │ └── Ransomchats-main/ # Raw GitHub data
-│ ├── outputs/ # Pipeline results
-│ └── consensus/ # Cross-model validation
+├── data/                       # Data Storage (Git-ignored)
+│   ├── raw/                    # Original Ransomchats dataset
+│   ├── outputs/                # Raw inference results from individual models
+│   ├── consensus_agentic/      # Validated "Gold Standard" outputs
+│   └── processed/              # Final CSV datasets for analysis
 │
-├── logs/ # Execution logs
-│
-├── run_pipeline.py # Main execution script
-├── update_database.py # Dataset updater
-└── requirements.txt # Python dependencies
+├── run_pipeline.py             # Entry point for the primary inference pipeline
+├── run_agentic_consensus.py    # Entry point for the consensus adjudication phase
+├── update_database.py          # Utility to sync with external data sources
+└── requirements.txt            # Project dependencies manifest
 
+Key Components
+--------------
 
-## 🚀 Getting Started
+1. Multi-Model Inference Engine
+The system utilizes an ensemble of Large Language Models to analyze each negotiation. Configuration is managed via 'config/model_config.yaml', allowing for dynamic model selection and parameter tuning. The 'LLMClient' class handles API communication with exponential backoff for reliability.
 
-### Prerequisites
+2. Agentic Consensus Module (src/analysis/agentic_consensus.py)
+This module implements the logic for synthesizing multi-model outputs.
+- Input: Independent JSON analyses from the ensemble models for a single chat.
+- Process: An LLM (configured as 'consensus.agentic.active_model') acts as an adjudicator, evaluating the inputs against criteria defined in 'agentic_consensus_prompts.yaml'. It resolves conflicts and merges data into a single coherent output.
+- Resilience: The module is designed to function with partial inputs (1 or 2 models) and logs reliability metrics.
 
-- **Python 3.9+**
-- **UniBS Network Access** (on-campus or via VPN)
-- **UniBS GPUStack API Key** (provided by thesis supervisors)
+3. Data Aggregator (src/analysis/aggregator.py)
+Post-consensus, this module transforms the validated JSON documents into tabular formats suitable for quantitative research. It generates:
+- Negotiation Dataset: Chat-level metrics (financial demands, duration, outcome).
+- Speech Act Dataset: Message-level linguistic classification.
+- Temporal Matrices: Time-series data representing the evolution of negotiation tactics.
 
-### Installation
+Installation & Setup
+--------------------
 
-#### 1. Clone the Repository
+Prerequisites:
+- Python 3.9+
+- Access to the UniBS GPUStack API (or compatible OpenAI-API endpoint).
+- Environment variable GPUSTACK_API_KEY set.
 
-```bash
-git clone https://github.com/BrilantGashi/LLM-Ransomware-Profiling.git
-cd LLM-Ransomware-Profiling/generative_ai_project
-2. Create Virtual Environment
-bash
-python3 -m venv .venv
-source .venv/bin/activate   # Linux/Mac
-.venv\Scripts\activate      # Windows
-3. Install Dependencies
-bash
-pip install --upgrade pip
-pip install -r requirements.txt
-4. Configure Environment
-bash
-# Create .env file from template
-cp .env.example .env
+Step-by-Step Installation:
 
-# Edit and add your API key
-nano .env
-.env content:
+1. Clone the Repository
+   git clone https://github.com/BrilantGashi/LLM-Ransomware-Profiling.git
+   cd LLM-Ransomware-Profiling/generative_ai_project
 
-bash
-GPUSTACK_API_KEY=your-api-key-here
-GPUSTACK_BASE_URL=https://gpustack.ing.unibs.it/v1
-⚠️ Security: Never commit .env to Git!
+2. Install Dependencies
+   The project relies on a strictly defined set of libraries. Use the provided requirements file to install the environment:
+   pip install -r requirements.txt
 
-5. Download Dataset
-bash
-python update_database.py
-🎮 Usage
-Quick Test Run (5 chats)
-bash
-python run_pipeline.py
-Full Dataset Processing
-Edit run_pipeline.py line 385:
+3. Configure API Access
+   The project uses environment variables for security. A template is provided.
+   Duplicate the example file to create your local configuration:
+   cp .env.example .env
+   
+   Open '.env' and insert your personal GPUSTACK_API_KEY.
 
-python
-pipeline.run(max_chats=None)  # Process all chats
-Then run:
+Execution Workflow
+------------------
 
-bash
-python run_pipeline.py
-Configuration
-Change Active Model
-Edit config/model_config.yaml:
+1. Data Synchronization
+   Downloads and prepares the raw dataset.
+   python update_database.py
 
-text
-# Single model
-active_model: "phi4-mini"
+2. Primary Inference (Multi-Model Analysis)
+   Runs the ensemble models on the raw dataset to generate initial JSON outputs.
+   python run_pipeline.py
 
-# Ensemble (multiple models)
-ensemble_models:
-  - phi4-mini
-  - qwen3
-  - llama3.2
-Adjust LLM Parameters
-text
-llm_parameters:
-  temperature: 0.6
-  top_p: 0.95
-  max_tokens: 1024
-📊 Output Structure
-Results are saved in data/outputs/:
+3. Consensus Adjudication
+   Synthesizes the raw outputs into validated "Gold Standard" data using the Agentic Consensus module.
+   python run_agentic_consensus.py --task all
 
-text
-data/outputs/
-├── speech_act_analysis/
-│   ├── phi4-mini/
-│   │   └── [group_name]/
-│   │       └── [chat_id].json
-│   └── qwen3/
-├── psychological_profiling/
-└── tactical_extraction/
-Consensus Results
-When using ensemble mode:
+4. Data Aggregation
+   Generates the final CSV datasets for analysis from the consensus data.
+   (Note: Ensure aggregator is configured to read from data/consensus_agentic)
+   python src/analysis/aggregator.py
 
-text
-data/consensus/
-└── [group_name]/
-    └── [chat_id]_consensus.json
-🔬 Research Methodology
-Pipeline Architecture
-Data Ingestion: Load and clean ransomware negotiation chats
+Technical Dependencies
+----------------------
+- OpenAI SDK: For standardized API interaction with LLMs.
+- Pandas: For data manipulation and aggregation.
+- PyYAML: For configuration management.
+- Matplotlib/Seaborn: For data visualization (via visualizer.py).
 
-Prompt Engineering: Apply task-specific templates with few-shot examples
-
-Multi-Model Inference: Process with 7 different LLMs
-
-Result Validation: JSON parsing and schema validation
-
-Consensus Generation: Cross-model agreement voting
-
-Statistical Analysis: Aggregate results and extract patterns
-
-Speech Act Theory
-Classification based on Searle's taxonomy:
-
-Assertives: Claims, statements, descriptions
-
-Directives: Demands, requests, questions
-
-Commissives: Promises, threats, offers
-
-Expressives: Emotional expressions
-
-Declarations: Status changes, confirmations
-
-🧪 Testing
-Test Logging Configuration
-bash
-python -m tests.test_logging
-Verify API Connectivity
-bash
-cd src/utils
-python debug_helper.py
-
-📚 Documentation
-Key Files
-UniBS Cluster Handbook: Official API documentation
-
-Configuration Guide: YAML configuration reference
-
-API Reference: Source code documentation
-
-Related Research
-Ransomchats Dataset: github.com/Casualtek/Ransomchats
-
-Speech Act Theory: Searle, J.R. (1969)
-
-LLM Ensembles: Multi-model consensus techniques
-
-🔒 Security & Ethics
-✅ API Keys via Environment Variables (never committed)
-
-✅ VPN-Only Access to UniBS cluster
-
-✅ No Sensitive Data in public repository
-
-👤 Author
+Author
+------
 Brilant Gashi
-Computer Science Student
+Department of Information Engineering
 University of Brescia
-
-🔗 GitHub: @BrilantGashi
-
-🙏 Acknowledgments
-Prof. Federico Cerutti, Pietro Baroni - Thesis supervision and guidance
-
-UniBS IT Services - Access to experimental LLM cluster
-
-Casualtek - Ransomchats dataset maintainers
-
-⭐ Academic Project - University of Brescia, 2024-2025
+2024-2025
