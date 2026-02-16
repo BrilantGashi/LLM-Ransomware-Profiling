@@ -76,25 +76,25 @@ def stratified_sample_chats(
         print(f"Excluded chats <10 messages: {len(bins['<10'])}")
     
     # Sample 10-30: ~55%
-    sample_10_30 = random.sample(bins['10-30'], k=min(50, len(bins['10-30'])))
+    sample_10_30 = random.sample(bins['10-30'], k=min(20, len(bins['10-30'])))
     sampled.extend(sample_10_30)
     if verbose:
         print(f"Sampled 10-30: {len(sample_10_30)}/{len(bins['10-30'])}")
     
     # Sample 30-60: ~42%
-    sample_30_60 = random.sample(bins['30-60'], k=min(25, len(bins['30-60'])))
+    sample_30_60 = random.sample(bins['30-60'], k=min(8, len(bins['30-60'])))
     sampled.extend(sample_30_60)
     if verbose:
         print(f"Sampled 30-60: {len(sample_30_60)}/{len(bins['30-60'])}")
     
     # Sample 60-100: ~33%
-    sample_60_100 = random.sample(bins['60-100'], k=min(10, len(bins['60-100'])))
+    sample_60_100 = random.sample(bins['60-100'], k=min(4, len(bins['60-100'])))
     sampled.extend(sample_60_100)
     if verbose:
         print(f"Sampled 60-100: {len(sample_60_100)}/{len(bins['60-100'])}")
     
     # Sample 100-150: ~30%
-    sample_100_150 = random.sample(bins['100-150'], k=min(3, len(bins['100-150'])))
+    sample_100_150 = random.sample(bins['100-150'], k=min(2, len(bins['100-150'])))
     sampled.extend(sample_100_150)
     if verbose:
         print(f"Sampled 100-150: {len(sample_100_150)}/{len(bins['100-150'])}")
