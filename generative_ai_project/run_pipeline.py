@@ -696,6 +696,11 @@ class RansomwarePipeline:
         with open(self.model_config_path, 'r', encoding='utf-8') as f:
             self.model_config = yaml.safe_load(f)
         
+        # Get max Context Window
+        ChunkConfig.MAX_PROMPT_CHARS = self.model_config.get("processing", {}).get(
+          "chunk_max_chars",
+            ChunkConfig.MAX_PROMPT_CHARS)
+        
         # Extract model list
         self.models_list = self.model_config.get(
             'ensemble_models', 
@@ -768,9 +773,9 @@ class RansomwarePipeline:
         """
         # Load task prompt templates
         task_files = {
-            'Speech Act Analysis': 'prompt_speech_act_analysis.yaml',
-            'Psychological Profiling': 'prompt_psychological_profiling.yaml',
-            'Tactical Extraction': 'prompt_tactical_extraction.yaml'
+            'speech_act_analysis': 'prompt_speech_act_analysis.yaml',
+            'psychological_profiling': 'prompt_psychological_profiling.yaml',
+            'tactical_extraction': 'prompt_tactical_extraction.yaml'
         }
         
         self.prompts_config = {'tasks': {}}
@@ -1191,11 +1196,15 @@ class RansomwarePipeline:
             if task_cfg.get('output_format') == 'json':
                 cleaned_json = self._clean_json_output(content)
                 
-                if cleaned_json is None or cleaned_json == "[]":
+                if cleaned_json is None:
                     warning = f"Invalid JSON in {task_name}"
                     self.stats.add_warning(chat_id, warning, model_name)
                     pbar.update(1)
                     return
+                elif cleaned_json == "[]":
+                    logger.warning(f"{chat_id}: Empty result for {task_name}")
+                    self.stats.add_warning(chat_id, "Empty JSON result", model_name)
+
                 else:
                     content = cleaned_json
                     self.stats.add_success(model_name)

@@ -43,7 +43,7 @@ active_model: "qwen3"
 ensemble_models:
   - granite3.3
   - llama3.2
-  - phi4-mini
+  - gemma3
 
 
 # ------------------------------------------------------------------------------
@@ -53,7 +53,7 @@ ensemble_models:
 llm_parameters:
   temperature: 0.8              # Determinism (0.0) vs Creativity (1.0)
   top_p: 0.95                   # Nucleus sampling threshold
-  max_tokens: 4096              # Maximum response length
+  max_tokens: 2048              # Maximum response length
   frequency_penalty: 0          # Repetition penalty (0.0 - 2.0)
   presence_penalty: 0           # Topic coverage penalty (0.0 - 2.0)
 
@@ -65,7 +65,7 @@ llm_parameters:
 model_specific_params:
   
   gpt-oss:
-    max_tokens: 4096
+    max_tokens: 20000
     temperature: 0.8
   
   phi4-mini:
@@ -84,6 +84,7 @@ model_specific_params:
     temperature: 0.7
   
   gemma3:
+    max_tokens: 512
     temperature: 0.8
 
 
@@ -104,7 +105,7 @@ embedding:
 # ------------------------------------------------------------------------------
 processing:
   max_workers: 6               # Parallel threads for chat processing
-  chunk_max_chars: 10000        # Maximum prompt length before chunking
+  chunk_max_chars: 5000        # Maximum prompt length before chunking
   
   # Retry mechanism configuration
   retry:
