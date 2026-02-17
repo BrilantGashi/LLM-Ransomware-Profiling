@@ -43,7 +43,7 @@ active_model: "qwen3"
 ensemble_models:
   - granite3.3
   - llama3.2
-  - gemma3
+  - phi4-mini
 
 
 # ------------------------------------------------------------------------------
