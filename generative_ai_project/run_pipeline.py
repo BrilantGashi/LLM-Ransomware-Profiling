@@ -1144,13 +1144,31 @@ class RansomwarePipeline:
             chat_id, group_name, original_length, 
             model_name, task_name, execution_time
         )
-        
-        # Merge chunk results
+
+        # Merge chunk results with intelligent synthesis for holistic tasks
         if len(chunks) > 1:
-            merged_content = self.chunker.merge_chunk_results(chunk_results)
+            # Tasks requiring holistic synthesis (not message-by-message analysis)
+            if task_name in ['psychological_profiling', 'tactical_extraction']:
+                from src.analysis.chunk_synthesizer import ChunkSynthesizer
+                
+                synthesizer = ChunkSynthesizer(
+                    config_path=str(self.model_config_path),
+                    model_name=None  # Uses synthesis.active_model from config
+                )
+                
+                merged_content = synthesizer.synthesize_chunks(task_name, chunk_results)
+                
+                logger.info(
+                    f"[{model_name}] Synthesized {len(chunks)} chunks for {chat_id}/{task_name}"
+                )
+            else:
+                # Speech act analysis uses simple concatenation
+                merged_content = self.chunker.merge_chunk_results(chunk_results)
+            
             return True, merged_content
         else:
             return True, chunk_results[0] if chunk_results else ""
+
 
     def _process_single_chat_wrapper(
         self,

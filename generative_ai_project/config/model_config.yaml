@@ -105,7 +105,7 @@ embedding:
 # ------------------------------------------------------------------------------
 processing:
   max_workers: 6               # Parallel threads for chat processing
-  chunk_max_chars: 5000        # Maximum prompt length before chunking
+  chunk_max_chars: 10000        # Maximum prompt length before chunking
   
   # Retry mechanism configuration
   retry:
@@ -149,6 +149,30 @@ consensus:
     fallback_model: "phi4"      # Optional: model to use if active_model fails
     temperature: 0.1            # Lower temperature for deterministic consensus
     max_tokens: 2048            # Increase token limit for large merged outputs
+
+
+# ------------------------------------------------------------------------------
+# SYNTHESIS CONFIGURATION
+# ------------------------------------------------------------------------------
+
+synthesis:
+  active_model: "phi4-mini"         # Model used as the synthesis agent
+  fallback_model: "llama3"   # Optional: model to use if active_model fails
+  temperature: 0.1              # Lower temperature for deterministic synthesis
+  max_tokens: 2048              # Maximum output length for synthesized results
+  
+  # Tasks requiring chunk synthesis (must have prompts in synthesis_prompts.yaml)
+  enabled_tasks:
+    - psychological_profiling
+    - tactical_extraction
+  
+  # Synthesis strategy configuration
+  strategy:
+    preserve_unique_observations: true    # Keep observations from single chunks
+    prioritize_recurring_patterns: true   # Weight patterns across multiple chunks
+    resolve_contradictions: true          # Attempt to resolve conflicting data
+
+
 
 
 # ------------------------------------------------------------------------------

@@ -1,0 +1,67 @@
+# ==============================================================================
+# CHUNK SYNTHESIS PROMPT TEMPLATES
+# ==============================================================================
+#
+# Prompt templates for synthesizing multiple chunk-level analysis outputs
+# into unified results. Used when large conversations are split into chunks
+# for processing within model context window limits.
+#
+# Each task requiring synthesis must define:
+#   - system: System-level instructions for the synthesis agent
+#   - user_template: Template for formatting chunk outputs in the user message
+#
+# The synthesis agent receives only the JSON outputs from each chunk (not the
+# original messages), making this approach highly efficient for context window
+# management while producing coherent unified results.
+#
+# Author: Brilant Gashi
+# Institution: University of Brescia
+# Academic Year: 2024-2025
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# PSYCHOLOGICAL PROFILING SYNTHESIS
+# ------------------------------------------------------------------------------
+psychological_profiling:
+  system: |
+    You are an expert psychological analyst specializing in threat actor profiling.
+    You will receive multiple partial psychological profiles extracted from different segments 
+    of the same ransomware negotiation. Your task is to synthesize them into ONE coherent, 
+    comprehensive profile.
+    
+    Guidelines:
+    - Merge overlapping traits (e.g., "aggressive" + "hostile" → "aggressive")
+    - Identify patterns across chunks (recurring behaviors are more significant)
+    - Resolve contradictions by considering context and frequency
+    - Preserve unique observations that appear in only one chunk if relevant
+    - Output a single unified JSON matching the original schema
+    
+  user_template: |
+    Synthesize these partial profiles into ONE comprehensive profile:
+    
+    {chunk_outputs}
+    
+    Return a single unified JSON object following the psychological profiling schema.
+
+# ------------------------------------------------------------------------------
+# TACTICAL EXTRACTION SYNTHESIS
+# ------------------------------------------------------------------------------
+tactical_extraction:
+  system: |
+    You are a cyber threat intelligence analyst specializing in ransomware TTPs.
+    You will receive multiple partial tactical extractions from different segments of the same 
+    ransomware negotiation. Your task is to merge them into ONE complete tactical report.
+    
+    Guidelines:
+    - Combine all unique technical details (ransom amounts, deadlines, tools, etc.)
+    - Deduplicate repeated information
+    - Preserve chronological progression if relevant (e.g., ransom negotiations)
+    - Include all mentioned TTPs, infrastructure, and IOCs
+    - Output a single unified JSON matching the original schema
+    
+  user_template: |
+    Merge these partial tactical extractions into ONE complete report:
+    
+    {chunk_outputs}
+    
+    Return a single unified JSON object following the tactical extraction schema.
