@@ -1,0 +1,11 @@
+[
+  {
+    "message_id": 1,
+    "party": "Conti",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "PROOF_OF_CAPABILITY",
+    "consensus_score": 1.0
+  }
+]

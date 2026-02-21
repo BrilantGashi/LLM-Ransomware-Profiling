@@ -1,0 +1,236 @@
+[
+  {
+    "message_id": 1,
+    "party": "Victim",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OTHER"
+  },
+  {
+    "message_id": 2,
+    "party": "Akira",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OTHER"
+  },
+  {
+    "message_id": 3,
+    "party": "Akira",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "OTHER"
+  },
+  {
+    "message_id": 4,
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OTHER"
+  },
+  {
+    "message_id": 1,
+    "party": "Victim",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "PROOF_OF_CAPABILITY"
+  },
+  {
+    "message_id": 1,
+    "party": "Attacker",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROOF_OF_CAPABILITY",
+    "phase": "PROOF_OF_CAPABILITY"
+  },
+  {
+    "message_id": 2,
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "DEMAND_FORMULATION"
+  },
+  {
+    "message_id": 1,
+    "party": "Victim",
+    "primary_act": "EXPRESSIVE_METACOMMUNICATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "",
+    "phase": "OTHER"
+  },
+  {
+    "message_id": 1,
+    "party": "Akira",
+    "primary_act": "EXPRESSIVE_METACOMMUNICATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "",
+    "phase": "OTHER"
+  },
+  {
+    "message_id": 2,
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "",
+    "phase": "OTHER"
+  },
+  {
+    "message_id": 1,
+    "party": "Attacker",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROOF_OF_CAPABILITY",
+    "phase": "PROOF_OF_CAPABILITY"
+  },
+  {
+    "message_id": 2,
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "PROOF_OF_CAPABILITY"
+  },
+  {
+    "message_id": 3,
+    "party": "Attacker",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "ACTION_PRESSURE",
+    "phase": "DEMAND_FORMULATION"
+  },
+  {
+    "message_id": 4,
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "PROOF_OF_CAPABILITY"
+  },
+  {
+    "message_id": 5,
+    "party": "Attacker",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OTHER"
+  },
+  {
+    "message_id": 1,
+    "party": "Attacker",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "PROOF_OF_CAPABILITY"
+  },
+  {
+    "message_id": 2,
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "PROOF_OF_CAPABILITY"
+  },
+  {
+    "message_id": 3,
+    "party": "Attacker",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "PROOF_OF_CAPABILITY"
+  },
+  {
+    "message_id": 4,
+    "party": "Attacker",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "ACTION_PRESSURE",
+    "phase": "BARGAINING_CONCESSION"
+  },
+  {
+    "message_id": 1,
+    "party": "Victim",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OTHER"
+  },
+  {
+    "message_id": 2,
+    "party": "Akira",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OTHER"
+  },
+  {
+    "message_id": 3,
+    "party": "Victim",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OTHER"
+  },
+  {
+    "message_id": 4,
+    "party": "Akira",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [
+      "PROMISE"
+    ],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "OTHER"
+  },
+  {
+    "message_id": 5,
+    "party": "Victim",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OTHER"
+  },
+  {
+    "message_id": 1,
+    "party": "Akira",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OPENING_CONTACT"
+  },
+  {
+    "message_id": 2,
+    "party": "Akira",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OPENING_CONTACT"
+  },
+  {
+    "message_id": 3,
+    "party": "Akira",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "ACTION_PRESSURE",
+    "phase": "DEMAND_FORMULATION"
+  },
+  {
+    "message_id": 4,
+    "party": "Akira",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "DEMAND_FORMULATION"
+  },
+  {
+    "message_id": 5,
+    "party": "Akira",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OTHER"
+  }
+]

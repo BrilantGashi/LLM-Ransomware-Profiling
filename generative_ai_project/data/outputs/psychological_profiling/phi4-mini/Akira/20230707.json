@@ -1,0 +1,19 @@
+{
+  "attacker_profile": {
+    "communication_tone": "Aggressive",
+    "competence_level": "Semi_Professional",
+    "primary_strategy": "Competing",
+    "influence_tactics": [
+      "Pressure"
+    ]
+  },
+  "victim_profile": {
+    "emotional_trajectory": "Panic",
+    "negotiation_tactic": "Rapid_Capitulation",
+    "tactic_effectiveness": "Low"
+  },
+  "interaction_dynamics": {
+    "power_balance": "Attacker_Dominant",
+    "negotiation_outcome_likelihood": "Low"
+  }
+}

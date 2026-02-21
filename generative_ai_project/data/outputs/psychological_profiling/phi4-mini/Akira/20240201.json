@@ -1,0 +1,772 @@
+[
+  {
+    "attacker_profile": {
+      "communication_tone": "Aggressive",
+      "competence_level": "Semi_Professional",
+      "primary_strategy": "Competing",
+      "influence_tactics": [
+        "Scarcity",
+        "Pressure"
+      ]
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Panic",
+      "negotiation_tactic": "Rapid_Capitulation",
+      "tactic_effectiveness": "Unknown"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Attacker_Dominant",
+      "negotiation_outcome_likelihood": "Medium"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Aggressive",
+      "competence_level": "Unknown",
+      "primary_strategy": "Competing",
+      "influence_tactics": [
+        "Pressure"
+      ]
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Professional_Detachment",
+      "negotiation_tactic": "Unknown",
+      "tactic_effectiveness": "Unknown"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Attacker_Dominant",
+      "negotiation_outcome_likelihood": "Low"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Unknown",
+      "competence_level": "Unknown",
+      "primary_strategy": "Unknown",
+      "influence_tactics": []
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Unknown",
+      "negotiation_tactic": "Unknown",
+      "tactic_effectiveness": "Unknown"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Unknown",
+      "negotiation_outcome_likelihood": "Unknown"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Aggressive",
+      "competence_level": "Organized_Group",
+      "primary_strategy": "Competing",
+      "influence_tactics": [
+        "Scarcity",
+        "Pressure"
+      ]
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Professional_Detachment",
+      "negotiation_tactic": "Technical_Stalling",
+      "tactic_effectiveness": "Medium"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Attacker_Dominant",
+      "negotiation_outcome_likelihood": "Medium"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Unknown",
+      "competence_level": "Unknown",
+      "primary_strategy": "Unknown",
+      "influence_tactics": []
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Unknown",
+      "negotiation_tactic": "Unknown",
+      "tactic_effectiveness": "Unknown"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Unknown",
+      "negotiation_outcome_likelihood": "Unknown"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Professional",
+      "competence_level": "Semi_Professional",
+      "primary_strategy": "Competing",
+      "influence_tactics": [
+        "Authority"
+      ]
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Professional_Detachment",
+      "negotiation_tactic": "Technical_Stalling",
+      "tactic_effectiveness": "Unknown"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Balanced",
+      "negotiation_outcome_likelihood": "Medium"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Unknown",
+      "competence_level": "Unknown",
+      "primary_strategy": "Unknown",
+      "influence_tactics": []
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Professional_Detachment",
+      "negotiation_tactic": "Unknown",
+      "tactic_effectiveness": "Unknown"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Unknown",
+      "negotiation_outcome_likelihood": "Unknown"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Aggressive",
+      "competence_level": "Semi_Professional",
+      "primary_strategy": "Competing",
+      "influence_tactics": [
+        "Pressure"
+      ]
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Panic",
+      "negotiation_tactic": "Technical_Stalling",
+      "tactic_effectiveness": "Medium"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Attacker_Dominant",
+      "negotiation_outcome_likelihood": "Medium"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Unknown",
+      "competence_level": "Unknown",
+      "primary_strategy": "Unknown",
+      "influence_tactics": []
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Professional_Detachment",
+      "negotiation_tactic": "Unknown",
+      "tactic_effectiveness": "Unknown"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Unknown",
+      "negotiation_outcome_likelihood": "Unknown"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Unknown",
+      "competence_level": "Unknown",
+      "primary_strategy": "Unknown",
+      "influence_tactics": []
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Unknown",
+      "negotiation_tactic": "Unknown",
+      "tactic_effectiveness": "Unknown"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Unknown",
+      "negotiation_outcome_likelihood": "Unknown"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Unknown",
+      "competence_level": "Unknown",
+      "primary_strategy": "Unknown",
+      "influence_tactics": []
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Unknown",
+      "negotiation_tactic": "Technical_Stalling",
+      "tactic_effectiveness": "Unknown"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Unknown",
+      "negotiation_outcome_likelihood": "Unknown"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Aggressive",
+      "competence_level": "Semi_Professional",
+      "primary_strategy": "Competing",
+      "influence_tactics": [
+        "Pressure",
+        "Authority"
+      ]
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Panic",
+      "negotiation_tactic": "Defiance",
+      "tactic_effectiveness": "Low"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Attacker_Dominant",
+      "negotiation_outcome_likelihood": "Medium"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Professional",
+      "competence_level": "Unknown",
+      "primary_strategy": "Unknown",
+      "influence_tactics": []
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Unknown",
+      "negotiation_tactic": "Unknown",
+      "tactic_effectiveness": "Unknown"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Unknown",
+      "negotiation_outcome_likelihood": "Unknown"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Unknown",
+      "competence_level": "Unknown",
+      "primary_strategy": "Unknown",
+      "influence_tactics": []
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Unknown",
+      "negotiation_tactic": "Unknown",
+      "tactic_effectiveness": "Unknown"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Unknown",
+      "negotiation_outcome_likelihood": "Unknown"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Aggressive",
+      "competence_level": "Organized_Group",
+      "primary_strategy": "Competing",
+      "influence_tactics": [
+        "Pressure"
+      ]
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Panic",
+      "negotiation_tactic": "Technical_Stalling",
+      "tactic_effectiveness": "Low"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Attacker_Dominant",
+      "negotiation_outcome_likelihood": "Low"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Professional",
+      "competence_level": "Organized_Group",
+      "primary_strategy": "Competing",
+      "influence_tactics": [
+        "Scarcity",
+        "Pressure",
+        "Authority"
+      ]
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Professional_Detachment",
+      "negotiation_tactic": "Unknown",
+      "tactic_effectiveness": "Unknown"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Attacker_Dominant",
+      "negotiation_outcome_likelihood": "Medium"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Professional",
+      "competence_level": "Semi_Professional",
+      "primary_strategy": "Compromising",
+      "influence_tactics": []
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Professional_Detachment",
+      "negotiation_tactic": "Poverty_Pleading",
+      "tactic_effectiveness": "Unknown"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Balanced",
+      "negotiation_outcome_likelihood": "Medium"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Professional",
+      "competence_level": "Semi_Professional",
+      "primary_strategy": "Competing",
+      "influence_tactics": [
+        "Scarcity",
+        "Authority"
+      ]
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Professional_Detachment",
+      "negotiation_tactic": "Unknown",
+      "tactic_effectiveness": "Unknown"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Attacker_Dominant",
+      "negotiation_outcome_likelihood": "Low"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Aggressive",
+      "competence_level": "Organized_Group",
+      "primary_strategy": "Competing",
+      "influence_tactics": [
+        "Scarcity",
+        "Pressure"
+      ]
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Professional_Detachment",
+      "negotiation_tactic": "Poverty_Pleading",
+      "tactic_effectiveness": "Medium"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Attacker_Dominant",
+      "negotiation_outcome_likelihood": "Medium"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Aggressive",
+      "competence_level": "Semi_Professional",
+      "primary_strategy": "Competing",
+      "influence_tactics": [
+        "Pressure"
+      ]
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Panic",
+      "negotiation_tactic": "Technical_Stalling",
+      "tactic_effectiveness": "Medium"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Attacker_Dominant",
+      "negotiation_outcome_likelihood": "Low"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Aggressive",
+      "competence_level": "Organized_Group",
+      "primary_strategy": "Competing",
+      "influence_tactics": [
+        "Scarcity",
+        "Pressure"
+      ]
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Professional_Detachment",
+      "negotiation_tactic": "Rapid_Capitulation",
+      "tactic_effectiveness": "Low"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Attacker_Dominant",
+      "negotiation_outcome_likelihood": "Low"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Unknown",
+      "competence_level": "Unknown",
+      "primary_strategy": "Unknown",
+      "influence_tactics": []
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Professional_Detachment",
+      "negotiation_tactic": "Unknown",
+      "tactic_effectiveness": "Unknown"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Unknown",
+      "negotiation_outcome_likelihood": "Unknown"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Unknown",
+      "competence_level": "Unknown",
+      "primary_strategy": "Unknown",
+      "influence_tactics": []
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Professional_Detachment",
+      "negotiation_tactic": "Unknown",
+      "tactic_effectiveness": "Unknown"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Unknown",
+      "negotiation_outcome_likelihood": "Unknown"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Professional",
+      "competence_level": "Semi_Professional",
+      "primary_strategy": "Competing",
+      "influence_tactics": [
+        "Scarcity"
+      ]
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Unknown",
+      "negotiation_tactic": "Unknown",
+      "tactic_effectiveness": "Unknown"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Attacker_Dominant",
+      "negotiation_outcome_likelihood": "Medium"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Aggressive",
+      "competence_level": "Semi_Professional",
+      "primary_strategy": "Competing",
+      "influence_tactics": [
+        "Pressure",
+        "Authority"
+      ]
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Professional_Detachment",
+      "negotiation_tactic": "Technical_Stalling",
+      "tactic_effectiveness": "Medium"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Victim_Dominant",
+      "negotiation_outcome_likelihood": "Medium"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Unknown",
+      "competence_level": "Unknown",
+      "primary_strategy": "Unknown",
+      "influence_tactics": []
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Professional_Detachment",
+      "negotiation_tactic": "Poverty_Pleading",
+      "tactic_effectiveness": "Unknown"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Unknown",
+      "negotiation_outcome_likelihood": "Unknown"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Unknown",
+      "competence_level": "Unknown",
+      "primary_strategy": "Unknown",
+      "influence_tactics": []
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Professional_Detachment",
+      "negotiation_tactic": "Unknown",
+      "tactic_effectiveness": "Unknown"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Unknown",
+      "negotiation_outcome_likelihood": "Unknown"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Unknown",
+      "competence_level": "Unknown",
+      "primary_strategy": "Unknown",
+      "influence_tactics": []
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Professional_Detachment",
+      "negotiation_tactic": "Poverty_Pleading",
+      "tactic_effectiveness": "Unknown"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Unknown",
+      "negotiation_outcome_likelihood": "Unknown"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Aggressive",
+      "competence_level": "Semi_Professional",
+      "primary_strategy": "Competing",
+      "influence_tactics": [
+        "Pressure",
+        "Scarcity"
+      ]
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Panic",
+      "negotiation_tactic": "Defiance",
+      "tactic_effectiveness": "Low"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Attacker_Dominant",
+      "negotiation_outcome_likelihood": "Low"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Aggressive",
+      "competence_level": "Semi_Professional",
+      "primary_strategy": "Competing",
+      "influence_tactics": [
+        "Scarcity",
+        "Pressure"
+      ]
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Professional_Detachment",
+      "negotiation_tactic": "Unknown",
+      "tactic_effectiveness": "Unknown"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Attacker_Dominant",
+      "negotiation_outcome_likelihood": "Medium"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Professional",
+      "competence_level": "Semi_Professional",
+      "primary_strategy": "Competing",
+      "influence_tactics": [
+        "Pressure"
+      ]
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Professional_Detachment",
+      "negotiation_tactic": "Technical_Stalling",
+      "tactic_effectiveness": "Medium"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Attacker_Dominant",
+      "negotiation_outcome_likelihood": "Medium"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Professional",
+      "competence_level": "Semi_Professional",
+      "primary_strategy": "Competing",
+      "influence_tactics": []
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Professional_Detachment",
+      "negotiation_tactic": "Unknown",
+      "tactic_effectiveness": "Unknown"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Unknown",
+      "negotiation_outcome_likelihood": "Unknown"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Professional",
+      "competence_level": "Semi_Professional",
+      "primary_strategy": "Compromising",
+      "influence_tactics": []
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Professional_Detachment",
+      "negotiation_tactic": "Poverty_Pleading",
+      "tactic_effectiveness": "Unknown"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Unknown",
+      "negotiation_outcome_likelihood": "Unknown"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Professional",
+      "competence_level": "Semi_Professional",
+      "primary_strategy": "Compromising",
+      "influence_tactics": [
+        "Scarcity",
+        "Pressure"
+      ]
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Professional_Detachment",
+      "negotiation_tactic": "Technical_Stalling",
+      "tactic_effectiveness": "Medium"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Balanced",
+      "negotiation_outcome_likelihood": "Medium"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Unknown",
+      "competence_level": "Unknown",
+      "primary_strategy": "Unknown",
+      "influence_tactics": []
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Unknown",
+      "negotiation_tactic": "Unknown",
+      "tactic_effectiveness": "Unknown"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Unknown",
+      "negotiation_outcome_likelihood": "Unknown"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Professional",
+      "competence_level": "Semi_Professional",
+      "primary_strategy": "Competing",
+      "influence_tactics": [
+        "Pressure"
+      ]
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Professional_Detachment",
+      "negotiation_tactic": "Poverty_Pleading",
+      "tactic_effectiveness": "Unknown"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Balanced",
+      "negotiation_outcome_likelihood": "Unknown"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Unknown",
+      "competence_level": "Unknown",
+      "primary_strategy": "Unknown",
+      "influence_tactics": []
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Professional_Detachment",
+      "negotiation_tactic": "Poverty_Pleading",
+      "tactic_effectiveness": "Unknown"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Unknown",
+      "negotiation_outcome_likelihood": "Unknown"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Professional",
+      "competence_level": "Organized_Group",
+      "primary_strategy": "Collaborating",
+      "influence_tactics": [
+        "Trust"
+      ]
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Professional_Detachment",
+      "negotiation_tactic": "Rapid_Capitulation",
+      "tactic_effectiveness": "Low"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Victim_Dominant",
+      "negotiation_outcome_likelihood": "Low"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Aggressive",
+      "competence_level": "Semi_Professional",
+      "primary_strategy": "Competing",
+      "influence_tactics": [
+        "Pressure"
+      ]
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Professional_Detachment",
+      "negotiation_tactic": "Technical_Stalling",
+      "tactic_effectiveness": "Medium"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Attacker_Dominant",
+      "negotiation_outcome_likelihood": "Low"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Unknown",
+      "competence_level": "Unknown",
+      "primary_strategy": "Unknown",
+      "influence_tactics": []
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Professional_Detachment",
+      "negotiation_tactic": "Defiance",
+      "tactic_effectiveness": "Unknown"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Unknown",
+      "negotiation_outcome_likelihood": "Unknown"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Professional",
+      "competence_level": "Unknown",
+      "primary_strategy": "Unknown",
+      "influence_tactics": []
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Professional_Detachment",
+      "negotiation_tactic": "Unknown",
+      "tactic_effectiveness": "Unknown"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Unknown",
+      "negotiation_outcome_likelihood": "Unknown"
+    }
+  },
+  {
+    "attacker_profile": {
+      "communication_tone": "Aggressive",
+      "competence_level": "Semi_Professional",
+      "primary_strategy": "Competing",
+      "influence_tactics": [
+        "Pressure"
+      ]
+    },
+    "victim_profile": {
+      "emotional_trajectory": "Panic",
+      "negotiation_tactic": "Poverty_Pleading",
+      "tactic_effectiveness": "Medium"
+    },
+    "interaction_dynamics": {
+      "power_balance": "Attacker_Dominant",
+      "negotiation_outcome_likelihood": "Low"
+    }
+  }
+]

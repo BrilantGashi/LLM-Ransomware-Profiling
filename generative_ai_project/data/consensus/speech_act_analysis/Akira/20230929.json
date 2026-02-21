@@ -1,0 +1,126 @@
+[
+  {
+    "message_id": 1,
+    "party": "Victim",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 2,
+    "party": "Attacker",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [
+      "PROMISE"
+    ],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 1,
+    "party": "Attacker",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [
+      "PROMISE"
+    ],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "PROOF_OF_CAPABILITY",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 2,
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 1,
+    "party": "Attacker",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [
+      "PROMISE",
+      "THREAT"
+    ],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 1,
+    "party": "Akira",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROOF_OF_CAPABILITY",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 2,
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 3,
+    "party": "Akira",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "PROOF_OF_CAPABILITY",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 4,
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 5,
+    "party": "Akira",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [],
+    "argumentative_function": "VALUE_FAIRNESS_APPEAL",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 6,
+    "party": "Akira",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 1,
+    "party": "Akira",
+    "primary_act": "EXPRESSIVE_METACOMMUNICATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "Unknown",
+    "phase": "OTHER",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 2,
+    "party": "Victim",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "Unknown",
+    "phase": "OTHER",
+    "consensus_score": 0.5
+  }
+]

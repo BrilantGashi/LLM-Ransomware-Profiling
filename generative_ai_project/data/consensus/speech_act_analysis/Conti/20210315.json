@@ -1,0 +1,276 @@
+[
+  {
+    "message_id": 1,
+    "party": "Attacker",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 1,
+    "party": "Conti",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "DEMAND_FORMULATION",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 1,
+    "party": "Attacker",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.75
+  },
+  {
+    "message_id": 2,
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "PROOF_OF_CAPABILITY",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 3,
+    "party": "Attacker",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "PROOF_OF_CAPABILITY",
+    "consensus_score": 0.75
+  },
+  {
+    "message_id": 4,
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "DEMAND_FORMULATION",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 5,
+    "party": "Attacker",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [
+      "THREAT"
+    ],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "DEMAND_FORMULATION",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 1,
+    "party": "Conti",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "PROOF_OF_CAPABILITY",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 2,
+    "party": "Conti",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "PROOF_OF_CAPABILITY",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 1,
+    "party": "Attacker",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "PROOF_OF_CAPABILITY",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 1,
+    "party": "Conti",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 2,
+    "party": "Conti",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "PROOF_OF_CAPABILITY",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 1,
+    "party": "Attacker",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 1,
+    "party": "Conti",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 2,
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "PROOF_OF_CAPABILITY",
+    "consensus_score": 0.75
+  },
+  {
+    "message_id": 1,
+    "party": "Victim",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "FACE_ETHOS_WORK",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.75
+  },
+  {
+    "message_id": 2,
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTAINANCE",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 6,
+    "party": "Victim",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "ACTION_PRESSURE",
+    "phase": "PROOF_OF_CAPABILITY",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 1,
+    "party": "Conti",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 2,
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "FACE_ETHOS_WORK",
+    "phase": "PROOF_OF_CAPABILITY",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 1,
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "ACTION_PRESSURE",
+    "phase": "PROOF_OF_CAPABILITY",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 2,
+    "party": "Conti",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [
+      "THREAT"
+    ],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "DEMAND_FORMULATION",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 1,
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "DIRECTIVE",
+    "phase": "DEMAND_FORMULATION",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 2,
+    "party": "Victim",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "BARGAINING_CONCESSION",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 1,
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 2,
+    "party": "Conti",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "PROOF_OF_CAPABILITY",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 1,
+    "party": "Conti",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "PROOF_OF_CAPABILITY",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 2,
+    "party": "Conti",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 1,
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "PROOF_OF_CAPABILITY",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 2,
+    "party": "Conti",
+    "primary_act": "EXPRESSIVE_METACOMMUNICATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "EXPRESSION_COOPERATION",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  }
+]

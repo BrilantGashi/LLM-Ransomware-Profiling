@@ -1,0 +1,114 @@
+[
+  {
+    "message_id": 1,
+    "party": "Victim|Akira",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 2,
+    "party": "Akira|Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "ACTION_PRESSURE",
+    "phase": "NEGOTIATION",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 3,
+    "party": "Victim|Akira",
+    "primary_act": "GROUNDS_FACTS",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.75
+  },
+  {
+    "message_id": 4,
+    "party": "Akira|Victim",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [
+      "THREAT"
+    ],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "NEGOTIATION",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 5,
+    "party": "Akira|Victim",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 6,
+    "party": "Victim|Akira",
+    "primary_act": "GROUNDS_FACTS",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.75
+  },
+  {
+    "message_id": 7,
+    "party": "Akira|Victim",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.75
+  },
+  {
+    "message_id": 8,
+    "party": "Victim",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 9,
+    "party": "Attacker",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 10,
+    "party": "Attacker",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [
+      "THREAT"
+    ],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 11,
+    "party": "Victim",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 12,
+    "party": "Attacker",
+    "primary_act": "NEGOTIATIVE_EVALUATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "Unknown",
+    "phase": "OTHER",
+    "consensus_score": 0.5
+  }
+]

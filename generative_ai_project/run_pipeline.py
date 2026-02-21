@@ -19,13 +19,17 @@ Academic Year: 2024-2025
 """
 
 import sys
+from pathlib import Path
+BASE_DIR = Path(__file__).parent
+if str(BASE_DIR) not in sys.path:
+    sys.path.insert(0, str(BASE_DIR))
 import json
 import yaml
 import logging
 import time
 import re
 import threading
-from pathlib import Path
+
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from collections import defaultdict
@@ -34,12 +38,7 @@ from io import StringIO
 from contextlib import contextmanager
 from typing import List, Dict, Any, Tuple, Optional
 import argparse
-from src.utils.sampling import (
-    stratified_sample_chats,
-    save_sample_manifest,
-    load_sample_manifest,
-    filter_db_by_sample
-)
+
 
 # Progress bar imports with graceful fallback
 try:
@@ -66,7 +65,7 @@ class TqdmLoggingHandler(logging.Handler):
     Custom logging handler that integrates with tqdm progress bars.
     
     Prevents logging output from interfering with progress bar display
-    by using tqdm.write() instead of standard print.
+    by using tqdm.write("") instead of standard print.
     """
     
     def emit(self, record):
@@ -122,6 +121,13 @@ try:
     from src.llm.unibs_client import LLMClient
     from src.utils.data_loader import download_and_load_messages_db, clean_message_list
     from src.analysis.consensus import ConsensusManager
+    from src.analysis.chunk_synthesizer import ChunkSynthesizer 
+    from src.utils.sampling import (        
+        stratified_sample_chats,
+        save_sample_manifest,
+        load_sample_manifest,
+        filter_db_by_sample
+    )
 except ImportError as e:
     logger.critical(f"Failed to import required modules: {e}")
     sys.exit(1)
@@ -441,7 +447,7 @@ class PipelineStats:
         print("PIPELINE EXECUTION COMPLETE")
         print("=" * 70)
         print(f"Duration: {duration}")
-        tqdm.write()
+        tqdm.write("")
         
         # Overall summary
         print("SUMMARY")
@@ -455,21 +461,21 @@ class PipelineStats:
         
         # Task completion
         if self.task_completion:
-            tqdm.write()
+            tqdm.write("")
             print("TASK COMPLETION")
             for task_name, count in sorted(self.task_completion.items()):
                 print(f"  {task_name:30s}: {count:4d} completions")
         
         # Few-shot statistics
         if self.few_shot_stats:
-            tqdm.write()
+            tqdm.write("")
             print("FEW-SHOT EXAMPLES LOADED")
             for task_name, count in sorted(self.few_shot_stats.items()):
                 print(f"  {task_name:25s}: {count} examples")
         
         # Top chunked chats
         if self.chunk_stats:
-            tqdm.write()
+            tqdm.write("")
             print("TOP CHUNKED CHATS")
             sorted_chunks = sorted(
                 self.chunk_stats.items(), 
@@ -481,7 +487,7 @@ class PipelineStats:
         
         # Model performance
         if self.model_stats:
-            tqdm.write()
+            tqdm.write("")
             print("MODEL PERFORMANCE")
             for model, stats in sorted(self.model_stats.items()):
                 total = stats['valid'] + stats['invalid']
@@ -494,7 +500,7 @@ class PipelineStats:
         
         # Warnings summary
         if self.chat_warnings:
-            tqdm.write()
+            tqdm.write("")
             print(f"WARNINGS ({len(self.chat_warnings)} chats)")
             for chat_id, warnings in sorted(self.chat_warnings.items())[:5]:
                 print(f"  {chat_id}: {len(warnings)} issue(s)")
@@ -503,14 +509,14 @@ class PipelineStats:
         
         # Errors summary
         if self.chat_errors:
-            tqdm.write()
+            tqdm.write("")
             print(f"ERRORS ({len(self.chat_errors)} chats)")
             for chat_id, errors in sorted(self.chat_errors.items())[:3]:
                 print(f"  {chat_id}: {errors[0][:60]}")
             if len(self.chat_errors) > 3:
                 print(f"  ... +{len(self.chat_errors)-3} more (see logs)")
         
-        tqdm.write()
+        tqdm.write("")
         print("=" * 70)
         print(f"Outputs: data/outputs/")
         print(f"Logs:    {LOG_FILE.name}")
@@ -717,7 +723,6 @@ class RansomwarePipeline:
         self._calculate_worker_allocation()
         
         # Initialize components
-        self.consensus_manager = ConsensusManager(self.base_dir)
         self.prompts_config = {}
         self.full_dataset = {}
         self.stats = PipelineStats()
@@ -1149,11 +1154,9 @@ class RansomwarePipeline:
         if len(chunks) > 1:
             # Tasks requiring holistic synthesis (not message-by-message analysis)
             if task_name in ['psychological_profiling', 'tactical_extraction']:
-                from src.analysis.chunk_synthesizer import ChunkSynthesizer
-                
-                synthesizer = ChunkSynthesizer(
+                synthesizer = ChunkSynthesizer(  
                     config_path=str(self.model_config_path),
-                    model_name=None  # Uses synthesis.active_model from config
+                    model_name=None
                 )
                 
                 merged_content = synthesizer.synthesize_chunks(task_name, chunk_results)
@@ -1222,6 +1225,8 @@ class RansomwarePipeline:
                 elif cleaned_json == "[]":
                     logger.warning(f"{chat_id}: Empty result for {task_name}")
                     self.stats.add_warning(chat_id, "Empty JSON result", model_name)
+                    pbar.update(1)
+                    return 
 
                 else:
                     content = cleaned_json
@@ -1280,9 +1285,9 @@ class RansomwarePipeline:
                 )
                 task_out_dir.mkdir(parents=True, exist_ok=True)
                 
-                out_file = task_out_dir / (
-                    f"{chat_id}.{task_cfg.get('output_format', 'txt')}"
-                )
+                fmt = task_cfg.get('output_format', 'txt')
+                ext = 'json' if fmt == 'json' else 'txt'
+                out_file = task_out_dir / f"{chat_id}.{ext}"
                 
                 # Skip if already processed
                 if out_file.exists():
@@ -1498,7 +1503,8 @@ class RansomwarePipeline:
                 # enough threads to spawn the model handlers. The actual work
                 # limiting is done by the internal pools and the global semaphore.
                 outer_workers = len(self.models_list)
-                
+                model_thread_count = len(self.models_list)
+
                 with ThreadPoolExecutor(max_workers=outer_workers) as executor:
                     futures = []
                     
@@ -1524,13 +1530,21 @@ class RansomwarePipeline:
         # Run consensus analysis if using multiple models
         if len(self.models_list) > 1:
             print("\nRunning consensus analysis...")
-            for group_name, chat_id, _ in all_jobs:
-                try:
-                    self.consensus_manager.run_consensus_pipeline(
-                        group_name, chat_id, self.models_list
-                    )
-                except Exception as e:
-                    logger.error(f"Consensus error {chat_id}: {e}")
+            for task_name in tasks.keys():
+                print(f"  Consensus: {task_name}")
+                cm = ConsensusManager(
+                    self.base_dir,
+                    task_name=task_name
+                )
+                for group_name, chat_id, _ in all_jobs:
+                    try:
+                        cm.run_consensus_pipeline(
+                            group_name, chat_id, self.models_list
+                        )
+                    except Exception as e:
+                        logger.error(
+                            f"Consensus error {chat_id}/{task_name}: {e}"
+                        )
         
         # Finalize statistics
         self.stats.completed_chats = len(all_jobs)

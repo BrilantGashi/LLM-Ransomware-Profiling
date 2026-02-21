@@ -1,0 +1,533 @@
+[
+  {
+    "message_id": 1,
+    "party": "Black Basta",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.75
+  },
+  {
+    "message_id": 2,
+    "party": "Black Basta",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 3,
+    "party": "Black Basta",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 4,
+    "party": "Victim",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [],
+    "argumentative_function": "ACTION_PRESSURE",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 5,
+    "party": "Black Basta",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [],
+    "argumentative_function": "ACTION_PRESSURE",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 6,
+    "party": "Victim",
+    "primary_act": "EXPRESSIVE_METACOMMUNICATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "VALUE_FAIRNESS_APPEAL",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.75
+  },
+  {
+    "message_id": 1,
+    "party": "Black Basta",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 2,
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "DIRECTIVE",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.75
+  },
+  {
+    "message_id": 3,
+    "party": "Black Basta",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "PROOF_OF_CAPABILITY",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 4,
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "DIRECTIVE",
+    "phase": "PROOF_OF_CAPABILITY",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 5,
+    "party": "Victim",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "PROOF_OF_CAPABILITY",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 6,
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "DIRECTIVE",
+    "phase": "BARGAINING_CONCESSION",
+    "consensus_score": 0.75
+  },
+  {
+    "message_id": 1,
+    "party": "Victim",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "VALUE_FAIRNESS_APPEAL",
+    "phase": "DEMAND_FORMULATION",
+    "consensus_score": 0.75
+  },
+  {
+    "message_id": 2,
+    "party": "Black Basta",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [
+      "THREAT"
+    ],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "DEMAND_FORMULATION",
+    "consensus_score": 0.75
+  },
+  {
+    "message_id": 1,
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "PROOF_OF_CAPABILITY",
+    "consensus_score": 0.75
+  },
+  {
+    "message_id": 2,
+    "party": "Black Basta",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "BARGAINING_CONCESSION",
+    "consensus_score": 0.75
+  },
+  {
+    "message_id": 1,
+    "party": "Victim",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "VALUE_FAIRNESS_APPEAL",
+    "phase": "DEMAND_FORMULATION",
+    "consensus_score": 0.75
+  },
+  {
+    "message_id": 2,
+    "party": "Black Basta",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "BARGAINING_CONCESSION",
+    "consensus_score": 0.75
+  },
+  {
+    "message_id": 1,
+    "party": "Black Basta",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "PROOF_OF_CAPABILITY",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 1,
+    "party": "Victim",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "BARGAINING_CONCESSION",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 2,
+    "party": "Black Basta",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [
+      "THREAT"
+    ],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "DEMAND_FORMULATION",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 1,
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "DEMAND_FORMULATION",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 2,
+    "party": "Black Basta",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "BARGAINING_CONCESSION",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 1,
+    "party": "Black Basta",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 2,
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 1,
+    "party": "Black Basta",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 2,
+    "party": "Black Basta",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 1,
+    "party": "Black Basta",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 1,
+    "party": "Black Basta",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 1,
+    "party": "Attacker",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 2,
+    "party": "Victim",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "PROOF_OF_CAPABILITY",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 3,
+    "party": "Attacker",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "PROOF_OF_CAPABILITY",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 4,
+    "party": "Victim",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "DEMAND_FORMULATION",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 5,
+    "party": "Attacker",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [
+      "THREAT"
+    ],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "DEMAND_FORMULATION",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 2,
+    "party": "Attacker",
+    "primary_act": "NEGOTIATIVE_EVALUATIVE",
+    "secondary_acts": [
+      "PROMISE"
+    ],
+    "argumentative_function": "VALUE_FAIRNESS_APPEAL",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 1,
+    "party": "Victim",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 2,
+    "party": "Attacker",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 1,
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 2,
+    "party": "Attacker",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [
+      "THREAT"
+    ],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 1,
+    "party": "Black Basta",
+    "primary_act": "NEGOTIATIVE_EVALUATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "VALUE_FAIRNESS_APPEAL",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 1,
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "VALUE_FAIRNESS_APPEAL",
+    "phase": "DEMAND_FORMULATION",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 2,
+    "party": "Attacker",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [
+      "THREAT"
+    ],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "BARGAINING_CONCESSION",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 1,
+    "party": "Victim",
+    "primary_act": "NEGOTIATIVE_EVALUATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "VALUE_FAIRNESS_APPEAL",
+    "phase": "RESOLUTION_CLOSURE",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 2,
+    "party": "Attacker",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [
+      "PROMISE"
+    ],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 1,
+    "party": "Attacker",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 2,
+    "party": "Victim",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 3,
+    "party": "Attacker",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "PROOF_OF_CAPABILITY",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 4,
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "PROOF_OF_CAPABILITY",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 5,
+    "party": "Attacker",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [
+      "THREAT"
+    ],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "DEMAND_FORMULATION",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 1,
+    "party": "Attacker",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 2,
+    "party": "Attacker",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 1,
+    "party": "Black Basta",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 1,
+    "party": "Victim",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROOF_OF_CAPABILITY",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 2,
+    "party": "Attacker",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "PROOF_OF_CAPABILITY",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 3,
+    "party": "Attacker",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "PROOF_OF_CAPABILITY",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 4,
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "DEMAND_FORMULATION",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 5,
+    "party": "Attacker",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [
+      "THREAT"
+    ],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "DEMAND_FORMULATION",
+    "consensus_score": 1.0
+  }
+]

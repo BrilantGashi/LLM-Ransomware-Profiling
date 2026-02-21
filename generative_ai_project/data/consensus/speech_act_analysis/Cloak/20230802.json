@@ -1,0 +1,411 @@
+[
+  {
+    "message_id": 1,
+    "party": "Attacker",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 1,
+    "party": "Attacker",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 2,
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "PROOF_OF_CAPABILITY",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 3,
+    "party": "Attacker",
+    "primary_act": "EXPRESSIVE_METACOMMUNICATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "PROOF_OF_CAPABILITY",
+    "consensus_score": 0.75
+  },
+  {
+    "message_id": 4,
+    "party": "Victim",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "DEMAND_FORMULATION",
+    "consensus_score": 0.75
+  },
+  {
+    "message_id": 5,
+    "party": "Attacker",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [
+      "THREAT"
+    ],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "DEMAND_FORMULATION",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 1,
+    "party": "Anonymous",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.75
+  },
+  {
+    "message_id": 2,
+    "party": "Anonymous",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [
+      "THREAT"
+    ],
+    "argumentative_function": "ACTION_PRESSURE",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.75
+  },
+  {
+    "message_id": 1,
+    "party": "Client ",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 2,
+    "party": "Anonymous ",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 1,
+    "party": "Anonymous",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "FACE_ETHOS_WORK",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.75
+  },
+  {
+    "message_id": 2,
+    "party": "Anonymous",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 1,
+    "party": "Anonymous",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 2,
+    "party": "Anonymous",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 1,
+    "party": "Anonymous",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "FACE_ETHOS_WORK",
+    "phase": "OTHER",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 2,
+    "party": "Anonymous",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "OTHER",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 1,
+    "party": "Client",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 2,
+    "party": "Anonymous",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.75
+  },
+  {
+    "message_id": 1,
+    "party": "Anonymous",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 2,
+    "party": "Anonymous",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 1,
+    "party": "Attacker",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 2,
+    "party": "Attacker",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 1,
+    "party": "Client",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 2,
+    "party": "Client",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.75
+  },
+  {
+    "message_id": 1,
+    "party": "Anonymous",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 2,
+    "party": "Anonymous",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.75
+  },
+  {
+    "message_id": 1,
+    "party": "Anonymous",
+    "primary_act": "EXPRESSIVE_METACOMMUNICATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "FACE_ETHOS_WORK",
+    "phase": "OPENING_CONTACT",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 2,
+    "party": "Client",
+    "primary_act": "DIRECTIVE",
+    "secondary_acts": [],
+    "argumentative_function": "DIRECTIVE",
+    "phase": "DEMAND_FORMULATION",
+    "consensus_score": 0.5
+  },
+  {
+    "message_id": 1,
+    "party": "Anonymous",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 2,
+    "party": "Anonymous",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 3,
+    "party": "Anonymous",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 4,
+    "party": "Anonymous",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 5,
+    "party": "Anonymous",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 6,
+    "party": "Client",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 7,
+    "party": "Client",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 1,
+    "party": "Anonymous",
+    "primary_act": "NEGOTIATIVE_EVALUATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 2,
+    "party": "Client",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 1,
+    "party": "Client",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "GROUNDS_FACTS",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 2,
+    "party": "Anonymous",
+    "primary_act": "INFORMATIVE_DECLARATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 3,
+    "party": "Anonymous",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [],
+    "argumentative_function": "CONDITIONAL_REASONING",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 4,
+    "party": "Anonymous",
+    "primary_act": "COMMISSIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 5,
+    "party": "Anonymous",
+    "primary_act": "NEGOTIATIVE_EVALUATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 6,
+    "party": "Anonymous",
+    "primary_act": "NEGOTIATIVE_EVALUATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 7,
+    "party": "Anonymous",
+    "primary_act": "NEGOTIATIVE_EVALUATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  },
+  {
+    "message_id": 8,
+    "party": "Anonymous",
+    "primary_act": "NEGOTIATIVE_EVALUATIVE",
+    "secondary_acts": [],
+    "argumentative_function": "PROCESS_MAINTENANCE",
+    "phase": "OTHER",
+    "consensus_score": 1.0
+  }
+]

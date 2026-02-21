@@ -1,0 +1,20 @@
+{
+  "Attacker_Profile": {
+    "communication_tone": "Professional",
+    "competence_level": "Semi_Professional",
+    "primary_strategy": "Competing",
+    "influence_tactics": [
+      "Authority",
+      "Pressure"
+    ]
+  },
+  "Victim_Profile": {
+    "emotional_trajectory": "Professional_Detachment",
+    "negotiation_tactic": "Technical_Stalling",
+    "tactic_effectiveness": "High"
+  },
+  "Interaction_Dynamics": {
+    "power_balance": "Attacker_Dominant",
+    "negotiation_outcome_likelihood": "Medium"
+  }
+}
