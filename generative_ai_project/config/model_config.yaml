@@ -69,19 +69,19 @@ model_specific_params:
     temperature: 0.8
   
   phi4-mini:
-    temperature: 0.8
+    temperature: 0.4
   
   qwen3:
     temperature: 0.6
   
   llama3.2:
-    temperature: 0.7
+    temperature: 0.4
   
   phi4:
     temperature: 0.7
 
   granite3.3:
-    temperature: 0.7
+    temperature: 0.4
   
   gemma3:
     max_tokens: 512
@@ -104,8 +104,8 @@ embedding:
 # PROCESSING & RETRY CONFIGURATION
 # ------------------------------------------------------------------------------
 processing:
-  max_workers: 6               # Parallel threads for chat processing
-  chunk_max_chars: 10000        # Maximum prompt length before chunking
+  max_workers: 3               # Parallel threads for chat processing
+  chunk_max_chars: 5000        # Maximum prompt length before chunking
   
   # Retry mechanism configuration
   retry:

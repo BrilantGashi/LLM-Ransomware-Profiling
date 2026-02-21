@@ -64,7 +64,7 @@ def stratified_sample_chats(
         print(f"{'TOTAL':>10}: {total:>3} chats")
         print("="*50 + "\n")
     
-    # Stratified Sampling Strategy
+        # Stratified Sampling Strategy
     sampled = []
     
     if verbose:
@@ -75,42 +75,32 @@ def stratified_sample_chats(
     if verbose:
         print(f"Excluded chats <10 messages: {len(bins['<10'])}")
     
-    # Sample 10-30: ~55%
-    sample_10_30 = random.sample(bins['10-30'], k=min(20, len(bins['10-30'])))
-    sampled.extend(sample_10_30)
+    # SKIP 10-30
+    sample_10_30 = []
     if verbose:
-        print(f"Sampled 10-30: {len(sample_10_30)}/{len(bins['10-30'])}")
+        print(f"Sampled 10-30: 0/{len(bins['10-30'])} (skipped)")
     
-    # Sample 30-60: ~42%
-    sample_30_60 = random.sample(bins['30-60'], k=min(8, len(bins['30-60'])))
+    # Sample 30-60: TARGET 40 chats
+    sample_30_60 = random.sample(bins['30-60'], k=min(40, len(bins['30-60'])))
     sampled.extend(sample_30_60)
     if verbose:
         print(f"Sampled 30-60: {len(sample_30_60)}/{len(bins['30-60'])}")
     
-    # Sample 60-100: ~33%
-    sample_60_100 = random.sample(bins['60-100'], k=min(4, len(bins['60-100'])))
-    sampled.extend(sample_60_100)
+    # SKIP 60-100
+    sample_60_100 = []
     if verbose:
-        print(f"Sampled 60-100: {len(sample_60_100)}/{len(bins['60-100'])}")
+        print(f"Sampled 60-100: 0/{len(bins['60-100'])} (skipped)")
     
-    # Sample 100-150: ~30%
-    sample_100_150 = random.sample(bins['100-150'], k=min(2, len(bins['100-150'])))
-    sampled.extend(sample_100_150)
+    # SKIP 100-150
+    sample_100_150 = []
     if verbose:
-        print(f"Sampled 100-150: {len(sample_100_150)}/{len(bins['100-150'])}")
+        print(f"Sampled 100-150: 0/{len(bins['100-150'])} (skipped)")
     
-    # Sample >150: Top 2 longest + 1 random
-    if len(bins['>150']) > 0:
-        sorted_long = sorted(bins['>150'], key=lambda x: x[2], reverse=True)
-        sample_150_plus = sorted_long[:2]
-        if len(sorted_long) > 2:
-            sample_150_plus.append(random.choice(sorted_long[2:]))
-        sampled.extend(sample_150_plus)
-        max_msg = max(x[2] for x in bins['>150'])
-        if verbose:
-            print(f"Sampled >150: {len(sample_150_plus)}/{len(bins['>150'])} (max len: {max_msg})")
+    # SKIP >150
+    if verbose:
+        print(f"Sampled >150: 0/{len(bins['>150'])} (skipped)")
     
-    total_available = sum(len(c) for c in bins.values() if c != bins['<10'])
+    total_available = len(bins['30-60'])
     
     if verbose:
         print("-"*50)
@@ -119,6 +109,7 @@ def stratified_sample_chats(
         print("="*50 + "\n")
     
     return sampled
+
 
 
 def save_sample_manifest(sampled: List[Tuple[str, str, int]], output_path: Path):
